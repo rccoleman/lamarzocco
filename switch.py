@@ -124,6 +124,11 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         return output
 
     @property
+    def icon(self) -> str:
+        """Return the icon to use in the frontend, if any."""
+        return "mdi:coffee-maker"
+
+    @property
     def device_info(self):
         """Device info."""
         return {

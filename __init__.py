@@ -1,15 +1,11 @@
 """The La Marzocco integration."""
 import asyncio
-
 import voluptuous as vol
-
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.oauth2.rfc6749.wrappers import OAuth2Token
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
-
 from datetime import timedelta
 import logging
 
@@ -40,6 +36,7 @@ from .const import (
     CONF_CLIENT_SECRET,
     MACHINE_STATUS,
     STATUS_ON,
+    GW_URL,
 )
 
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
@@ -57,6 +54,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass, config_entry):
     """Set up La Marzocco as config entry."""
     coordinator = LaMarzoccoDataUpdateCoordinator(hass, config_entry)
+    await hass.async_add_executor_job(coordinator.init_data)
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -94,11 +92,15 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, config_entry):
         """Initialize global data updater."""
         self.machine_data = LMData(hass, config_entry.data)
-        self.machine_data.init_data()
+        self.hass = hass
 
         super().__init__(
             hass, _LOGGER, name=DOMAIN, update_interval=timedelta(seconds=60)
         )
+
+    def init_data(self):
+        """Initialize the UpdateCoordinator object"""
+        self.machine_data.init_data()
 
     async def _async_update_data(self):
         """Fetch data"""
@@ -116,27 +118,24 @@ class LMData:
         self.hass = hass
         self._config = config
         self.current_data = {}
-        self.current_status = None
-        self.new_status = None
         self.client = None
-        self.config_endpoint = None
-        self.status_endpoint = None
-        self.token = None
+        self.is_on = False
 
     def init_data(self):
         """Machine data inialization"""
         serial_number = self._config[CONF_SERIAL_NUMBER]
         token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
-        self.config_endpoint = (
-            f"https://gw.lamarzocco.io/v1/home/machines/{serial_number}/configuration"
-        )
-        self.status_endpoint = (
-            f"https://gw.lamarzocco.io/v1/home/machines/{serial_number}/status"
-        )
+        self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
+        self.status_endpoint = f"{GW_URL}/{serial_number}/status"
         self.client = OAuth2Session(
             self._config[CONF_CLIENT_ID],
             self._config[CONF_CLIENT_SECRET],
             token_endpoint=token_endpoint,
+        )
+
+        self.client.fetch_token(
+            username=self._config[CONF_USERNAME],
+            password=self._config[CONF_PASSWORD],
         )
 
     async def fetch_data(self):
@@ -145,28 +144,17 @@ class LMData:
         return self
 
     def _fetch_data(self):
-        if self.token is None:
-            self.token = self.client.fetch_token(
-                username=self._config[CONF_USERNAME],
-                password=self._config[CONF_PASSWORD],
-            )
+        _LOGGER.debug("Fetching data")
 
-        if self.new_status is not None and self.current_status != self.new_status:
-            self._power(self.new_status)
-            self.current_status = self.new_status
-        else:
-            self.current_status = self.client.get(self.status_endpoint)
-            if self.current_status is not None:
-                data = self.current_status.json().get(DATA_TAG)
-                self.current_status = data.get(MACHINE_STATUS) == STATUS_ON
-                self.new_status = self.current_status
+        current_status = self.client.get(self.status_endpoint)
+        if current_status is not None:
+            _LOGGER.debug(current_status.json())
+            data = current_status.json().get(DATA_TAG)
+            self.is_on = data.get(MACHINE_STATUS) == STATUS_ON
 
-        self.current_data = self.client.get(self.config_endpoint)
-        if self.current_data is not None:
-            self.current_data = self.current_data.json().get(DATA_TAG)
+        current_data = self.client.get(self.config_endpoint)
+        if current_data is not None:
+            _LOGGER.debug(current_data.json())
+            self.current_data = current_data.json().get(DATA_TAG)
 
-        print("Device is {}".format("On" if self.current_status else "Off"))
-
-    def _power(self, power):
-        command = COMMAND_ON if power else COMMAND_STANDBY
-        self.client.post(self.status_endpoint, json=command)
+        _LOGGER.debug("Device is {}".format("On" if self.is_on else "Off"))

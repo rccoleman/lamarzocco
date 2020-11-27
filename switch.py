@@ -1,14 +1,22 @@
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA_BASE
-from homeassistant.core import DOMAIN
+from homeassistant.core import DOMAIN, callback
 import voluptuous as vol
 import logging
 from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from .const import DOMAIN, CONF_SERIAL_NUMBER, DEFAULT_NAME, ATTR_MAP
+from .const import (
+    DOMAIN,
+    CONF_SERIAL_NUMBER,
+    DEFAULT_NAME,
+    ATTR_MAP,
+    COMMAND_ON,
+    COMMAND_STANDBY,
+)
 from homeassistant.const import CONF_CLIENT_ID, CONF_NAME, CONF_USERNAME, CONF_PASSWORD
+import traceback
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -41,20 +49,37 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Initialise the platform with a data instance and site."""
         super().__init__(coordinator)
         self._config = config
+        self._temp_state = None
 
     def turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        self.coordinator.data.new_status = True
-
-        # Update the data
-        self.schedule_update_ha_state(True)
+        self._power(True)
+        self.schedule_update_ha_state(force_refresh=False)
 
     def turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        self.coordinator.data.new_status = False
+        self._power(False)
+        self.schedule_update_ha_state(force_refresh=False)
 
-        # Update the data
-        self.schedule_update_ha_state(True)
+    def _power(self, power):
+        command = COMMAND_ON if power else COMMAND_STANDBY
+        data = self.coordinator.data
+        data.client.post(data.status_endpoint, json=command)
+
+        # set a temporary state while we wait for the device to change state
+        self._temp_state = power
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Respond to a DataUpdateCoordinator update."""
+        self.update_from_latest_data()
+        self.async_write_ha_state()
+
+    @callback
+    def update_from_latest_data(self) -> None:
+        """Update the state."""
+        if self._temp_state == self.coordinator.data.is_on:
+            self._temp_state = None
 
     @property
     def unique_id(self):
@@ -64,12 +89,21 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        return self.coordinator.data.new_status
+        return (
+            self._temp_state
+            if self._temp_state is not None
+            else self.coordinator.data.is_on
+        )
 
     @property
     def assumed_state(self) -> bool:
         """Return true if unable to access real state of entity."""
         return False
+
+    # @property
+    # def state(self) -> bool:
+    #     """Return the current value of the switch."""
+    #     return self._temp_state
 
     @property
     def name(self):
@@ -109,7 +143,7 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         return {
             "identifiers": {(DOMAIN,)},
             "manufacturer": "La Marzocco",
-            "model": "Forecast",
+            "model": "GS/3",
             "default_name": "lamarzocco",
-            "entry_type": "service",
+            "entry_type": "None",
         }

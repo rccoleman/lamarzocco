@@ -37,6 +37,8 @@ STATUS_MAP = {STATUS_ON: "On", STATUS_STANDBY: "Standby"}
 COMMAND_ON = {"status": "ON"}
 COMMAND_STANDBY = {"status": "STANDBY"}
 
+GW_URL = "https://gw.lamarzocco.io/v1/home/machines"
+
 ATTR_MAP = {
     STATE_STATUS: "Status",
     ATTR_ENABLE_PREBREWING: "Prebrewing Enabled",

@@ -4,18 +4,25 @@ import logging
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
+from homeassistant.helpers import config_validation as cv
 
-from .const import DOMAIN  # pylint:disable=unused-import
+from .const import (
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
+    CONF_SERIAL_NUMBER,
+    DOMAIN,
+)  # pylint:disable=unused-import
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 
 _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        "serial_number": str,
-        "client_id": str,
-        "client_secret": str,
-        "username": str,
-        "password": str,
+        vol.Required(CONF_SERIAL_NUMBER): cv.string,
+        vol.Required(CONF_CLIENT_ID): cv.string,
+        vol.Required(CONF_CLIENT_SECRET): cv.string,
+        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string,
     }
 )
 

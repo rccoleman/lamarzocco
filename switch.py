@@ -1,11 +1,7 @@
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.helpers.config_validation import PLATFORM_SCHEMA_BASE
 from homeassistant.core import DOMAIN, callback
-import voluptuous as vol
 import logging
-from homeassistant.config_entries import SOURCE_IMPORT
-from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     DOMAIN,
@@ -15,21 +11,11 @@ from .const import (
     COMMAND_ON,
     COMMAND_STANDBY,
 )
-from homeassistant.const import CONF_CLIENT_ID, CONF_NAME, CONF_USERNAME, CONF_PASSWORD
-import traceback
+from homeassistant.const import CONF_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 ATTRIBUTION = "Data from La Marzocco"
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA_BASE.extend(
-    {
-        vol.Required(CONF_SERIAL_NUMBER): cv.string,
-        vol.Required(CONF_CLIENT_ID): cv.string,
-        vol.Required(CONF_USERNAME): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string,
-    }
-)
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):

@@ -1,0 +1,14 @@
+{
+  "domain": "lamarzocco",
+  "name": "La Marzocco",
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/lamarzocco",
+  "requirements": ["authlib"],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@rccoleman"
+  ]
+}

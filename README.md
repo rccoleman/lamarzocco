@@ -18,7 +18,7 @@ If you've installed [HACS](https://hacs.xyz), you can simply add this repo as a 
 2. Click "Integrations`
 3. Click the three dots in the upper-right corner
 4. Select "Custom Repositories"
-5. Select "Integrtation" from the dropdown box
+5. Select "Integration" from the dropdown box
 6. Paste `https://github.com/rccoleman/lamarzocco` into the textbox to the left
 7. Click "Add"
 8. Click "Install" on card that appears

@@ -23,7 +23,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
         [
-            LaMarzocco(coordinator, config_entry.data),
+            LaMarzocco(coordinator, config_entry.data, hass.config.units.is_metric),
         ]
     )
 
@@ -31,11 +31,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
     """Implementation of a La Marzocco integration"""
 
-    def __init__(self, coordinator, config):
+    def __init__(self, coordinator, config, is_metric):
         """Initialise the platform with a data instance and site."""
         super().__init__(coordinator)
         self._config = config
         self._temp_state = None
+        self.is_metric = is_metric
 
     def turn_on(self, **kwargs) -> None:
         """Turn device on."""
@@ -117,13 +118,19 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         output = {}
 
         current_data = self.coordinator.data.current_data
-        for tag in current_data:
-            if tag in ATTR_MAP.keys():
-                value = current_data[tag]
+        for key in current_data:
+            if key in ATTR_MAP.keys():
+                value = current_data[key]
+
+                """Convert boolean values to strings to improve display in Lovelace"""
                 if isinstance(value, bool):
                     value = str(value)
 
-                output[ATTR_MAP[tag]] = value
+                """Convert temps to fahrenheit if needed"""
+                if not self.is_metric and "TSET" in key:
+                    value = round((value * 9 / 5) + 32, 1)
+
+                output[ATTR_MAP[key]] = value
 
         return output
 

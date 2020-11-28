@@ -8,8 +8,6 @@ from .const import (
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
     ATTR_MAP,
-    COMMAND_ON,
-    COMMAND_STANDBY,
 )
 from homeassistant.const import CONF_NAME
 
@@ -40,21 +38,17 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
 
     def turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        self._power(True)
+        self.coordinator.data.power(True)
+        self._temp_state = True
+
         self.schedule_update_ha_state(force_refresh=False)
 
     def turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        self._power(False)
+        self.coordinator.data.power(False)
+        self._temp_state = False
+
         self.schedule_update_ha_state(force_refresh=False)
-
-    def _power(self, power):
-        command = COMMAND_ON if power else COMMAND_STANDBY
-        data = self.coordinator.data
-        data.client.post(data.status_endpoint, json=command)
-
-        # set a temporary state while we wait for the device to change state
-        self._temp_state = power
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -94,12 +88,7 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
 
     @property
     def name(self):
-        """Return the name of the sensor."""
-        name = self._config.get(CONF_NAME)
-
-        if name is not None:
-            return name
-
+        """Return the name of the switch."""
         return f"{DEFAULT_NAME}"
 
     @property

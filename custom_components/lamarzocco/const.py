@@ -6,7 +6,7 @@ CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"
 
-DEFAULT_NAME = "la_marzocco"
+DEFAULT_NAME = "espresso_machine"
 
 ATTR_ENABLE_PREBREWING = "ENABLE_PREBREWING"
 ATTR_STBY_TIMER = "STBY_TIMER"

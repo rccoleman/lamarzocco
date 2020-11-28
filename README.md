@@ -10,21 +10,40 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 
 ## Installation
 
-Installation is a manual process for now.
+### HACS
+
+If you've installed [HACS](https://hacs.xyz), you can simply add this repo as a Custom Repository and install that way.
+
+1. Launch the HACS panel from the left sidebar
+2. Click "Integrations`
+3. Click the three dots in the upper-right corner
+4. Select "Custom Repositories"
+5. Select "Integration" from the dropdown box
+6. Paste `https://github.com/rccoleman/lamarzocco` into the textbox to the left
+7. Click "Add"
+8. Click "Install" on card that appears
+
+### Manual
+
+If you don't have HACS installed or would prefer to install manually.
 
 1. Create a `config/custom_comoponents` directory if it doesn't already exist
-2. Clone the contents of this repo into that directory.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
-3. Restart Home Assistant
-4. Navigate to Configuration->Integrations
-5. Hit the "+ Add New Integration" button in the lower-right
-6. Search for "La Marzocco" and select it
-7. You'll be presented with a dialog box like this:
+2. Run this repo and move `lamarzocco` into `config/custom_components`.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
+
+#### Restart Home Assistant
+
+## Configuration
+
+1. Navigate to Configuration->Integrations
+2. Hit the "+ Add New Integration" button in the lower-right
+3. Search for "La Marzocco" and select it
+4. You'll be presented with a dialog box like this:
 
 ![Config Flow](https://github.com/rccoleman/lamarzocco/blob/master/Config%20Flow.png?raw=true)
 
-8. Fill in the info (you'll find the serial number in the app starting with "LM" for a Linea Mini or "GS" for a GS/3)
-9. Hit "Submit"
-10. You should find a new entity in Dev->States initially called `switch.la_marzocco`
+5. Fill in the info (you'll find the serial number in the app starting with "LM" for a Linea Mini or "GS" for a GS/3)
+6. Hit "Submit"
+7. You should find a new entity in Dev->States initially called `switch.la_marzocco`
 
 You should be able to turn your machine on and off by toggling the switch and a number of attributes should be populated with data from your machine.  Here's an example:
 

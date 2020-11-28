@@ -13,7 +13,7 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 Installation is a manual process for now.
 
 1. Create a `config/custom_comoponents` directory if it doesn't already exist
-2. Clone the contents of this repo into that directory.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
+2. Run this repo and move `lamarzocco` into `config/custom_components`.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
 3. Restart Home Assistant
 4. Navigate to Configuration->Integrations
 5. Hit the "+ Add New Integration" button in the lower-right

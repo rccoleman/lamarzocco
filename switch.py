@@ -119,7 +119,11 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         current_data = self.coordinator.data.current_data
         for tag in current_data:
             if tag in ATTR_MAP.keys():
-                output[ATTR_MAP[tag]] = current_data[tag]
+                value = current_data[tag]
+                if isinstance(value, bool):
+                    value = str(value)
+
+                output[ATTR_MAP[tag]] = value
 
         return output
 

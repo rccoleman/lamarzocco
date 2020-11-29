@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_configured": "Device is already configured"
+            "single_instance_allowed": "Device is already configured.  On a single instance is allowed."
         },
         "error": {
             "cannot_connect": "Failed to connect",

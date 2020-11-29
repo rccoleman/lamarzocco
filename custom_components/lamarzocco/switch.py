@@ -9,7 +9,6 @@ from .const import (
     DEFAULT_NAME,
     ATTR_MAP,
 )
-from homeassistant.const import CONF_NAME
 
 _LOGGER = logging.getLogger(__name__)
 

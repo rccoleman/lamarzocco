@@ -1,11 +1,17 @@
 """The La Marzocco integration."""
 import asyncio
-from authlib.integrations.requests_client import OAuth2Session
+
+# from authlib.integrations.requests_client import OAuth2Session
+from requests import Response
+from requests_oauthlib import OAuth2Session
+
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
 from datetime import timedelta
 import logging
+import oauthlib
 
 from homeassistant.const import (
     CONF_USERNAME,
@@ -123,12 +129,12 @@ class LaMarzocco:
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
         self.client = OAuth2Session(
-            self._config[CONF_CLIENT_ID],
-            self._config[CONF_CLIENT_SECRET],
-            token_endpoint=token_endpoint,
+            client=oauthlib.oauth2.LegacyApplicationClient(self._config[CONF_CLIENT_ID])
         )
 
         self.client.fetch_token(
+            token_endpoint,
+            client_secret=self._config[CONF_CLIENT_SECRET],
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],
         )

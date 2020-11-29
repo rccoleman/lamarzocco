@@ -63,9 +63,9 @@ async def async_setup_entry(hass, config_entry):
 
     hass.data[DOMAIN][config_entry.entry_id] = coordinator
 
-    for component in PLATFORMS:
+    for platform in PLATFORMS:
         hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(config_entry, component)
+            hass.config_entries.async_forward_entry_setup(config_entry, platform)
         )
 
     return True
@@ -96,14 +96,18 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
         self.hass = hass
 
         super().__init__(
-            hass, _LOGGER, name=DOMAIN, update_interval=timedelta(seconds=60)
+            hass,
+            _LOGGER,
+            name=DOMAIN,
+            update_interval=timedelta(seconds=60),
+            update_method=self.async_update_data,
         )
 
     def init_data(self):
         """Initialize the UpdateCoordinator object"""
         self._device.init_data()
 
-    async def _async_update_data(self):
+    async def async_update_data(self):
         """Fetch data"""
         try:
             return await self._device.fetch_data()
@@ -125,7 +129,6 @@ class LaMarzocco:
     def init_data(self):
         """Machine data inialization"""
         serial_number = self._config[CONF_SERIAL_NUMBER]
-        token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
         self.client = OAuth2Session(
@@ -133,7 +136,7 @@ class LaMarzocco:
         )
 
         self.client.fetch_token(
-            token_endpoint,
+            "https://cms.lamarzocco.io/oauth/v2/token",
             client_secret=self._config[CONF_CLIENT_SECRET],
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],

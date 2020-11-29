@@ -19,13 +19,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add a switch entity from a config_entry."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
-        [
-            LaMarzocco(coordinator, config_entry.data, hass.config.units.is_metric),
-        ]
+        [LaMarzoccoEntity(coordinator, config_entry.data, hass.config.units.is_metric)]
     )
 
 
-class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
+class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     """Implementation of a La Marzocco integration"""
 
     def __init__(self, coordinator, config, is_metric):
@@ -39,21 +37,19 @@ class LaMarzocco(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Turn device on."""
         self.coordinator.data.power(True)
         self._temp_state = True
-
         self.schedule_update_ha_state(force_refresh=False)
 
     def turn_off(self, **kwargs) -> None:
         """Turn device off."""
         self.coordinator.data.power(False)
         self._temp_state = False
-
         self.schedule_update_ha_state(force_refresh=False)
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Respond to a DataUpdateCoordinator update."""
         self.update_from_latest_data()
-        self.async_write_ha_state()
+        super()._handle_coordinator_update()
 
     @callback
     def update_from_latest_data(self) -> None:

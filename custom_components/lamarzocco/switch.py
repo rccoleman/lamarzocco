@@ -33,17 +33,17 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._temp_state = None
         self.is_metric = is_metric
 
-    def turn_on(self, **kwargs) -> None:
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        self.coordinator.data.power(True)
+        await self.coordinator.data.power(True)
         self._temp_state = True
-        self.schedule_update_ha_state(force_refresh=False)
+        self.async_schedule_update_ha_state(force_refresh=False)
 
-    def turn_off(self, **kwargs) -> None:
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        self.coordinator.data.power(False)
+        await self.coordinator.data.power(False)
         self._temp_state = False
-        self.schedule_update_ha_state(force_refresh=False)
+        self.async_schedule_update_ha_state(force_refresh=False)
 
     @callback
     def _handle_coordinator_update(self) -> None:

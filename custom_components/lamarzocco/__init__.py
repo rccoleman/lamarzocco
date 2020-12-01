@@ -4,6 +4,7 @@ import asyncio
 # from authlib.integrations.requests_client import OAuth2Session
 from requests import Response
 from requests_oauthlib import OAuth2Session
+from authlib.integrations.httpx_client import AsyncOAuth2Client
 
 
 from homeassistant.config_entries import ConfigEntry
@@ -55,7 +56,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass, config_entry):
     """Set up La Marzocco as config entry."""
     coordinator = LaMarzoccoDataUpdateCoordinator(hass, config_entry)
-    await hass.async_add_executor_job(coordinator.init_data)
+    await coordinator.init_data()
     await coordinator.async_refresh()
 
     if not coordinator.last_update_success:
@@ -103,9 +104,9 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
             update_method=self.async_update_data,
         )
 
-    def init_data(self):
+    async def init_data(self):
         """Initialize the UpdateCoordinator object"""
-        self._device.init_data()
+        await self._device.init_data()
 
     async def async_update_data(self):
         """Fetch data"""
@@ -126,45 +127,50 @@ class LaMarzocco:
         self.client = None
         self.is_on = False
 
-    def init_data(self):
+    async def init_data(self):
         """Machine data inialization"""
         serial_number = self._config[CONF_SERIAL_NUMBER]
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
-        self.client = OAuth2Session(
-            client=oauthlib.oauth2.LegacyApplicationClient(self._config[CONF_CLIENT_ID])
+        token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
+        client_id = self._config[CONF_CLIENT_ID]
+        client_secret = self._config[CONF_CLIENT_SECRET]
+
+        self.client = AsyncOAuth2Client(
+            client_id=client_id,
+            client_secret=client_secret,
+            token_endpoint=token_endpoint,
         )
 
-        self.client.fetch_token(
-            "https://cms.lamarzocco.io/oauth/v2/token",
-            client_secret=self._config[CONF_CLIENT_SECRET],
+        headers = {"client_id": client_id, "client_secret": client_secret}
+
+        await self.client.fetch_token(
+            url=token_endpoint,
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],
+            headers=headers,
         )
 
     async def fetch_data(self):
         """Fetch data from API - (current weather and forecast)."""
-        await self.hass.async_add_executor_job(self._fetch_data)
-        return self
-
-    def _fetch_data(self):
         _LOGGER.debug("Fetching data")
 
-        current_status = self.client.get(self.status_endpoint)
+        current_status = await self.client.get(self.status_endpoint)
         if current_status is not None:
             _LOGGER.debug(current_status.json())
             data = current_status.json()
             if data is not None:
                 self.is_on = data[DATA_TAG][MACHINE_STATUS] == STATUS_ON
 
-        current_data = self.client.get(self.config_endpoint)
+        current_data = await self.client.get(self.config_endpoint)
         if current_data is not None:
             _LOGGER.debug(current_data.json())
             self.current_data = current_data.json().get(DATA_TAG)
 
         _LOGGER.debug("Device is {}".format("On" if self.is_on else "Off"))
         _LOGGER.debug("Data is {}".format(self.current_data))
+        return self
 
-    def power(self, power):
+    async def power(self, power):
         command = COMMAND_ON if power else COMMAND_STANDBY
-        self.client.post(self.status_endpoint, json=command)
+        await self.client.post(self.status_endpoint, json=command)

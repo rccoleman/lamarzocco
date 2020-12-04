@@ -128,6 +128,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Device info."""
         return {
             "identifiers": {(DOMAIN,)},
+            "name": "La Marzocco",
             "manufacturer": "La Marzocco",
             "model": "GS/3",
             "default_name": "lamarzocco",

@@ -106,7 +106,10 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def init_data(self):
         """Initialize the UpdateCoordinator object"""
-        await self._device.init_data()
+        try:
+            await self._device.init_data()
+        except Exception as err:
+            raise UpdateFailed(f"Init failed: {err}") from err
 
     async def async_update_data(self):
         """Fetch data"""

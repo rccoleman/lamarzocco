@@ -3,7 +3,7 @@
   "name": "La Marzocco",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/lamarzocco",
-  "requirements": ["authlib"],
+  "requirements": ["authlib==0.15.2", "requests-oauthlib==1.3.0"],
   "ssdp": [],
   "zeroconf": [],
   "homekit": {},

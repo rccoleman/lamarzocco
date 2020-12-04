@@ -1,18 +1,12 @@
 """The La Marzocco integration."""
 import asyncio
 
-# from authlib.integrations.requests_client import OAuth2Session
-from requests import Response
-from requests_oauthlib import OAuth2Session
 from authlib.integrations.httpx_client import AsyncOAuth2Client
-
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.core import HomeAssistant
 from datetime import timedelta
 import logging
-import oauthlib
 
 from homeassistant.const import (
     CONF_USERNAME,

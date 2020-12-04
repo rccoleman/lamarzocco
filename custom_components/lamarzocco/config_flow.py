@@ -11,7 +11,7 @@ from .const import (
     CONF_CLIENT_SECRET,
     CONF_SERIAL_NUMBER,
     DOMAIN,
-)  # pylint:disable=unused-import
+)
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
 
 _LOGGER = logging.getLogger(__name__)

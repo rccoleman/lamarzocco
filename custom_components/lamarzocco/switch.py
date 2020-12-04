@@ -76,11 +76,6 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Return true if unable to access real state of entity."""
         return False
 
-    # @property
-    # def state(self) -> bool:
-    #     """Return the current value of the switch."""
-    #     return self._temp_state
-
     @property
     def name(self):
         """Return the name of the switch."""

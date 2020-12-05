@@ -4,7 +4,7 @@ import logging
 import voluptuous as vol
 
 from homeassistant import config_entries, core, exceptions
-from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import config_entry_oauth2_flow, config_validation as cv
 
 from .const import (
     CONF_CLIENT_ID,
@@ -49,7 +49,9 @@ async def validate_input(hass: core.HomeAssistant, data):
     return {"title": "La Marzocco"}
 
 
-class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class OAuth2FlowHandler(
+    config_entry_oauth2_flow.AbstractOAuth2FlowHandler, domain=DOMAIN
+):
     """Handle a config flow for La Marzocco."""
 
     VERSION = 1

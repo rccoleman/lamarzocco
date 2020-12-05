@@ -1,5 +1,6 @@
 """The La Marzocco integration."""
 import asyncio
+from homeassistant.helpers import config_entry_oauth2_flow
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from homeassistant.config_entries import ConfigEntry
@@ -35,6 +36,7 @@ from .const import (
     MACHINE_STATUS,
     STATUS_ON,
     GW_URL,
+    TOKEN_URL,
 )
 
 PLATFORMS = ["switch"]
@@ -44,11 +46,31 @@ async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the La Marzocco component."""
     _LOGGER.debug("La Marzocco Setup")
     hass.data.setdefault(DOMAIN, {})
+
+    config_flow.OAuth2FlowHandler.async_register_implementation(
+        hass,
+        config_entry_oauth2_flow.LocalOAuth2Implementation(
+            hass,
+            DOMAIN,
+            config[DOMAIN][CONF_CLIENT_ID],
+            config[DOMAIN][CONF_CLIENT_SECRET],
+            config[DOMAIN][CONF_USERNAME],
+            config[DOMAIN][CONF_PASSWORD],
+        ),
+    )
     return True
 
 
 async def async_setup_entry(hass, config_entry):
     """Set up La Marzocco as config entry."""
+    implementation = (
+        await config_entry_oauth2_flow.async_get_config_entry_implementation(
+            hass, config_entry
+        )
+    )
+
+    session = config_entry_oauth2_flow.OAuth2Session(hass, config_entry, implementation)
+
     coordinator = LaMarzoccoDataUpdateCoordinator(hass, config_entry)
     await coordinator.init_data()
     await coordinator.async_refresh()
@@ -129,20 +151,19 @@ class LaMarzocco:
         serial_number = self._config[CONF_SERIAL_NUMBER]
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
-        token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
         client_id = self._config[CONF_CLIENT_ID]
         client_secret = self._config[CONF_CLIENT_SECRET]
 
         self.client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
-            token_endpoint=token_endpoint,
+            token_endpoint=TOKEN_URL,
         )
 
         headers = {"client_id": client_id, "client_secret": client_secret}
 
         await self.client.fetch_token(
-            url=token_endpoint,
+            url=TOKEN_URL,
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],
             headers=headers,

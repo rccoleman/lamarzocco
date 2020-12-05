@@ -32,9 +32,8 @@ from .const import (
     CONF_SERIAL_NUMBER,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
-    MACHINE_STATUS,
-    STATUS_ON,
     GW_URL,
+    TOKEN_URL,
 )
 
 PLATFORMS = ["switch"]
@@ -129,20 +128,19 @@ class LaMarzocco:
         serial_number = self._config[CONF_SERIAL_NUMBER]
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
-        token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
         client_id = self._config[CONF_CLIENT_ID]
         client_secret = self._config[CONF_CLIENT_SECRET]
 
         self.client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
-            token_endpoint=token_endpoint,
+            token_endpoint=TOKEN_URL,
         )
 
         headers = {"client_id": client_id, "client_secret": client_secret}
 
         await self.client.fetch_token(
-            url=token_endpoint,
+            url=TOKEN_URL,
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],
             headers=headers,

@@ -1,3 +1,4 @@
+from typing import Dict
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.core import DOMAIN, callback
@@ -5,21 +6,19 @@ import logging
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.dt import as_local, parse_datetime
 from .const import (
-    ATTR_DATA_CHANGED,
-    DATA_RECEIVED,
-    ATTR_STATUS_CHANGED,
+    ATTR_DATA_MAP,
+    ATTR_STATUS_MAP,
     DOMAIN,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
-    ATTR_MAP,
-    MACHINE_STATUS,
+    RECEIVED_DATETIME,
+    STATUS_MACHINE_STATUS,
     STATUS_ON,
-    STATUS_RECEIVED,
+    TEMP_KEYS,
+    ATTRIBUTION,
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-ATTRIBUTION = "Data from La Marzocco"
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -38,7 +37,9 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         super().__init__(coordinator)
         self._config = config
         self._temp_state = None
-        self._is_on = coordinator.data.current_status[MACHINE_STATUS] == STATUS_ON
+        self._is_on = (
+            coordinator.data.current_status[STATUS_MACHINE_STATUS] == STATUS_ON
+        )
         self.is_metric = is_metric
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -62,7 +63,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @callback
     def update_from_latest_data(self) -> None:
         """Update the state."""
-        status = self.coordinator.data.current_status[MACHINE_STATUS]
+        status = self.coordinator.data.current_status[STATUS_MACHINE_STATUS]
         self._is_on = status == STATUS_ON
         if self._temp_state == self._is_on:
             self._temp_state = None
@@ -100,29 +101,37 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def state_attributes(self):
         """Return the state attributes."""
+        output = self.generate_attrs(
+            self.coordinator.data.current_status, ATTR_STATUS_MAP
+        )
+
+        output.update(
+            self.generate_attrs(self.coordinator.data.current_data, ATTR_DATA_MAP)
+        )
+
+        return output
+
+    def generate_attrs(self, data, map) -> Dict:
         output = {}
 
-        output[ATTR_STATUS_CHANGED] = parse_datetime(
-            self.coordinator.data.current_status[STATUS_RECEIVED]
-        )
-        output[ATTR_DATA_CHANGED] = parse_datetime(
-            self.coordinator.data.current_data[DATA_RECEIVED]
-        )
-
         current_data = self.coordinator.data.current_data
-        for key in current_data:
-            if key in ATTR_MAP.keys():
-                value = current_data[key]
+        for key in data:
+            if key in map.keys():
+                value = data[key]
 
                 """Convert boolean values to strings to improve display in Lovelace"""
                 if isinstance(value, bool):
                     value = str(value)
 
                 """Convert temps to fahrenheit if needed"""
-                if not self.is_metric and "TSET" in key:
+                if not self.is_metric and any(val in key for val in TEMP_KEYS):
                     value = round((value * 9 / 5) + 32, 1)
 
-                output[ATTR_MAP[key]] = value
+                """Convert dates to datetime"""
+                if RECEIVED_DATETIME in key:
+                    value = parse_datetime(value)
+
+                output[map[key]] = value
 
         return output
 

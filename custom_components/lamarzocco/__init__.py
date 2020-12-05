@@ -121,8 +121,8 @@ class LaMarzocco:
         self.hass = hass
         self._config = config
         self.current_data = {}
+        self.current_status = {}
         self.client = None
-        self.is_on = False
 
     async def init_data(self):
         """Machine data inialization"""
@@ -154,17 +154,15 @@ class LaMarzocco:
 
         current_status = await self.client.get(self.status_endpoint)
         if current_status is not None:
-            _LOGGER.debug(current_status.json())
-            data = current_status.json()
-            if data is not None:
-                self.is_on = data[DATA_TAG][MACHINE_STATUS] == STATUS_ON
+            _LOGGER.debug(current_status.content)
+            self.current_status = current_status.json().get(DATA_TAG)
 
         current_data = await self.client.get(self.config_endpoint)
         if current_data is not None:
-            _LOGGER.debug(current_data.json())
+            _LOGGER.debug(current_data.content)
             self.current_data = current_data.json().get(DATA_TAG)
 
-        _LOGGER.debug("Device is {}".format("On" if self.is_on else "Off"))
+        _LOGGER.debug("Status is {}".format(self.current_status))
         _LOGGER.debug("Data is {}".format(self.current_data))
         return self
 

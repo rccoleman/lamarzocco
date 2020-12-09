@@ -4,9 +4,9 @@
 
 This is a prototype integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app.  This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
 
-Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), I built an integration that requests and automatically updates tokens and delivers configuration and machine status info from the cloud gateway to Home Assistant.
+Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), I built an integration that makes configuration/machine status available to Home Assistant and allows the user to turn the machine to "on" or "standby".
 
-Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token, and the only way that I've been able to get them is to sniff the web traffic from the mobile app.  This is complicated and you'll need to research how to do it (investigate mitmproxy).  I won't provide assistance for this.
+Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token, and the only way that I've been able to get them is to sniff the web traffic from the mobile app.  This is complicated and you'll need to research how to do it (investigate `mitmproxy`).  I won't provide assistance for this.
 
 ## Installation
 

@@ -8,6 +8,7 @@ from homeassistant.util.dt import as_local, parse_datetime
 from .const import (
     ATTR_DATA_MAP,
     ATTR_STATUS_MAP,
+    DEVICE_MAP,
     DOMAIN,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
@@ -143,11 +144,13 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
+        prefix = self._config[CONF_SERIAL_NUMBER][:2]
+
         return {
             "identifiers": {(DOMAIN,)},
             "name": "La Marzocco",
             "manufacturer": "La Marzocco",
-            "model": "GS/3",
+            "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
             "default_name": "lamarzocco",
             "entry_type": "None",
         }

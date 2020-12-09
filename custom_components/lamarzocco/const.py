@@ -47,6 +47,12 @@ TEMP_KEYS = ["TSET", "TEMP"]
 
 GW_URL = "https://gw.lamarzocco.io/v1/home/machines"
 TOKEN_URL = "https://cms.lamarzocco.io/oauth/v2/token"
+CUSTOMER_URL = "https://cms.lamarzocco.io/api/customer"
+
+DEVICE_MAP = {
+    "GS": "GS/3",
+    "LM": "Linea Mini",
+}
 
 ATTR_DATA_MAP = {
     RECEIVED_DATETIME: "data_last_changed",

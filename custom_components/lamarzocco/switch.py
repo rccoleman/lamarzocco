@@ -1,18 +1,25 @@
+from typing import Dict
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.core import DOMAIN, callback
 import logging
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util.dt import as_local, parse_datetime
 from .const import (
+    ATTR_DATA_MAP,
+    ATTR_STATUS_MAP,
+    DEVICE_MAP,
     DOMAIN,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
-    ATTR_MAP,
+    RECEIVED_DATETIME,
+    STATUS_MACHINE_STATUS,
+    STATUS_ON,
+    TEMP_KEYS,
+    ATTRIBUTION,
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-ATTRIBUTION = "Data from La Marzocco"
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -31,6 +38,9 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         super().__init__(coordinator)
         self._config = config
         self._temp_state = None
+        self._is_on = (
+            coordinator.data.current_status[STATUS_MACHINE_STATUS] == STATUS_ON
+        )
         self.is_metric = is_metric
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -54,7 +64,9 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @callback
     def update_from_latest_data(self) -> None:
         """Update the state."""
-        if self._temp_state == self.coordinator.data.is_on:
+        status = self.coordinator.data.current_status[STATUS_MACHINE_STATUS]
+        self._is_on = status == STATUS_ON
+        if self._temp_state == self._is_on:
             self._temp_state = None
 
     @property
@@ -65,11 +77,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        return (
-            self._temp_state
-            if self._temp_state is not None
-            else self.coordinator.data.is_on
-        )
+        return self._temp_state if self._temp_state is not None else self._is_on
 
     @property
     def assumed_state(self) -> bool:
@@ -94,22 +102,37 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def state_attributes(self):
         """Return the state attributes."""
+        output = self.generate_attrs(
+            self.coordinator.data.current_status, ATTR_STATUS_MAP
+        )
+
+        output.update(
+            self.generate_attrs(self.coordinator.data.current_data, ATTR_DATA_MAP)
+        )
+
+        return output
+
+    def generate_attrs(self, data, map) -> Dict:
         output = {}
 
         current_data = self.coordinator.data.current_data
-        for key in current_data:
-            if key in ATTR_MAP.keys():
-                value = current_data[key]
+        for key in data:
+            if key in map.keys():
+                value = data[key]
 
                 """Convert boolean values to strings to improve display in Lovelace"""
                 if isinstance(value, bool):
                     value = str(value)
 
                 """Convert temps to fahrenheit if needed"""
-                if not self.is_metric and "TSET" in key:
+                if not self.is_metric and any(val in key for val in TEMP_KEYS):
                     value = round((value * 9 / 5) + 32, 1)
 
-                output[ATTR_MAP[key]] = value
+                """Convert dates to datetime"""
+                if RECEIVED_DATETIME in key:
+                    value = parse_datetime(value)
+
+                output[map[key]] = value
 
         return output
 
@@ -121,11 +144,13 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
+        prefix = self._config[CONF_SERIAL_NUMBER][:2]
+
         return {
             "identifiers": {(DOMAIN,)},
             "name": "La Marzocco",
             "manufacturer": "La Marzocco",
-            "model": "GS/3",
+            "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
             "default_name": "lamarzocco",
             "entry_type": "None",
         }

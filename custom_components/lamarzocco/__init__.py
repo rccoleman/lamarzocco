@@ -32,9 +32,8 @@ from .const import (
     CONF_SERIAL_NUMBER,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
-    MACHINE_STATUS,
-    STATUS_ON,
     GW_URL,
+    TOKEN_URL,
 )
 
 PLATFORMS = ["switch"]
@@ -121,28 +120,27 @@ class LaMarzocco:
         self.hass = hass
         self._config = config
         self.current_data = {}
+        self.current_status = {}
         self.client = None
-        self.is_on = False
 
     async def init_data(self):
         """Machine data inialization"""
         serial_number = self._config[CONF_SERIAL_NUMBER]
         self.config_endpoint = f"{GW_URL}/{serial_number}/configuration"
         self.status_endpoint = f"{GW_URL}/{serial_number}/status"
-        token_endpoint = "https://cms.lamarzocco.io/oauth/v2/token"
         client_id = self._config[CONF_CLIENT_ID]
         client_secret = self._config[CONF_CLIENT_SECRET]
 
         self.client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
-            token_endpoint=token_endpoint,
+            token_endpoint=TOKEN_URL,
         )
 
         headers = {"client_id": client_id, "client_secret": client_secret}
 
         await self.client.fetch_token(
-            url=token_endpoint,
+            url=TOKEN_URL,
             username=self._config[CONF_USERNAME],
             password=self._config[CONF_PASSWORD],
             headers=headers,
@@ -154,17 +152,15 @@ class LaMarzocco:
 
         current_status = await self.client.get(self.status_endpoint)
         if current_status is not None:
-            _LOGGER.debug(current_status.json())
-            data = current_status.json()
-            if data is not None:
-                self.is_on = data[DATA_TAG][MACHINE_STATUS] == STATUS_ON
+            _LOGGER.debug(current_status.content)
+            self.current_status = current_status.json().get(DATA_TAG)
 
         current_data = await self.client.get(self.config_endpoint)
         if current_data is not None:
-            _LOGGER.debug(current_data.json())
+            _LOGGER.debug(current_data.content)
             self.current_data = current_data.json().get(DATA_TAG)
 
-        _LOGGER.debug("Device is {}".format("On" if self.is_on else "Off"))
+        _LOGGER.debug("Status is {}".format(self.current_status))
         _LOGGER.debug("Data is {}".format(self.current_data))
         return self
 

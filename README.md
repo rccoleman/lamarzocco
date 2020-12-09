@@ -43,10 +43,10 @@ If you don't have HACS installed or would prefer to install manually.
 
 5. Fill in the info (you'll find the serial number in the app starting with "LM" for a Linea Mini or "GS" for a GS/3)
 6. Hit "Submit"
-7. You should find a new entity in Dev->States initially called `switch.la_marzocco`
+7. You should find a new entity in Dev->States initially called `switch.espresso_machine`
 
 You should be able to turn your machine on and off by toggling the switch and a number of attributes should be populated with data from your machine.  Here's an example:
 
-![Config Flow](https://github.com/rccoleman/lamarzocco/blob/master/States.png?raw=true)
+![Entity](https://github.com/rccoleman/lamarzocco/blob/master/States.png?raw=true)
 
 If you have any questions or find any issues, please post to the thread on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581).

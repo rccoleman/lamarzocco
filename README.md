@@ -28,7 +28,7 @@ If you've installed [HACS](https://hacs.xyz), you can simply add this repo as a 
 If you don't have HACS installed or would prefer to install manually.
 
 1. Create a `config/custom_comoponents` directory if it doesn't already exist
-2. Run this repo and move `lamarzocco` into `config/custom_components`.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
+2. Clone this repo and move `lamarzocco` into `config/custom_components`.  Your directory tree should look like `config/custom_components/lamarzocco/...files...`
 
 #### Restart Home Assistant
 

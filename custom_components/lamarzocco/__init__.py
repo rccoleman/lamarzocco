@@ -1,25 +1,15 @@
 """The La Marzocco integration."""
 import asyncio
+import logging
+from datetime import timedelta
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.core import HomeAssistant
-from datetime import timedelta
-import logging
-
-from homeassistant.const import (
-    CONF_USERNAME,
-    CONF_PASSWORD,
-)
-
-from datetime import timedelta
-
 from homeassistant.components.light import LightEntity
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
@@ -27,11 +17,11 @@ _LOGGER = logging.getLogger(__name__)
 from .const import (
     COMMAND_ON,
     COMMAND_STANDBY,
-    DATA_TAG,
-    DOMAIN,
-    CONF_SERIAL_NUMBER,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
+    CONF_SERIAL_NUMBER,
+    DATA_TAG,
+    DOMAIN,
     GW_URL,
     TOKEN_URL,
 )

@@ -2,17 +2,11 @@
 import logging
 
 import voluptuous as vol
-
 from homeassistant import config_entries, core, exceptions
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
 
-from .const import (
-    CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
-    CONF_SERIAL_NUMBER,
-    DOMAIN,
-)
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
+from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_SERIAL_NUMBER, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

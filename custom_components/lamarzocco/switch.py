@@ -1,22 +1,24 @@
-from typing import Dict
-from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.core import DOMAIN, callback
 import logging
+from typing import Dict
+
+from homeassistant.components.switch import SwitchEntity
+from homeassistant.core import DOMAIN, callback
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.dt import as_local, parse_datetime
+
 from .const import (
     ATTR_DATA_MAP,
     ATTR_STATUS_MAP,
-    DEVICE_MAP,
-    DOMAIN,
+    ATTRIBUTION,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
+    DEVICE_MAP,
+    DOMAIN,
     RECEIVED_DATETIME,
     STATUS_MACHINE_STATUS,
     STATUS_ON,
     TEMP_KEYS,
-    ATTRIBUTION,
 )
 
 _LOGGER = logging.getLogger(__name__)

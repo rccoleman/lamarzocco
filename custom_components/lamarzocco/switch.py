@@ -1,5 +1,7 @@
 from .const import (
     ATTR_STATUS_MAP,
+    DOMAIN,
+    DEVICE_MAP,
     ATTRIBUTION,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,

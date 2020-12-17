@@ -1,27 +1,21 @@
 """Config flow for La Marzocco integration."""
 import logging
 from typing import Any, Dict, Optional
-from authlib.integrations.base_client.errors import OAuthError
+
 import voluptuous as vol
+from authlib.integrations.base_client.errors import OAuthError
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_TYPE,
+    CONF_USERNAME,
+)
 from homeassistant.helpers import config_validation as cv
 
-from homeassistant.const import (
-    CONF_USERNAME,
-    CONF_PASSWORD,
-    CONF_NAME,
-    CONF_TYPE,
-    CONF_HOST,
-)
-
-from .const import (
-    CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
-    CONF_SERIAL_NUMBER,
-    DOMAIN,
-)
 from .api import LaMarzocco
+from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_SERIAL_NUMBER, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 

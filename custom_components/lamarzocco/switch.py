@@ -1,12 +1,10 @@
 from .const import (
     ATTR_STATUS_MAP,
-    DEVICE_MAP,
-    DOMAIN,
+    ATTRIBUTION,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
     STATUS_MACHINE_STATUS,
     TEMP_KEYS,
-    ATTRIBUTION,
 )
 
 from typing import Dict

@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 from authlib.integrations.base_client.errors import OAuthError
 import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
 
 from homeassistant.const import (

@@ -48,7 +48,8 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Register the callback to receive updates"""
         coordinator.data.lmdirect.register_callback(self.update_callback)
 
-    async def update_callback(self, status, state):
+    @callback
+    def update_callback(self, status, state):
         _LOGGER.debug("Data updated: {}, state={}".format(status, state))
         self._current_status.update(status)
 

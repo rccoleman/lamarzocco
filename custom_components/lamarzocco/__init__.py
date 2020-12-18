@@ -12,7 +12,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import LaMarzocco
 from .const import DOMAIN
 
-SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ["switch"]
@@ -73,7 +72,7 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=60),
+            update_interval=timedelta(seconds=20),
             update_method=self.async_update_data,
         )
 

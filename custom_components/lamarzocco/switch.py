@@ -8,8 +8,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     ATTR_STATUS_MAP,
-    DOMAIN,
-    DEVICE_MAP,
     ATTRIBUTION,
     CONF_SERIAL_NUMBER,
     DEFAULT_NAME,

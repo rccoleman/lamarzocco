@@ -1,5 +1,8 @@
+import errno
 import logging
+from socket import error as SocketError
 
+import lmdirect.cmds as CMD
 from authlib.integrations.base_client.errors import OAuthError
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME

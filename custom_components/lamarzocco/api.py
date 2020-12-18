@@ -1,22 +1,21 @@
+import errno
+import logging
+from socket import error as SocketError
+
+import lmdirect.cmds as CMD
+from authlib.integrations.base_client.errors import OAuthError
+from authlib.integrations.httpx_client import AsyncOAuth2Client
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from lmdirect import LMDirect
+
 from .const import (
-    CONF_SERIAL_NUMBER,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
+    CONF_SERIAL_NUMBER,
+    CUSTOMER_URL,
     GW_URL,
     TOKEN_URL,
-    CUSTOMER_URL,
 )
-from socket import error as SocketError
-from authlib.integrations.httpx_client import AsyncOAuth2Client
-from authlib.integrations.base_client.errors import OAuthError
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_USERNAME,
-    CONF_PASSWORD,
-)
-from lmdirect import LMDirect
-import lmdirect.cmds as CMD
-import logging, errno
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -61,7 +61,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         raise CannotConnect
 
     # Return info that you want to store in the config entry.
-    return {"title": "Connected"}
+    return {"title": data[CONF_HOST]}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

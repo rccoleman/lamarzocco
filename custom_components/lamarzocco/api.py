@@ -1,6 +1,4 @@
 from .const import (
-    COMMAND_ON,
-    COMMAND_STANDBY,
     CONF_SERIAL_NUMBER,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -8,6 +6,7 @@ from .const import (
     TOKEN_URL,
     CUSTOMER_URL,
 )
+from socket import error as SocketError
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.integrations.base_client.errors import OAuthError
 from homeassistant.const import (
@@ -16,7 +15,8 @@ from homeassistant.const import (
     CONF_PASSWORD,
 )
 from lmdirect import LMDirect
-import logging
+import lmdirect.cmds as CMD
+import logging, errno
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,8 +67,7 @@ class LaMarzocco:
         key = None
         if cust_info is not None:
             key = cust_info.json()["data"]["fleet"][0]["communicationKey"]
-        self.lmdirect = LMDirect(key)
-        await self.lmdirect.connect(self._config[CONF_HOST])
+        self.lmdirect = LMDirect(key, self._config[CONF_HOST])
 
     async def close(self):
         if self.lmdirect is not None:
@@ -79,13 +78,21 @@ class LaMarzocco:
     async def fetch_data(self):
         """Fetch data from API - (current weather and forecast)."""
         _LOGGER.debug("Fetching data")
-        await self.lmdirect.request_status()
+        try:
+            """Request latest status"""
+            await self.lmdirect.request_status()
+        except SocketError as e:
+            if e.errno != errno.ECONNRESET:
+                raise
+            else:
+                _LOGGER.debug("Connection error: {}".format(e))
+
         return self
 
     async def power(self, power):
         """Send power on or power off commands"""
-        command = COMMAND_ON if power else COMMAND_STANDBY
-        await self.client.post(self.status_endpoint, json=command)
+        cmd = CMD.CMD_ON if power else CMD.CMD_OFF
+        await self.lmdirect.send_cmd(cmd)
 
 
 class AuthFail(BaseException):

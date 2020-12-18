@@ -1,19 +1,16 @@
 """The La Marzocco integration."""
 
-from .const import DOMAIN
-from .api import LaMarzocco
-
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.core import HomeAssistant
+import asyncio
+import logging
 from datetime import timedelta
 
-import logging, asyncio
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-    UpdateFailed,
-)
+from .api import LaMarzocco
+from .const import DOMAIN
 
 SCAN_INTERVAL = timedelta(minutes=10)
 _LOGGER = logging.getLogger(__name__)

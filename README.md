@@ -66,10 +66,14 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/Configured_Integration.png)
 
+## Usage
+
 In Dev->States, you should see something like this, initially called `switch.espresso_machine`:
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
 
 You should be able to turn your machine on and off by toggling the switch and the switch should reflect the current state.
+
+> **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running.  The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
 
 If you have any questions or find any issues, either file them here or post to the thread on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581).

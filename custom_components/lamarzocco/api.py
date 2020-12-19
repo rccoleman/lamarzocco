@@ -16,7 +16,6 @@ from lmdirect.const import *
 import logging, errno
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.DEBUG)
 
 
 class LaMarzocco:

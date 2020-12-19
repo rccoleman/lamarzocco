@@ -9,8 +9,7 @@
           "client_id": "[%key:common::config_flow::data::client_id%]",
           "client_secret": "[%key:common::config_flow::data::client_secret%]",
           "username": "[%key:common::config_flow::data::username%]",
-          "password": "[%key:common::config_flow::data::password%]",
-          "serial_number": "[%key:common::config_flow::data::serial_number%]"
+          "password": "[%key:common::config_flow::data::password%]"
         }
       },
       "confirm": {

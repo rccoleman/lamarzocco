@@ -22,7 +22,6 @@ _LOGGER = logging.getLogger(__name__)
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST): cv.string,
-        vol.Required(CONF_SERIAL_NUMBER): cv.string,
         vol.Required(CONF_CLIENT_ID): cv.string,
         vol.Required(CONF_CLIENT_SECRET): cv.string,
         vol.Required(CONF_USERNAME): cv.string,
@@ -46,6 +45,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     try:
         lm = LaMarzocco(hass, data)
         await lm.init_data()
+        await lm.fetch_data()
         await lm.close()
 
     except OAuthError:
@@ -55,7 +55,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         raise CannotConnect
 
     # Return info that you want to store in the config entry.
-    return {"title": data[CONF_HOST]}
+    return {"title": lm.machine_name}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -110,7 +110,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_NAME: host,
         }
         await self.async_set_unique_id(serial_number)
-        self._abort_if_unique_id_configured({CONF_HOST: host})
+        self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
 
         self.context.update({"title_placeholders": self._discovered})
 
@@ -128,7 +128,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data = user_input.copy()
                 data[CONF_HOST] = self._discovered[CONF_HOST]
                 data[CONF_TYPE] = self._discovered[CONF_TYPE]
-                data[CONF_SERIAL_NUMBER] = self._discovered[CONF_SERIAL_NUMBER]
+                # data[CONF_SERIAL_NUMBER] = self._discovered[CONF_SERIAL_NUMBER]
 
                 return await self._try_create_entry(data)
             except InvalidAuth as error:

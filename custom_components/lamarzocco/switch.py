@@ -9,7 +9,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
     DEVICE_MAP,
     DOMAIN,
@@ -72,7 +71,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def unique_id(self):
         """Return unique ID."""
-        return f"{self._config[CONF_SERIAL_NUMBER]}"
+        return f"{self.coordinator.data.serial_number}"
 
     @property
     def is_on(self) -> bool:
@@ -131,7 +130,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
-        prefix = self._config[CONF_SERIAL_NUMBER][:2]
+        prefix = self.coordinator.data.serial_number[:2]
 
         return {
             "identifiers": {(DOMAIN,)},

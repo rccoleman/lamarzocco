@@ -13,7 +13,6 @@
             "user": {
                 "data": {
                     "host": "IP Address",
-                    "serial_number": "Serial Number",
                     "client_id": "Client ID",
                     "client_secret": "Client Secret",
                     "password": "Password",

@@ -72,7 +72,7 @@ class LaMarzoccoDataUpdateCoordinator(DataUpdateCoordinator):
             hass,
             _LOGGER,
             name=DOMAIN,
-            update_interval=timedelta(seconds=20),
+            update_interval=timedelta(seconds=30),
             update_method=self.async_update_data,
         )
 

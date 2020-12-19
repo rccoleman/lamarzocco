@@ -36,9 +36,13 @@ If you don't have HACS installed or would prefer to install manually.
 
 ### Discovery
 
-Home Assistant should automatically discover your machine on your local network via Zeroconf.  You'll get a notification in Lovelace that it has discovered a device, and you should see a "Discovered" box in Configuration->Integrations liek this:
+Home Assistant should automatically discover your machine on your local network via Zeroconf.  You'll get a notification in Lovelace that it has discovered a device, and you should see a "Discovered" box in Configuration->Integrations like this:
 
-<image>
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Discovered_Integration.png)
+
+Clicking "Configure" brings you to this:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Discovered.png)
 
 Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit.  The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.
 
@@ -51,14 +55,21 @@ You can also add the integration manually.
 3. Search for "La Marzocco" and select it
 4. You'll be presented with a dialog box like this:
 
-<image>
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Manual.png)
 
 5. Fill in the info
 6. Hit "Submit"
-7. You should find a new entity in Dev->States initially called `switch.espresso_machine`
 
-You should be able to turn your machine on and off by toggling the switch and a number of attributes should be populated with data from your machine.  Here's an example:
+#### Configured Integration
 
-<image>
+Regardless of how you configured the integration, you should see this in Configuration->Integrations:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Configured_Integration.png)
+
+In Dev->States, you should see something like this, initially called `switch.espresso_machine`:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
+
+You should be able to turn your machine on and off by toggling the switch and the switch should reflect the current state.
 
 If you have any questions or find any issues, either file them here or post to the thread on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581).

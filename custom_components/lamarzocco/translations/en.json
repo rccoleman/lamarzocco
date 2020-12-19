@@ -1,5 +1,6 @@
 {
     "config": {
+        "flow_title": "La Marzocco Espresso {host}",
         "abort": {
             "single_instance_allowed": "Device is already configured.  On a single instance is allowed."
         },
@@ -11,7 +12,15 @@
         "step": {
             "user": {
                 "data": {
-                    "serial_number": "Serial Number",
+                    "host": "IP Address",
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret",
+                    "password": "Password",
+                    "username": "Username"
+                }
+            },
+            "confirm": {
+                "data": {
                     "client_id": "Client ID",
                     "client_secret": "Client Secret",
                     "password": "Password",

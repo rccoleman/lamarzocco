@@ -4,9 +4,9 @@
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": ["authlib==0.15.2"],
+  "requirements": ["lmdirect==0.2.0.post1", "authlib==0.15.2"],
   "ssdp": [],
-  "zeroconf": [],
+  "zeroconf": ["_marzocco._tcp.local."],
   "homekit": {},
   "dependencies": [],
   "codeowners": [

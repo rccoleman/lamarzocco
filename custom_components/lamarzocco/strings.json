@@ -1,10 +1,21 @@
 {
   "title": "La Marzocco",
   "config": {
+    "flow_title": "La Marzocco Espresso {host}",
     "step": {
       "user": {
         "data": {
           "host": "[%key:common::config_flow::data::host%]",
+          "client_id": "[%key:common::config_flow::data::client_id%]",
+          "client_secret": "[%key:common::config_flow::data::client_secret%]",
+          "username": "[%key:common::config_flow::data::username%]",
+          "password": "[%key:common::config_flow::data::password%]"
+        }
+      },
+      "confirm": {
+        "data": {
+          "client_id": "[%key:common::config_flow::data::client_id%]",
+          "client_secret": "[%key:common::config_flow::data::client_secret%]",
           "username": "[%key:common::config_flow::data::username%]",
           "password": "[%key:common::config_flow::data::password%]"
         }

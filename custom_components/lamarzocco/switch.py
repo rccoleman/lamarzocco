@@ -2,22 +2,17 @@ import logging
 from typing import Dict
 
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.core import DOMAIN, callback
+from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.util.dt import as_local, parse_datetime
 
 from .const import (
-    ATTR_DATA_MAP,
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    CONF_SERIAL_NUMBER,
     DEFAULT_NAME,
     DEVICE_MAP,
     DOMAIN,
-    RECEIVED_DATETIME,
     STATUS_MACHINE_STATUS,
-    STATUS_ON,
     TEMP_KEYS,
 )
 
@@ -40,10 +35,26 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         super().__init__(coordinator)
         self._config = config
         self._temp_state = None
-        self._is_on = (
-            coordinator.data.current_status[STATUS_MACHINE_STATUS] == STATUS_ON
-        )
-        self.is_metric = is_metric
+        self._is_metric = is_metric
+        self._current_status = {}
+
+        """Start with the machine in standby if we haven't received accurate data yet"""
+        self._is_on = False
+        self._current_status[STATUS_MACHINE_STATUS] = 0
+
+        """Register the callback to receive updates"""
+        coordinator.data.lmdirect.register_callback(self.update_callback)
+
+    @callback
+    def update_callback(self, status, state):
+        _LOGGER.debug("Data updated: {}, state={}".format(status, state))
+        self._current_status.update(status)
+
+        self._is_on = True if self._current_status[STATUS_MACHINE_STATUS] else False
+        if self._temp_state == self._is_on:
+            self._temp_state = None
+
+        self.schedule_update_ha_state(force_refresh=False)
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
@@ -57,24 +68,10 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._temp_state = False
         self.async_schedule_update_ha_state(force_refresh=False)
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Respond to a DataUpdateCoordinator update."""
-        self.update_from_latest_data()
-        super()._handle_coordinator_update()
-
-    @callback
-    def update_from_latest_data(self) -> None:
-        """Update the state."""
-        status = self.coordinator.data.current_status[STATUS_MACHINE_STATUS]
-        self._is_on = status == STATUS_ON
-        if self._temp_state == self._is_on:
-            self._temp_state = None
-
     @property
     def unique_id(self):
         """Return unique ID."""
-        return f"{self._config[CONF_SERIAL_NUMBER]}"
+        return f"{self.coordinator.data.serial_number}"
 
     @property
     def is_on(self) -> bool:
@@ -104,20 +101,11 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def state_attributes(self):
         """Return the state attributes."""
-        output = self.generate_attrs(
-            self.coordinator.data.current_status, ATTR_STATUS_MAP
-        )
-
-        output.update(
-            self.generate_attrs(self.coordinator.data.current_data, ATTR_DATA_MAP)
-        )
-
-        return output
+        return self.generate_attrs(self._current_status, ATTR_STATUS_MAP)
 
     def generate_attrs(self, data, map) -> Dict:
         output = {}
 
-        current_data = self.coordinator.data.current_data
         for key in data:
             if key in map.keys():
                 value = data[key]
@@ -127,12 +115,8 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
                     value = str(value)
 
                 """Convert temps to fahrenheit if needed"""
-                if not self.is_metric and any(val in key for val in TEMP_KEYS):
+                if not self._is_metric and any(val in key for val in TEMP_KEYS):
                     value = round((value * 9 / 5) + 32, 1)
-
-                """Convert dates to datetime"""
-                if RECEIVED_DATETIME in key:
-                    value = parse_datetime(value)
 
                 output[map[key]] = value
 
@@ -146,7 +130,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
-        prefix = self._config[CONF_SERIAL_NUMBER][:2]
+        prefix = self.coordinator.data.serial_number[:2]
 
         return {
             "identifiers": {(DOMAIN,)},

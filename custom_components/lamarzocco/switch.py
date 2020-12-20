@@ -10,7 +10,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    DEVICE_MAP,
     DOMAIN,
     STATUS_MACHINE_STATUS,
     STATUS_RECEIVED,
@@ -44,7 +43,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._current_status[STATUS_MACHINE_STATUS] = 0
 
         """Register the callback to receive updates"""
-        coordinator.data.lmdirect.register_callback(self.update_callback)
+        coordinator.data.register_callback(self.update_callback)
 
     @callback
     def update_callback(self, status, state):

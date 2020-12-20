@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from typing import Dict
 
@@ -12,6 +13,7 @@ from .const import (
     DEVICE_MAP,
     DOMAIN,
     STATUS_MACHINE_STATUS,
+    STATUS_RECEIVED,
     TEMP_KEYS,
 )
 
@@ -48,6 +50,8 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     def update_callback(self, status, state):
         _LOGGER.debug("Data updated: {}, state={}".format(status, state))
         self._current_status.update(status)
+
+        self._current_status[STATUS_RECEIVED] = datetime.now()
 
         self._is_on = True if self._current_status[STATUS_MACHINE_STATUS] else False
         if self._temp_state == self._is_on:

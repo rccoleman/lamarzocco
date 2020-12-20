@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Dict
 
 from homeassistant.components.switch import SwitchEntity
@@ -9,10 +10,10 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    DEFAULT_NAME,
     DEVICE_MAP,
     DOMAIN,
     STATUS_MACHINE_STATUS,
+    STATUS_RECEIVED,
     TEMP_KEYS,
 )
 
@@ -50,6 +51,8 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         _LOGGER.debug("Data updated: {}, state={}".format(status, state))
         self._current_status.update(status)
 
+        self._current_status[STATUS_RECEIVED] = datetime.now()
+
         self._is_on = True if self._current_status[STATUS_MACHINE_STATUS] else False
         if self._temp_state == self._is_on:
             self._temp_state = None
@@ -86,7 +89,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"{DEFAULT_NAME}"
+        return f"{self.coordinator.data.machine_name}"
 
     @property
     def entity_registry_enabled_default(self) -> bool:
@@ -133,10 +136,10 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         prefix = self.coordinator.data.serial_number[:2]
 
         return {
-            "identifiers": {(DOMAIN,)},
-            "name": "La Marzocco",
+            "identifiers": {(DOMAIN, self.coordinator.data.serial_number)},
+            "name": self.coordinator.data.machine_name,
             "manufacturer": "La Marzocco",
             "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
-            "default_name": "lamarzocco",
+            "default_name": self.coordinator.data.machine_name,
             "entry_type": "None",
         }

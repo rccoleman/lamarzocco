@@ -6,7 +6,7 @@ This is a prototype integration for recent La Marzocco espresso machines that us
 
 Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), I built an integration that makes configuration/machine status available to Home Assistant and allows the user to turn the machine to "on" or "standby".
 
-Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token, and the only way that I've been able to get them is to sniff the web traffic from the mobile app.  This is complicated and you'll need to research how to do it (investigate `mitmproxy`).  I won't provide assistance for this.
+Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token and encryption key for the local API.  I wrote a Python script to use with `mitmproxy` to get this information and you can find instructions [here](https://github.com/rccoleman/lmdirect/blob/master/Credentials.md).
 
 ## Installation
 
@@ -34,19 +34,46 @@ If you don't have HACS installed or would prefer to install manually.
 
 ## Configuration
 
+### Discovery
+
+Home Assistant should automatically discover your machine on your local network via Zeroconf.  You'll get a notification in Lovelace that it has discovered a device, and you should see a "Discovered" box in Configuration->Integrations like this:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Discovered_Integration.png)
+
+Clicking "Configure" brings you to this:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Discovered.png)
+
+Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit.  The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.
+
+### Manual
+
+You can also add the integration manually.
+
 1. Navigate to Configuration->Integrations
 2. Hit the "+ Add New Integration" button in the lower-right
 3. Search for "La Marzocco" and select it
 4. You'll be presented with a dialog box like this:
 
-![Config Flow](https://github.com/rccoleman/lamarzocco/blob/master/Config%20Flow.png?raw=true)
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Manual.png)
 
-5. Fill in the info (you'll find the serial number in the app starting with "LM" for a Linea Mini or "GS" for a GS/3)
+5. Fill in the info
 6. Hit "Submit"
-7. You should find a new entity in Dev->States initially called `switch.espresso_machine`
 
-You should be able to turn your machine on and off by toggling the switch and a number of attributes should be populated with data from your machine.  Here's an example:
+#### Configured Integration
 
-![Entity](https://github.com/rccoleman/lamarzocco/blob/master/States.png?raw=true)
+Regardless of how you configured the integration, you should see this in Configuration->Integrations:
 
-If you have any questions or find any issues, please post to the thread on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581).
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/Configured_Integration.png)
+
+## Usage
+
+In Dev->States, you should see something like this, initially called `switch.espresso_machine`:
+
+![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
+
+You should be able to turn your machine on and off by toggling the switch and the switch should reflect the current state.
+
+> **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running.  The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
+
+If you have any questions or find any issues, either file them here or post to the thread on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581).

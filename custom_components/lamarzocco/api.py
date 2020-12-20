@@ -1,19 +1,13 @@
-from .const import (
-    CONF_CLIENT_ID,
-    CONF_CLIENT_SECRET,
-)
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_USERNAME,
-    CONF_PASSWORD,
-)
-
+import errno
+import logging
 from socket import error as SocketError
 
-from lmdirect import LMDirect
 import lmdirect.cmds as CMD
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from lmdirect import LMDirect
 from lmdirect.const import *
-import logging, errno
+
+from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 
 _LOGGER = logging.getLogger(__name__)
 

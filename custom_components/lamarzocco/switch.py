@@ -9,7 +9,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    DEFAULT_NAME,
     DEVICE_MAP,
     DOMAIN,
     STATUS_MACHINE_STATUS,
@@ -86,7 +85,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"{DEFAULT_NAME}"
+        return f"lm_{self.coordinator.data.machine_name}"
 
     @property
     def entity_registry_enabled_default(self) -> bool:

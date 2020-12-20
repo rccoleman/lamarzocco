@@ -133,13 +133,11 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
-        prefix = self.coordinator.data.serial_number[:2]
-
         return {
             "identifiers": {(DOMAIN, self.coordinator.data.serial_number)},
             "name": self.coordinator.data.machine_name,
             "manufacturer": "La Marzocco",
-            "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
-            "default_name": self.coordinator.data.machine_name,
+            "model": self.coordinator.data.model_name,
+            "default_name": "La Marzocco " + self.coordinator.data.model_name,
             "entry_type": "None",
         }

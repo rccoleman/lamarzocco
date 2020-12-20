@@ -28,6 +28,7 @@ class LaMarzocco:
         self.lmdirect = None
         self._serial_number = None
         self._machine_name = None
+        self._model_name = None
 
     async def init_data(self):
         creds = {
@@ -49,9 +50,13 @@ class LaMarzocco:
         try:
             """Request latest status"""
             await self.lmdirect.request_status()
-            if any(x is None for x in [self._machine_name, self._serial_number]):
+            if any(
+                x is None
+                for x in [self._machine_name, self._serial_number, self._model_name]
+            ):
                 self._machine_name = self.lmdirect.machine_name
                 self._serial_number = self.lmdirect.serial_number
+                self._model_name = self.lmdirect.model_name
         except SocketError as e:
             if e.errno != errno.ECONNRESET:
                 raise
@@ -69,6 +74,11 @@ class LaMarzocco:
     def machine_name(self):
         """Return machine name"""
         return self._machine_name
+
+    @property
+    def model_name(self):
+        """Return machine name"""
+        return self._model_name
 
     async def power(self, power):
         """Send power on or power off commands"""

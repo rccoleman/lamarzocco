@@ -89,7 +89,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"lm_{self.coordinator.data.machine_name}"
+        return f"{self.coordinator.data.machine_name}"
 
     @property
     def entity_registry_enabled_default(self) -> bool:
@@ -136,10 +136,10 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         prefix = self.coordinator.data.serial_number[:2]
 
         return {
-            "identifiers": {(DOMAIN,)},
-            "name": "La Marzocco",
+            "identifiers": {(DOMAIN, self.coordinator.data.serial_number)},
+            "name": self.coordinator.data.machine_name,
             "manufacturer": "La Marzocco",
             "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
-            "default_name": "lamarzocco",
+            "default_name": self.coordinator.data.machine_name,
             "entry_type": "None",
         }

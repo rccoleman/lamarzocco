@@ -10,7 +10,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .const import (
     ATTR_STATUS_MAP,
     ATTRIBUTION,
-    DEVICE_MAP,
     DOMAIN,
     STATUS_MACHINE_STATUS,
     STATUS_RECEIVED,
@@ -44,7 +43,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._current_status[STATUS_MACHINE_STATUS] = 0
 
         """Register the callback to receive updates"""
-        coordinator.data.lmdirect.register_callback(self.update_callback)
+        coordinator.data.register_callback(self.update_callback)
 
     @callback
     def update_callback(self, status, state):
@@ -133,13 +132,11 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def device_info(self):
         """Device info."""
-        prefix = self.coordinator.data.serial_number[:2]
-
         return {
             "identifiers": {(DOMAIN, self.coordinator.data.serial_number)},
             "name": self.coordinator.data.machine_name,
             "manufacturer": "La Marzocco",
-            "model": DEVICE_MAP[prefix] if prefix in DEVICE_MAP.keys() else "No Model",
-            "default_name": self.coordinator.data.machine_name,
+            "model": self.coordinator.data.model_name,
+            "default_name": "La Marzocco " + self.coordinator.data.model_name,
             "entry_type": "None",
         }

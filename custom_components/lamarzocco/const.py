@@ -15,11 +15,6 @@ COMMAND_STANDBY = {"status": "STANDBY"}
 
 TEMP_KEYS = ["TSET", "TEMP"]
 
-DEVICE_MAP = {
-    "GS": "GS/3",
-    "LM": "Linea Mini",
-}
-
 DATA_TAG = "data"
 
 STATUS_RECEIVED = "RECEIVED"

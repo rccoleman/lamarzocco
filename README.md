@@ -1,5 +1,9 @@
 # La Marzocco Home Assistant Integration
 
+![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg)
+![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg?branch=dev)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
 ## Overview
 
 This is a prototype integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app.  This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.

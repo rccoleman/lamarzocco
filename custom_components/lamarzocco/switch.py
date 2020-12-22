@@ -2,21 +2,29 @@ import logging
 from datetime import datetime
 from typing import Dict
 
+import voluptuous as vol
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import callback
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform, service
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import (
-    ATTR_STATUS_MAP,
-    ATTRIBUTION,
-    DOMAIN,
-    STATUS_MACHINE_STATUS,
-    STATUS_RECEIVED,
-    TEMP_KEYS,
-)
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class Service:
+    def __init__(self, name, params):
+        self._name = name
+        self._params = params
+        self._platform = entity_platform.current_platform.get()
+
+    def register(self):
+        self._platform.async_register_entity_service(
+            self._name, self._params, self._name
+        )
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -25,6 +33,14 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(
         [LaMarzoccoEntity(coordinator, config_entry.data, hass.config.units.is_metric)]
     )
+
+    SERVICES = [
+        Service(SERVICE_SET_COFFEE_TEMP, {vol.Required("temperature"): cv.string}),
+        Service(SERVICE_SET_STEAM_TEMP, {vol.Required("temperature"): cv.string}),
+    ]
+
+    for service in SERVICES:
+        service.register()
 
 
 class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
@@ -44,6 +60,16 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
 
         """Register the callback to receive updates"""
         coordinator._device.register_callback(self.update_callback)
+
+    async def set_coffee_temp(self, temperature=None):
+        """Service call to set coffee temp"""
+        _LOGGER.debug(f"Setting coffee temp to {temperature}")
+        await self.coordinator._device.set_coffee_temp(temperature)
+
+    async def set_steam_temp(self, temperature=None):
+        """Service call to set steam temp"""
+        _LOGGER.debug(f"Setting steam temp to {temperature}")
+        await self.coordinator._device.set_steam_temp(temperature)
 
     @callback
     def update_callback(self, status, state):

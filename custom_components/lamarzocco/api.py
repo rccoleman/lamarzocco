@@ -48,5 +48,5 @@ class LaMarzocco(LMDirect):
     async def power(self, power):
         """Send power on or power off commands"""
         await self.send_msg(
-            Msg.POWER, Msg.POWER_ON_DATA if power else Msg.POWER_OFF_DATA
+            MSGS[Msg.POWER], Msg.POWER_ON_DATA if power else Msg.POWER_OFF_DATA
         )

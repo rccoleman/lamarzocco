@@ -44,9 +44,3 @@ class LaMarzocco(LMDirect):
                 _LOGGER.debug("Connection error: {}".format(e))
 
         return self
-
-    async def power(self, power):
-        """Send power on or power off commands"""
-        await self.send_msg(
-            MSGS[Msg.POWER], Msg.POWER_ON_DATA if power else Msg.POWER_OFF_DATA
-        )

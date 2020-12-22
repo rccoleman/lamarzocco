@@ -60,13 +60,13 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        await self.coordinator._device.power(True)
+        await self.coordinator._device.set_power(True)
         self._temp_state = True
         self.async_schedule_update_ha_state(force_refresh=False)
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        await self.coordinator._device.power(False)
+        await self.coordinator._device.set_power(False)
         self._temp_state = False
         self.async_schedule_update_ha_state(force_refresh=False)
 

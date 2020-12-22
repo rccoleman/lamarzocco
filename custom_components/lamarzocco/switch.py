@@ -43,7 +43,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._current_status[STATUS_MACHINE_STATUS] = 0
 
         """Register the callback to receive updates"""
-        coordinator.data.register_callback(self.update_callback)
+        coordinator._device.register_callback(self.update_callback)
 
     @callback
     def update_callback(self, status, state):
@@ -60,20 +60,20 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        await self.coordinator.data.power(True)
+        await self.coordinator._device.power(True)
         self._temp_state = True
         self.async_schedule_update_ha_state(force_refresh=False)
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        await self.coordinator.data.power(False)
+        await self.coordinator._device.power(False)
         self._temp_state = False
         self.async_schedule_update_ha_state(force_refresh=False)
 
     @property
     def unique_id(self):
         """Return unique ID."""
-        return f"{self.coordinator.data.serial_number}"
+        return f"{self.coordinator._device.serial_number}"
 
     @property
     def is_on(self) -> bool:
@@ -88,7 +88,7 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"{self.coordinator.data.machine_name}"
+        return f"{self.coordinator._device.machine_name}"
 
     @property
     def entity_registry_enabled_default(self) -> bool:
@@ -133,10 +133,10 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     def device_info(self):
         """Device info."""
         return {
-            "identifiers": {(DOMAIN, self.coordinator.data.serial_number)},
-            "name": self.coordinator.data.machine_name,
+            "identifiers": {(DOMAIN, self.coordinator._device.serial_number)},
+            "name": self.coordinator._device.machine_name,
             "manufacturer": "La Marzocco",
-            "model": self.coordinator.data.model_name,
-            "default_name": "La Marzocco " + self.coordinator.data.model_name,
+            "model": self.coordinator._device.model_name,
+            "default_name": "La Marzocco " + self.coordinator._device.model_name,
             "entry_type": "None",
         }

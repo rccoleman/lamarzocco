@@ -16,16 +16,12 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 
 ### HACS
 
-If you've installed [HACS](https://hacs.xyz), you can simply add this repo as a Custom Repository and install that way.
+If you've installed [HACS](https://hacs.xyz), this integration is in the default list and you can simply search for "La Marzocco" there and install it that way.
 
 1. Launch the HACS panel from the left sidebar
 2. Click "Integrations`
-3. Click the three dots in the upper-right corner
-4. Select "Custom Repositories"
-5. Select "Integration" from the dropdown box
-6. Paste `https://github.com/rccoleman/lamarzocco` into the textbox to the left
-7. Click "Add"
-8. Click "Install" on card that appears
+3. Search for "La Marzocco" and select it
+4. Click "Install" on card that appears
 
 ### Manual
 

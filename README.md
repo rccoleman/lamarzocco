@@ -72,7 +72,7 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ## Usage
 
-In Dev->States, you should see something like this, initially called `switch.espresso_machine`:
+In Dev->States, you should see something like this, initially called `switch.your_machine_name`:
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
 

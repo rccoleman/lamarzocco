@@ -16,7 +16,7 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 
 ### HACS
 
-If you've installed [HACS](https://hacs.xyz), this integration is in the default list and you can simply search for "La Marzocco" there and install it that way.
+If you've installed [HACS](https://hacs.xyz), this integration is in the default list and you can simply search for "La Marzocco" and install it that way.
 
 1. Launch the HACS panel from the left sidebar
 2. Click "Integrations`

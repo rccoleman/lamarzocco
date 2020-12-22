@@ -1,7 +1,7 @@
 import logging, errno
 from socket import error as SocketError
 
-import lmdirect.cmds as CMD
+from lmdirect.msgs import Msg, MSGS
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from lmdirect import LMDirect
 from lmdirect.const import *
@@ -47,5 +47,6 @@ class LaMarzocco(LMDirect):
 
     async def power(self, power):
         """Send power on or power off commands"""
-        cmd = CMD.CMD_ON if power else CMD.CMD_OFF
-        await self.send_cmd(cmd)
+        await self.send_msg(
+            Msg.POWER, Msg.POWER_ON_DATA if power else Msg.POWER_OFF_DATA
+        )

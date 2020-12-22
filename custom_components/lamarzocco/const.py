@@ -61,3 +61,8 @@ ATTR_STATUS_MAP = {
     STATUS_TOFF_PREBREWING_K3: "prebrewing_toff_k3",
     STATUS_TOFF_PREBREWING_K4: "prebrewing_toff_k4",
 }
+
+# Services
+SERVICE_SET_COFFEE_TEMP = "set_coffee_temp"
+SERVICE_SET_STEAM_TEMP = "set_steam_temp"
+SERVICE_SET_PREBREWING_ENABLE = "set_prebrewing_enable"

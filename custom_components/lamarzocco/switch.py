@@ -7,7 +7,7 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-from homeassistant.helpers import config_validation as cv, entity_platform, service
+from homeassistant.helpers import config_validation as cv, entity_platform
 
 from .const import *
 
@@ -51,14 +51,8 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._config = config
         self._temp_state = None
         self._is_metric = is_metric
-        self._current_status = {}
 
-        """Start with the machine in standby if we haven't received accurate data yet"""
-        self._is_on = False
-        self._current_status[STATUS_MACHINE_STATUS] = 0
-
-        """Register the callback to receive updates"""
-        coordinator._device.register_callback(self.update_callback)
+        self.coordinator._device.register_callback(self.update_callback)
 
     async def set_coffee_temp(self, temperature=None):
         """Service call to set coffee temp"""
@@ -69,19 +63,6 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         """Service call to set steam temp"""
         _LOGGER.debug(f"Setting steam temp to {temperature}")
         await self.coordinator._device.set_steam_temp(temperature)
-
-    @callback
-    def update_callback(self, status, state):
-        _LOGGER.debug("Data updated: {}, state={}".format(status, state))
-        self._current_status.update(status)
-
-        self._current_status[STATUS_RECEIVED] = datetime.now()
-
-        self._is_on = True if self._current_status[STATUS_MACHINE_STATUS] else False
-        if self._temp_state == self._is_on:
-            self._temp_state = None
-
-        self.schedule_update_ha_state(force_refresh=False)
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
@@ -95,6 +76,12 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
         self._temp_state = False
         self.async_schedule_update_ha_state(force_refresh=False)
 
+    @callback
+    def update_callback(self, status, state):
+        """Update callback for switch entity"""
+        _LOGGER.debug("update_callback for SWITCH called")
+        self.schedule_update_ha_state(force_refresh=False)
+
     @property
     def unique_id(self):
         """Return unique ID."""
@@ -103,7 +90,14 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        return self._temp_state if self._temp_state is not None else self._is_on
+        if self._temp_state == self.coordinator._device._is_on:
+            self._temp_state = None
+
+        return (
+            self._temp_state
+            if self._temp_state is not None
+            else self.coordinator._device._is_on
+        )
 
     @property
     def assumed_state(self) -> bool:
@@ -128,7 +122,9 @@ class LaMarzoccoEntity(CoordinatorEntity, SwitchEntity, RestoreEntity):
     @property
     def state_attributes(self):
         """Return the state attributes."""
-        return self.generate_attrs(self._current_status, ATTR_STATUS_MAP)
+        return self.generate_attrs(
+            self.coordinator._device._current_status, ATTR_STATUS_MAP
+        )
 
     def generate_attrs(self, data, map) -> Dict:
         output = {}

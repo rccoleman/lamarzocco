@@ -1,5 +1,9 @@
 # La Marzocco Home Assistant Integration
 
+![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg)
+![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg?branch=dev)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+
 ## Overview
 
 This is a prototype integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app.  This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
@@ -12,16 +16,12 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 
 ### HACS
 
-If you've installed [HACS](https://hacs.xyz), you can simply add this repo as a Custom Repository and install that way.
+If you've installed [HACS](https://hacs.xyz), this integration is in the default list and you can simply search for "La Marzocco" and install it that way.
 
 1. Launch the HACS panel from the left sidebar
 2. Click "Integrations`
-3. Click the three dots in the upper-right corner
-4. Select "Custom Repositories"
-5. Select "Integration" from the dropdown box
-6. Paste `https://github.com/rccoleman/lamarzocco` into the textbox to the left
-7. Click "Add"
-8. Click "Install" on card that appears
+3. Search for "La Marzocco" and select it
+4. Click "Install" on card that appears
 
 ### Manual
 
@@ -68,7 +68,7 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ## Usage
 
-In Dev->States, you should see something like this, initially called `switch.espresso_machine`:
+In Dev->States, you should see something like this, initially called `switch.your_machine_name`:
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
 

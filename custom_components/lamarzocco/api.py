@@ -1,11 +1,11 @@
-import logging, errno
+import errno
+import logging
+from datetime import datetime
 from socket import error as SocketError
 
-from lmdirect.msgs import Msg, MSGS
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from lmdirect import LMDirect
 from lmdirect.const import *
-from datetime import datetime
 
 from .const import *
 

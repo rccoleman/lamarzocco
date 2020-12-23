@@ -2,6 +2,7 @@ import errno
 import logging
 from socket import error as SocketError
 from datetime import datetime
+from homeassistant.core import callback
 
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from lmdirect import LMDirect
@@ -35,16 +36,17 @@ class LaMarzocco(LMDirect):
             }
         )
 
+    async def init_data(self):
+        """Register the callback to receive updates"""
+        self.register_callback(self.update_callback)
+
+    @callback
     def update_callback(self, status, state):
         _LOGGER.debug("Data updated: {}, state={}".format(status, state))
         self._current_status.update(status)
         self._current_status[STATUS_RECEIVED] = datetime.now()
         self._is_on = True if self._current_status[STATUS_MACHINE_STATUS] else False
         _LOGGER.debug("update_callback for API called")
-
-    async def init_data(self):
-        """Register the callback to receive updates"""
-        self.register_callback(self.update_callback)
 
     async def fetch_data(self):
         """Fetch data from API - (current weather and forecast)."""

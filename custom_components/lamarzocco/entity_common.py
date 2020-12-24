@@ -1,8 +1,9 @@
-from homeassistant.core import callback
-from .const import *
-
-from typing import Dict
 import logging
+from typing import Dict
+
+from homeassistant.core import callback
+
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 

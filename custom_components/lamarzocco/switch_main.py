@@ -1,11 +1,11 @@
 import logging
+
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import *
 from .entity_common import EntityCommon
-
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,7 +1,8 @@
 """Sensor platform for the Corona virus."""
+import logging
+
 from homeassistant.const import ATTR_ATTRIBUTION
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
-import logging
 
 from .const import *
 from .entity_common import EntityCommon

@@ -1,12 +1,13 @@
-from .switch_main import LaMarzoccoMainEntity
-from .switch_prebrew import LaMarzoccoPrebrewEntity
-from .switch_auto_on_off import LaMarzoccoAutoOnOffEntity
-
 import logging
+
 import voluptuous as vol
-from homeassistant.helpers import config_validation as cv, entity_platform
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 
 from .const import *
+from .switch_auto_on_off import LaMarzoccoAutoOnOffEntity
+from .switch_main import LaMarzoccoMainEntity
+from .switch_prebrew import LaMarzoccoPrebrewEntity
 
 _LOGGER = logging.getLogger(__name__)
 

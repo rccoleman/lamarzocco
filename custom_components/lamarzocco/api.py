@@ -2,10 +2,9 @@ import errno
 import logging
 from datetime import datetime
 from socket import error as SocketError
-from datetime import datetime
 
-from homeassistant.core import callback
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import callback
 from lmdirect import LMDirect
 from lmdirect.const import *
 

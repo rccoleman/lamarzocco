@@ -28,3 +28,54 @@ set_steam_temp:
     temperature:
       description: Temperature setting in Celcius
       example: "95.2"
+
+enable_auto_on_off:
+  # Description of the service
+  description: Enable auto on/off for a specific day of the week
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    day_of_week:
+      description: "The day of the week to enable.  Acceptable values are: sun, mon, tue, wed, thu, fri, sat"
+      example: mon
+
+disable_auto_on_off:
+  # Description of the service
+  description: Disable auto on/off for a specific day of the week
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    day_of_week:
+      description: "The day of the week to disable (sun, mon, tue, wed, thu, fri, sat)"
+      example: mon
+
+set_auto_on_off_hours:
+  # Description of the service
+  description: Set the auto on and off times for each day of the week
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    day_of_week:
+      description: "The day of the week to change (sun, mon, tue, wed, thu, fri, sat)"
+      example: mon
+    hour_on:
+      description: The hour to turn the machine on (0..23)
+      example: 6
+    hour_off:
+      description: The hour to turn the machine off (0..23)
+      example: 17

@@ -14,11 +14,13 @@ SENSORS = {
         TEMP_COFFEE,
         "Coffee Temp",
         ATTR_STATUS_MAP_COFFEE_TEMP,
+        ENTITY_COFFEE_TEMP,
     ),
     "boiler_temp": (
         TEMP_STEAM,
         "Steam Temp",
         ATTR_STATUS_MAP_STEAM_TEMP,
+        ENTITY_STEAM_TEMP,
     ),
 }
 
@@ -42,6 +44,7 @@ class LaMarzoccoSensor(CoordinatorEntity, EntityCommon):
         self._name = sensor_type
         self._coordinator = coordinator
         self._is_metric = is_metric
+        self._entity = SENSORS[self._name][3]
 
         self.coordinator._device.register_callback(self.update_callback)
 

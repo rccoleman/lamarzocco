@@ -21,6 +21,7 @@ class LaMarzoccoAutoOnOffEntity(
         self._config = config
         self._temp_state = None
         self._is_metric = is_metric
+        self._entity = ENTITY_AUTO_ON_OFF
 
         self.coordinator._device.register_callback(self.update_callback)
 

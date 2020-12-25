@@ -36,8 +36,11 @@ class EntityCommon:
 
     @callback
     def update_callback(self, **kwargs):
-        """Update callback for each entity"""
-        self.schedule_update_ha_state(force_refresh=False)
+        """Update the state machine"""
+        entity = kwargs.get("entity")
+        if entity in [None, self._entity]:
+            _LOGGER.debug(f"Calling callback for {self._entity}")
+            self.schedule_update_ha_state(force_refresh=False)
 
     @property
     def device_info(self):

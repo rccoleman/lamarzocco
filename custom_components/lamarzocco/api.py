@@ -1,12 +1,14 @@
-import logging, errno
+import errno
+import logging
+from datetime import datetime
 from socket import error as SocketError
 
-import lmdirect.cmds as CMD
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.core import callback
 from lmdirect import LMDirect
 from lmdirect.const import *
 
-from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,6 +19,12 @@ class LaMarzocco(LMDirect):
     def __init__(self, hass, config):
         """Initialise the weather entity data."""
         self.hass = hass
+        self._current_status = {}
+
+        """Start with the machine in standby if we haven't received accurate data yet"""
+        self._is_on = False
+
+        self._current_status[POWER] = 0
 
         super().__init__(
             {
@@ -29,7 +37,14 @@ class LaMarzocco(LMDirect):
         )
 
     async def init_data(self):
-        """Init data"""
+        """Register the callback to receive updates"""
+        self.register_callback(self.update_callback)
+
+    @callback
+    def update_callback(self, **kwargs):
+        self._current_status.update(kwargs.get("current_status"))
+        self._current_status[RECEIVED] = datetime.now().replace(microsecond=0)
+        self._is_on = True if self._current_status[POWER] else False
 
     async def fetch_data(self):
         """Fetch data from API - (current weather and forecast)."""
@@ -44,8 +59,3 @@ class LaMarzocco(LMDirect):
                 _LOGGER.debug("Connection error: {}".format(e))
 
         return self
-
-    async def power(self, power):
-        """Send power on or power off commands"""
-        cmd = CMD.CMD_ON if power else CMD.CMD_OFF
-        await self.send_cmd(cmd)

@@ -10,8 +10,16 @@ from .entity_common import EntityCommon
 _LOGGER = logging.getLogger(__name__)
 
 SENSORS = {
-    "coffee_temp": (TEMP_COFFEE, "Coffee Temp", ATTR_STATUS_MAP_COFFEE_TEMP),
-    "boiler_temp": (TEMP_STEAM, "Steam Temp", ATTR_STATUS_MAP_STEAM_TEMP),
+    "coffee_temp": (
+        TEMP_COFFEE,
+        "Coffee Temp",
+        ATTR_STATUS_MAP_COFFEE_TEMP,
+    ),
+    "boiler_temp": (
+        TEMP_STEAM,
+        "Steam Temp",
+        ATTR_STATUS_MAP_STEAM_TEMP,
+    ),
 }
 
 
@@ -71,11 +79,6 @@ class LaMarzoccoSensor(CoordinatorEntity, EntityCommon):
     def device_class(self):
         """Device class for sensor"""
         return "temperature"
-
-    @property
-    def device_state_attributes(self):
-        """Return device attributes."""
-        return {ATTR_ATTRIBUTION: ATTRIBUTION}
 
     @property
     def state_attributes(self):

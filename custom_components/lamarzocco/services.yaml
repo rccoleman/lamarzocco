@@ -11,7 +11,7 @@ set_coffee_temp:
       # Example value that can be passed for this field
       example: "switch.espresso_machine"
     temperature:
-      description: Temperature setting in Celcius
+      description: Temperature setting in your native units (F or C)
       example: "95.2"
 
 set_steam_temp:
@@ -26,7 +26,7 @@ set_steam_temp:
       # Example value that can be passed for this field
       example: "switch.espresso_machine"
     temperature:
-      description: Temperature setting in Celcius
+      description: Temperature setting in your native units (F or C)
       example: "95.2"
 
 enable_auto_on_off:
@@ -41,7 +41,7 @@ enable_auto_on_off:
       # Example value that can be passed for this field
       example: "switch.espresso_machine"
     day_of_week:
-      description: "The day of the week to enable.  Acceptable values are: sun, mon, tue, wed, thu, fri, sat"
+      description: "The day of the week to enable (sun, mon, tue, wed, thu, fri, sat)"
       example: mon
 
 disable_auto_on_off:
@@ -79,3 +79,57 @@ set_auto_on_off_hours:
     hour_off:
       description: The hour to turn the machine off (0..23)
       example: 17
+
+set_dose:
+  # Description of the service
+  description: Sets the dose for a specific key
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    key:
+      description: "The key to program (1-5)"
+      example: 1
+    pulses:
+      description: "The dose in pulses (roughly ~0.5ml per pulse)"
+      example: 122
+
+set_dose_tea:
+  # Description of the service
+  description: Sets the dose for tea
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    seconds:
+      description: "The number of seconds to stream hot water"
+      example: 8
+
+set_prebrew_times:
+  # Description of the service
+  description: Set the prebrewing "on" and "off" times for a specific key
+  # Different fields that your service accepts
+  fields:
+    # Key of the field
+    entity_id:
+      # Description of the field
+      description: Name(s) of the entities to set
+      # Example value that can be passed for this field
+      example: "switch.espresso_machine"
+    key:
+      description: "The key to program (1-4)"
+      example: 1
+    time_on:
+      description: The time in seconds for the pump to run during prebrewing (0-5.9s)
+      example: 1.1
+    time_off:
+      description: The time in seconds for the pump to stop during prebrewing (0-5.9s)
+      example: 1.1

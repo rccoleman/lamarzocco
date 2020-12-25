@@ -24,7 +24,7 @@ class LaMarzocco(LMDirect):
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._is_on = False
 
-        self._current_status[MACHINE_STATUS] = 0
+        self._current_status[POWER] = 0
 
         super().__init__(
             {
@@ -41,11 +41,10 @@ class LaMarzocco(LMDirect):
         self.register_callback(self.update_callback)
 
     @callback
-    def update_callback(self, status, state):
-        # _LOGGER.debug("Data updated: {}, state={}".format(status, state))
-        self._current_status.update(status)
+    def update_callback(self, **kwargs):
+        self._current_status.update(kwargs.get("current_status"))
         self._current_status[RECEIVED] = datetime.now().replace(microsecond=0)
-        self._is_on = True if self._current_status[MACHINE_STATUS] else False
+        self._is_on = True if self._current_status[POWER] else False
 
     async def fetch_data(self):
         """Fetch data from API - (current weather and forecast)."""

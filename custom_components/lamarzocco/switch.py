@@ -71,6 +71,30 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("hour_off"): cv.string,
             },
         ),
+        Service(
+            SERVICE_SET_DOSE,
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("key"): cv.string,
+                vol.Required("pulses"): cv.string,
+            },
+        ),
+        Service(
+            SERVICE_SET_PREBREW_TIMES,
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("key"): cv.string,
+                vol.Required("time_on"): cv.string,
+                vol.Required("time_off"): cv.string,
+            },
+        ),
+        Service(
+            SERVICE_SET_DOSE_TEA,
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("seconds"): cv.string,
+            },
+        ),
     ]
 
     for service in SERVICES:

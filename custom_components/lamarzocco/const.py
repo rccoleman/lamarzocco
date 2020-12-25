@@ -76,6 +76,15 @@ ATTR_STATUS_MAP_AUTO_ON_OFF = {
 
 DAYS = [SUN_AUTO, MON_AUTO, TUE_AUTO, WED_AUTO, THU_AUTO, FRI_AUTO, SAT_AUTO]
 
+ENTITY_TAG = "tag"
+ENTITY_NAME = "name"
+ENTITY_MAP = "map"
+ENTITY_TYPE = "type"
+ENTITY_ICON = "icon"
+ENTITY_FUNC = "func"
+
+FUNC_BASE = "self.coordinator._device."
+
 # Services
 SERVICE_SET_COFFEE_TEMP = "set_coffee_temp"
 SERVICE_SET_STEAM_TEMP = "set_steam_temp"

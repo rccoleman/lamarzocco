@@ -1,13 +1,39 @@
 import logging
-import voluptuous as vol
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers import config_validation as cv, entity_platform
+import voluptuous as vol
 
 from .const import *
-from .switch_auto_on_off import LaMarzoccoAutoOnOffEntity
-from .switch_main import LaMarzoccoMainEntity
-from .switch_prebrew import LaMarzoccoPrebrewEntity
+from .entity_base import EntityCommon
 
 _LOGGER = logging.getLogger(__name__)
+
+ENTITIES = {
+    "main": {
+        ENTITY_TAG: POWER,
+        ENTITY_NAME: "Main",
+        ENTITY_MAP: ATTR_STATUS_MAP_MAIN,
+        ENTITY_TYPE: TYPE_MAIN,
+        ENTITY_ICON: "mdi:coffee-maker",
+        ENTITY_FUNC: "set_power",
+    },
+    "auto_on_off": {
+        ENTITY_TAG: GLOBAL_AUTO,
+        ENTITY_NAME: "Auto On Off",
+        ENTITY_MAP: ATTR_STATUS_MAP_AUTO_ON_OFF,
+        ENTITY_TYPE: TYPE_AUTO_ON_OFF,
+        ENTITY_ICON: "mdi:alarm",
+        ENTITY_FUNC: "set_auto_on_off_global",
+    },
+    "prebrew": {
+        ENTITY_TAG: ENABLE_PREBREWING,
+        ENTITY_NAME: "Prebrew",
+        ENTITY_MAP: ATTR_STATUS_MAP_PREBREW,
+        ENTITY_TYPE: TYPE_STEAM_TEMP,
+        ENTITY_ICON: "mdi:location-enter",
+        ENTITY_FUNC: "set_prebrewing_enable",
+    },
+}
 
 
 class Service:
@@ -22,17 +48,8 @@ class Service:
         )
 
 
-SWITCHES = [LaMarzoccoMainEntity, LaMarzoccoPrebrewEntity, LaMarzoccoAutoOnOffEntity]
-
-
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add a switch entity from a config_entry."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
-    async_add_entities(
-        switch_entity(coordinator, config_entry.data, hass.config.units.is_metric)
-        for switch_entity in SWITCHES
-    )
-
     SERVICES = [
         Service(
             SERVICE_SET_COFFEE_TEMP,
@@ -97,5 +114,47 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         ),
     ]
 
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    async_add_entities(
+        LaMarzoccoSwitch(coordinator, switch_type, hass.config.units.is_metric)
+        for switch_type in ENTITIES
+    )
+
     for service in SERVICES:
         service.register()
+
+
+class LaMarzoccoSwitch(EntityCommon, SwitchEntity):
+    """Implementation of a La Marzocco integration"""
+
+    def __init__(self, coordinator, switch_type, is_metric):
+        """Initialise the platform with a data instance and site."""
+        super().__init__(coordinator)
+        self._object_id = switch_type
+        self._temp_state = None
+        self._is_metric = is_metric
+        self.ENTITIES = ENTITIES
+        self._entity_type = self.ENTITIES[self._object_id][ENTITY_TYPE]
+
+        self.coordinator._device.register_callback(self.update_callback)
+
+    async def async_turn_on(self, **kwargs) -> None:
+        """Turn device on."""
+        await eval(FUNC_BASE + self.ENTITIES[self._object_id][ENTITY_FUNC] + "(True)")
+        self._temp_state = True
+
+    async def async_turn_off(self, **kwargs) -> None:
+        """Turn device off."""
+        await eval(FUNC_BASE + self.ENTITIES[self._object_id][ENTITY_FUNC] + "(False)")
+        self._temp_state = False
+
+    @property
+    def is_on(self) -> bool:
+        """Return true if device is on."""
+        reported_state = self.coordinator._device.current_status.get(
+            self.ENTITIES[self._object_id][ENTITY_TAG]
+        )
+        if self._temp_state == reported_state:
+            self._temp_state = None
+
+        return self._temp_state if self._temp_state is not None else reported_state

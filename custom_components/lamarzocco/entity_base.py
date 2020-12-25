@@ -2,17 +2,20 @@ import logging
 from typing import Dict
 
 from homeassistant.core import callback
+from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class EntityCommon:
+class EntityCommon(CoordinatorEntity, RestoreEntity):
     """Common elements for all switches"""
 
     _is_metric = False
-    _entity = None
+    _entity_id = None
+    ENTITIES = []
 
     @property
     def entity_registry_enabled_default(self) -> bool:
@@ -25,21 +28,29 @@ class EntityCommon:
         return False
 
     @property
-    def name_base(self):
+    def name(self):
         """Return the name of the switch."""
-        return f"{self.coordinator._device.machine_name} "
+        return (
+            f"{self.coordinator._device.machine_name} "
+            + self.ENTITIES[self._object_id][ENTITY_NAME]
+        )
 
     @property
-    def unique_id_base(self):
+    def unique_id(self):
         """Return unique ID."""
-        return f"{self.coordinator._device.serial_number}_"
+        return f"{self.coordinator._device.serial_number}_" + self._object_id
+
+    @property
+    def icon(self) -> str:
+        """Return the icon to use in the frontend"""
+        return self.ENTITIES[self._object_id][ENTITY_ICON]
 
     @callback
     def update_callback(self, **kwargs):
         """Update the state machine"""
-        entity = kwargs.get("entity")
-        if entity in [None, self._entity]:
-            _LOGGER.debug(f"Calling callback for {self._entity}")
+        entity_type = kwargs.get("entity_type")
+        if entity_type in [None, self._entity_type]:
+            _LOGGER.debug(f"Calling callback for {self._entity_type}")
             self.schedule_update_ha_state(force_refresh=False)
 
     @property
@@ -54,9 +65,14 @@ class EntityCommon:
             "entry_type": "None",
         }
 
-    def generate_attrs(self, data, map) -> Dict:
+    @property
+    def state_attributes(self):
+        """Return the state attributes."""
+
         output = {}
 
+        data = self.coordinator._device._current_status
+        map = self.ENTITIES[self._object_id][ENTITY_MAP]
         for key in data:
             if key in map.keys():
                 value = data[key]

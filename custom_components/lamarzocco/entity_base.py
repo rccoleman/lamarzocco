@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -50,7 +49,6 @@ class EntityCommon(CoordinatorEntity, RestoreEntity):
         """Update the state machine"""
         entity_type = kwargs.get("entity_type")
         if entity_type in [None, self._entity_type]:
-            _LOGGER.debug(f"Calling callback for {self._entity_type}")
             self.schedule_update_ha_state(force_refresh=False)
 
     @property

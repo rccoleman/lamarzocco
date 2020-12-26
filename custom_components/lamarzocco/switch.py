@@ -128,8 +128,7 @@ class LaMarzoccoSwitch(EntityCommon, SwitchEntity):
     """Implementation of a La Marzocco integration"""
 
     def __init__(self, lm, switch_type, is_metric):
-        """Initialise the platform with a data instance and site."""
-        # super().__init__(lm)
+        """Initialise switches"""
         self._object_id = switch_type
         self._temp_state = None
         self._is_metric = is_metric

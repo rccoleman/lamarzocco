@@ -24,8 +24,6 @@ class LaMarzocco(LMDirect):
         self._run = True
 
         """Start with the machine in standby if we haven't received accurate data yet"""
-        self._is_on = False
-
         self._current_status[POWER] = 0
 
         super().__init__(
@@ -45,7 +43,7 @@ class LaMarzocco(LMDirect):
         """Connect to populate info"""
         await self.connect()
 
-        """Start listening for status"""
+        """Start polling for status"""
         hass.loop.create_task(self.fetch_data())
 
     async def close(self):
@@ -56,7 +54,6 @@ class LaMarzocco(LMDirect):
     def update_callback(self, **kwargs):
         self._current_status.update(kwargs.get("current_status"))
         self._current_status[RECEIVED] = datetime.now().replace(microsecond=0)
-        self._is_on = True if self._current_status[POWER] else False
 
     async def fetch_data(self):
         while self._run:
@@ -70,4 +67,4 @@ class LaMarzocco(LMDirect):
                     raise
                 else:
                     _LOGGER.debug("Connection error: {}".format(e))
-            await asyncio.sleep(20)
+            await asyncio.sleep(POLLING_INTERVAL)

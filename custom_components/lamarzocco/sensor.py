@@ -38,8 +38,7 @@ class LaMarzoccoSensor(EntityCommon):
     """Sensor representing corona virus data."""
 
     def __init__(self, lm, sensor_type, is_metric):
-        """Initialize coronavirus sensor."""
-        # super().__init__(lm)
+        """Initialize sensors"""
         self._object_id = sensor_type
         self._lm = lm
         self._is_metric = is_metric

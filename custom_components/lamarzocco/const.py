@@ -4,6 +4,9 @@ from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
 
+"""Set polling interval at 20s"""
+POLLING_INTERVAL = 20
+
 CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"

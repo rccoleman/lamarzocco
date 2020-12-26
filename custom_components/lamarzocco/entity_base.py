@@ -63,25 +63,21 @@ class EntityCommon(RestoreEntity):
     def state_attributes(self):
         """Return the state attributes."""
 
-        output = {}
-
         data = self._lm._current_status
         map = self.ENTITIES[self._object_id][ENTITY_MAP]
-        for key in data:
-            if key in map.keys():
-                value = data[key]
 
-                """Convert boolean values to strings to improve display in Lovelace"""
-                if isinstance(value, bool):
-                    value = str(value)
+        def convert_values(k, v):
+            """Convert boolean values to strings to improve display in Lovelace"""
+            if isinstance(v, bool):
+                return str(v)
 
-                """Convert temps to fahrenheit if needed"""
-                if not self._is_metric and any(val in key for val in TEMP_KEYS):
-                    value = round((value * 9 / 5) + 32, 1)
+            """Convert temps to fahrenheit if needed"""
+            if not self._is_metric and any(key in k for key in TEMP_KEYS):
+                return round((v * 9 / 5) + 32, 1)
 
-                output[map[key]] = value
-
-        return output
+        return {
+            map[k]: convert_values(k, v) for (k, v) in data.items() if k in map.keys()
+        }
 
     """Services"""
 

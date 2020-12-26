@@ -1,8 +1,6 @@
 """Sensor platform for the Corona virus."""
 import logging
 
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
-
 from .const import *
 from .entity_base import EntityCommon
 
@@ -28,10 +26,10 @@ ENTITIES = {
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Defer sensor setup to the shared sensor module."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    lm = hass.data[DOMAIN][config_entry.entry_id]
 
     async_add_entities(
-        LaMarzoccoSensor(coordinator, sensor_type, hass.config.units.is_metric)
+        LaMarzoccoSensor(lm, sensor_type, hass.config.units.is_metric)
         for sensor_type in ENTITIES
     )
 
@@ -39,33 +37,29 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoSensor(EntityCommon):
     """Sensor representing corona virus data."""
 
-    def __init__(self, coordinator, sensor_type, is_metric):
+    def __init__(self, lm, sensor_type, is_metric):
         """Initialize coronavirus sensor."""
-        super().__init__(coordinator)
+        # super().__init__(lm)
         self._object_id = sensor_type
-        self._coordinator = coordinator
+        self._lm = lm
         self._is_metric = is_metric
         self.ENTITIES = ENTITIES
         self._entity_type = self.ENTITIES[self._object_id][ENTITY_TYPE]
 
-        self.coordinator._device.register_callback(self.update_callback)
+        self._lm.register_callback(self.update_callback)
 
     @property
     def available(self):
         """Return if sensor is available."""
         return (
-            self.coordinator._device.current_status.get(
-                self.ENTITIES[self._object_id][ENTITY_TAG]
-            )
+            self._lm.current_status.get(self.ENTITIES[self._object_id][ENTITY_TAG])
             is not None
         )
 
     @property
     def state(self):
         """State of the sensor."""
-        return self.coordinator._device.current_status.get(
-            self.ENTITIES[self._object_id][ENTITY_TAG]
-        )
+        return self._lm.current_status.get(self.ENTITIES[self._object_id][ENTITY_TAG])
 
     @property
     def unit_of_measurement(self):

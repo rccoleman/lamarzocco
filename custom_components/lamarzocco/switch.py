@@ -1,7 +1,9 @@
 import logging
-from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers import config_validation as cv, entity_platform
+
 import voluptuous as vol
+from homeassistant.components.switch import SwitchEntity
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 
 from .const import *
 from .entity_base import EntityCommon
@@ -114,9 +116,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         ),
     ]
 
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    lm = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
-        LaMarzoccoSwitch(coordinator, switch_type, hass.config.units.is_metric)
+        LaMarzoccoSwitch(lm, switch_type, hass.config.units.is_metric)
         for switch_type in ENTITIES
     )
 
@@ -127,16 +129,17 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoSwitch(EntityCommon, SwitchEntity):
     """Implementation of a La Marzocco integration"""
 
-    def __init__(self, coordinator, switch_type, is_metric):
+    def __init__(self, lm, switch_type, is_metric):
         """Initialise the platform with a data instance and site."""
-        super().__init__(coordinator)
+        # super().__init__(lm)
         self._object_id = switch_type
         self._temp_state = None
         self._is_metric = is_metric
+        self._lm = lm
         self.ENTITIES = ENTITIES
         self._entity_type = self.ENTITIES[self._object_id][ENTITY_TYPE]
 
-        self.coordinator._device.register_callback(self.update_callback)
+        self._lm.register_callback(self.update_callback)
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
@@ -151,7 +154,7 @@ class LaMarzoccoSwitch(EntityCommon, SwitchEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        reported_state = self.coordinator._device.current_status.get(
+        reported_state = self._lm.current_status.get(
             self.ENTITIES[self._object_id][ENTITY_TAG]
         )
         if self._temp_state == reported_state:

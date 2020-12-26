@@ -83,7 +83,7 @@ ENTITY_TYPE = "type"
 ENTITY_ICON = "icon"
 ENTITY_FUNC = "func"
 
-FUNC_BASE = "self.coordinator._device."
+FUNC_BASE = "self._lm."
 
 # Services
 SERVICE_SET_COFFEE_TEMP = "set_coffee_temp"

@@ -1,5 +1,6 @@
 import errno
 import logging
+import asyncio
 from datetime import datetime
 from socket import error as SocketError
 
@@ -20,6 +21,7 @@ class LaMarzocco(LMDirect):
         """Initialise the weather entity data."""
         self.hass = hass
         self._current_status = {}
+        self._run = True
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._is_on = False
@@ -36,9 +38,19 @@ class LaMarzocco(LMDirect):
             }
         )
 
-    async def init_data(self):
+    async def init_data(self, hass):
         """Register the callback to receive updates"""
         self.register_callback(self.update_callback)
+
+        """Connect to populate info"""
+        await self.connect()
+
+        """Start listening for status"""
+        hass.loop.create_task(self.fetch_data())
+
+    async def close(self):
+        self._run = False
+        super().close()
 
     @callback
     def update_callback(self, **kwargs):
@@ -47,15 +59,15 @@ class LaMarzocco(LMDirect):
         self._is_on = True if self._current_status[POWER] else False
 
     async def fetch_data(self):
-        """Fetch data from API - (current weather and forecast)."""
-        _LOGGER.debug("Fetching data")
-        try:
-            """Request latest status"""
-            await self.request_status()
-        except SocketError as e:
-            if e.errno != errno.ECONNRESET:
-                raise
-            else:
-                _LOGGER.debug("Connection error: {}".format(e))
-
-        return self
+        while self._run:
+            """Fetch data from API - (current weather and forecast)."""
+            _LOGGER.debug("Fetching data")
+            try:
+                """Request latest status"""
+                await self.request_status()
+            except SocketError as e:
+                if e.errno != errno.ECONNRESET:
+                    raise
+                else:
+                    _LOGGER.debug("Connection error: {}".format(e))
+            await asyncio.sleep(20)

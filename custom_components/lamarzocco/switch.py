@@ -1,7 +1,9 @@
 import logging
-from homeassistant.components.switch import SwitchEntity
-from homeassistant.helpers import config_validation as cv, entity_platform
+
 import voluptuous as vol
+from homeassistant.components.switch import SwitchEntity
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_platform
 
 from .const import *
 from .entity_base import EntityCommon

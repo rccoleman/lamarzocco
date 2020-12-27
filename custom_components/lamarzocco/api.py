@@ -22,34 +22,23 @@ class LaMarzocco(LMDirect):
         """Initialise the weather entity data."""
         self.hass = hass
         self._current_status = {}
-        self._run = True
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._current_status[POWER] = 0
 
-        super().__init__(
-            {
-                IP_ADDR: config[CONF_HOST],
-                CLIENT_ID: config[CONF_CLIENT_ID],
-                CLIENT_SECRET: config[CONF_CLIENT_SECRET],
-                USERNAME: config[CONF_USERNAME],
-                PASSWORD: config[CONF_PASSWORD],
-            }
-        )
+        super().__init__(config)
 
     async def init_data(self, hass):
         """Register the callback to receive updates"""
         self.register_callback(self.update_callback)
 
-        """Connect to populate info"""
-        await self.connect()
-
         """Start polling for status"""
         hass.loop.create_task(self.fetch_data())
 
     async def close(self):
+        """Stop the reeive and send loops"""
         self._run = False
-        super().close()
+        await super().close()
 
     @callback
     def update_callback(self, **kwargs):

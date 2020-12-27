@@ -44,9 +44,12 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     try:
         lm = LaMarzocco(hass, data)
-        await lm.init_data()
-        await lm.fetch_data()
+        await lm.init_data(hass)
+        machine_info = await lm.connect()
         await lm.close()
+
+        if not machine_info:
+            raise CannotConnect
 
     except OAuthError:
         raise InvalidAuth
@@ -55,7 +58,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         raise CannotConnect
 
     # Return info that you want to store in the config entry.
-    return {"title": lm.machine_name}
+    return {"title": lm.machine_name, **machine_info}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -65,9 +68,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     async def _try_create_entry(self, data):
-        info = await validate_input(self.hass, data)
+        machine_info = await validate_input(self.hass, data)
         self._abort_if_unique_id_configured()
-        return self.async_create_entry(title=info["title"], data=data)
+        return self.async_create_entry(
+            title=machine_info["title"], data={**data, **machine_info}
+        )
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
@@ -99,16 +104,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         serial_number: str = raw["serial_number"].decode("utf-8")
         host: str = discovery_info[CONF_HOST]
 
-        _LOGGER.debug(
-            "LaMarzocco: Host={}, Name={}, SN={}".format(host, type, serial_number)
-        )
-
-        self._discovered = {
+        self._discovered_host = {
             CONF_HOST: host,
             CONF_TYPE: type,
             CONF_SERIAL_NUMBER: serial_number,
             CONF_NAME: host,
         }
+
+        _LOGGER.debug(
+            "LaMarzocco: Host={}, Name={}, SN={}".format(host, type, serial_number)
+        )
+
         await self.async_set_unique_id(serial_number)
         self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
 
@@ -127,8 +133,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 data = user_input.copy()
                 data[CONF_HOST] = self._discovered[CONF_HOST]
-                data[CONF_TYPE] = self._discovered[CONF_TYPE]
-                # data[CONF_SERIAL_NUMBER] = self._discovered[CONF_SERIAL_NUMBER]
 
                 return await self._try_create_entry(data)
             except InvalidAuth as error:

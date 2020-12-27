@@ -10,6 +10,9 @@ POLLING_INTERVAL = 20
 CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"
+CONF_KEY = "key"
+CONF_MACHINE_NAME = "machine_name"
+CONF_MODEL_NAME = "model_name"
 
 DEFAULT_NAME = "Espresso Machine"
 

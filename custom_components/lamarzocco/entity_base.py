@@ -69,11 +69,13 @@ class EntityCommon(RestoreEntity):
         def convert_values(k, v):
             """Convert boolean values to strings to improve display in Lovelace"""
             if isinstance(v, bool):
-                return str(v)
+                v = str(v)
 
             """Convert temps to fahrenheit if needed"""
             if not self._is_metric and any(key in k for key in TEMP_KEYS):
-                return round((v * 9 / 5) + 32, 1)
+                v = round((v * 9 / 5) + 32, 1)
+
+            return v
 
         return {
             map[k]: convert_values(k, v) for (k, v) in data.items() if k in map.keys()

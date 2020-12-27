@@ -2,11 +2,9 @@
 
 import asyncio
 import logging
-from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
 
 from .api import LaMarzocco
 from .const import DOMAIN

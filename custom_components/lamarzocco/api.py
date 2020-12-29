@@ -22,6 +22,7 @@ class LaMarzocco(LMDirect):
         """Initialise the weather entity data."""
         self.hass = hass
         self._current_status = {}
+        self._polling_task = None
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._current_status[POWER] = 0
@@ -32,12 +33,18 @@ class LaMarzocco(LMDirect):
         """Register the callback to receive updates"""
         self.register_callback(self.update_callback)
 
+        self._run = True
+
         """Start polling for status"""
-        hass.loop.create_task(self.fetch_data())
+        self._polling_task = hass.loop.create_task(self.fetch_data())
 
     async def close(self):
         """Stop the reeive and send loops"""
         self._run = False
+
+        if self._polling_task:
+            self._polling_task.cancel()
+
         await super().close()
 
     @callback

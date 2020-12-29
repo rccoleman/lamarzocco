@@ -44,7 +44,6 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     try:
         lm = LaMarzocco(hass, data)
-        await lm.init_data(hass)
         machine_info = await lm.connect()
         await lm.close()
 
@@ -104,7 +103,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         serial_number: str = raw["serial_number"].decode("utf-8")
         host: str = discovery_info[CONF_HOST]
 
-        self._discovered_host = {
+        self._discovered = {
             CONF_HOST: host,
             CONF_TYPE: type,
             CONF_SERIAL_NUMBER: serial_number,

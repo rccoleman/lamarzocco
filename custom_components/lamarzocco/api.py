@@ -1,7 +1,6 @@
 import asyncio
 import errno
 import logging
-import asyncio
 from datetime import datetime
 from socket import error as SocketError
 

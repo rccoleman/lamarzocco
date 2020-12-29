@@ -1,18 +1,17 @@
 """Tests for the config flow."""
 from unittest import mock
 
-from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH
-from homeassistant import data_entry_flow
-from lmdirect.connection import AuthFail
-
 import pytest
+from homeassistant import data_entry_flow
+from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH
+from lmdirect import LMDirect
+from lmdirect.connection import AuthFail
 from pytest_homeassistant_custom_component.async_mock import AsyncMock, patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.lamarzocco import config_flow
+from custom_components.lamarzocco.config_flow import InvalidAuth, validate_input
 from custom_components.lamarzocco.const import DOMAIN
-from custom_components.lamarzocco.config_flow import validate_input, InvalidAuth
-from lmdirect import LMDirect
 
 
 @patch("custom_components.lamarzocco.api.LaMarzocco.init_data")

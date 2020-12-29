@@ -4,12 +4,12 @@ import logging
 from datetime import datetime
 from socket import error as SocketError
 
+from lmdirect.msgs import POWER, RECEIVED
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from lmdirect import LMDirect
-from lmdirect.const import *
 
-from .const import *
+from .const import POLLING_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 

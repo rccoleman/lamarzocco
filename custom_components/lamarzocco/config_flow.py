@@ -52,7 +52,7 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     except OAuthError:
         raise InvalidAuth
-    except Exception as error:
+    except Exception:
         _LOGGER.exception("Unexpected exception")
         raise CannotConnect
 
@@ -84,7 +84,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 return await self._try_create_entry(user_input)
-            except InvalidAuth as error:
+            except InvalidAuth:
                 errors["base"] = "invalid_auth"
 
         return self.async_show_form(
@@ -117,8 +117,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         await self.async_set_unique_id(serial_number)
         self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
 
-        self.context.update({"title_placeholders": self._discovered})
-
         return await self.async_step_confirm()
 
     async def async_step_confirm(
@@ -134,7 +132,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data[CONF_HOST] = self._discovered[CONF_HOST]
 
                 return await self._try_create_entry(data)
-            except InvalidAuth as error:
+            except InvalidAuth:
                 errors["base"] = "invalid_auth"
 
         return self.async_show_form(

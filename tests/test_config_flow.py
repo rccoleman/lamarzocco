@@ -1,31 +1,40 @@
 """Tests for the config flow."""
 from unittest import mock
 
-import pytest
-from homeassistant import data_entry_flow
-from homeassistant.const import CONF_ACCESS_TOKEN, CONF_NAME, CONF_PATH
-from lmdirect import LMDirect
-from lmdirect.connection import AuthFail
-from pytest_homeassistant_custom_component.async_mock import AsyncMock, patch
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from homeassistant import data_entry_flow, core
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_USERNAME,
+    CONF_PASSWORD,
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
+)
+from pytest_homeassistant_custom_component.async_mock import patch
 
 from custom_components.lamarzocco import config_flow
 from custom_components.lamarzocco.config_flow import InvalidAuth, validate_input
-from custom_components.lamarzocco.const import DOMAIN
+from custom_components.lamarzocco.const import (
+    CONF_MACHINE_NAME,
+    CONF_SERIAL_NUMBER,
+    CONF_MODEL_NAME,
+    DOMAIN,
+)
 
 
 @patch("custom_components.lamarzocco.api.LaMarzocco.init_data")
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
-@patch("lmdirect.LMDirect.close")
-async def test_function(mock_init_data, mock_connect, mock_close, hass):
+@patch("custom_components.lamarzocco.api.LaMarzocco.close")
+async def test_validate_input(mock_close, mock_connect, mock_init_data, hass):
     data = {
         "title": "buzz",
-        "machine_name": "test_machine",
-        "serial_number": "12345",
+        "host": "1.2.3.4",
+        "machine_name": "machine_name",
+        "serial_number": "1234567890",
         "client_id": "aabbcc",
         "client_secret": "bbccdd",
         "username": "username",
         "password": "password",
+        "model_name": "model_name",
     }
     mock_connect.return_value = data
     result = await validate_input(hass, data)
@@ -57,28 +66,66 @@ async def test_flow_user_init(hass):
     assert data == machine_info
 
 
-@patch("custom_components.lamarzocco.config_flow.LaMarzocco")
-@patch("custom_components.lamarzocco.LaMarzocco")
-async def test_user_flow_works(mock_async_setup_entry, mock_class, hass):
-    """Test config flow."""
+async def test_flow_zeroconf_init(hass):
+    """Test the initialization of the form in the first step of the config flow."""
     data = {
         "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
     }
-    instance = AsyncMock()
-    instance.connect = AsyncMock(return_value=data)
-    instance._current_status = {"POWER": 0}
-    instance.current_status = {"POWER": 0}
-    instance.serial_number = "12345"
-    instance.model_name = "model_name"
-    instance.machine_name = "machine_name"
-    instance.register_callback = mock.Mock()
-    mock_class.return_value = instance
-    mock_async_setup_entry.return_value = instance
+    with patch(
+        "custom_components.lamarzocco.config_flow.validate_input"
+    ) as mock_validate_input:
+        machine_info = mock_validate_input.return_value = data
+        result = await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN,
+            context={"source": "zeroconf"},
+            data={
+                "host": bytes("1.2.3.4", "utf-8"),
+                "properties": {
+                    "_raw": {
+                        "type": bytes("machine_type", "utf8"),
+                        "serial_number": bytes("aabbccdd", "utf8"),
+                        "name": bytes("buzz", "utf8"),
+                    }
+                },
+            },
+        )
+    expected = {
+        "data_schema": config_flow.STEP_DISCOVERY_DATA_SCHEMA,
+        "description_placeholders": None,
+        "errors": {},
+        "flow_id": mock.ANY,
+        "handler": "lamarzocco",
+        "step_id": "confirm",
+        "type": "form",
+    }
+    assert expected == result
+    assert data == machine_info
+
+
+async def validate_input(hass: core.HomeAssistant, data):
+    """Validate the user input allows us to connect."""
+    data = {
+        "title": "buzz",
+        CONF_HOST: "1.2.3.4",
+        CONF_CLIENT_ID: "aabbcc",
+        CONF_CLIENT_SECRET: "bbccdd",
+        CONF_USERNAME: "username",
+        CONF_PASSWORD: "password",
+        CONF_SERIAL_NUMBER: "1234567890",
+        CONF_MACHINE_NAME: "machine_name",
+        CONF_MODEL_NAME: "model_name",
+    }
+
+    return data
+
+
+@patch("custom_components.lamarzocco.config_flow.validate_input", validate_input)
+@patch("custom_components.lamarzocco.LaMarzocco.request_status")
+async def test_user_flow_works(
+    mock_request_status,
+    hass,
+):
+    """Test config flow."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": "user"}
     )
@@ -89,11 +136,11 @@ async def test_user_flow_works(mock_async_setup_entry, mock_class, hass):
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={
-            "host": "1.2.3.4",
-            "client_id": "aabbcc",
-            "client_secret": "bbccdd",
-            "username": "username",
-            "password": "password",
+            CONF_HOST: "1.2.3.4",
+            CONF_CLIENT_ID: "aabbcc",
+            CONF_CLIENT_SECRET: "bbccdd",
+            CONF_USERNAME: "username",
+            CONF_PASSWORD: "password",
         },
     )
 
@@ -101,38 +148,21 @@ async def test_user_flow_works(mock_async_setup_entry, mock_class, hass):
     assert result["title"] == "buzz"
     assert result["data"] == {
         "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
+        CONF_HOST: "1.2.3.4",
+        CONF_CLIENT_ID: "aabbcc",
+        CONF_CLIENT_SECRET: "bbccdd",
+        CONF_USERNAME: "username",
+        CONF_PASSWORD: "password",
+        CONF_SERIAL_NUMBER: "1234567890",
+        CONF_MACHINE_NAME: "machine_name",
+        CONF_MODEL_NAME: "model_name",
     }
-    print("async_setup: {}".format(mock_async_setup_entry.mock_calls))
-    print("mock_class: {}".format(mock_class.mock_calls))
 
 
-@patch("custom_components.lamarzocco.config_flow.LaMarzocco")
-@patch("custom_components.lamarzocco.LaMarzocco")
-async def test_zeroconf_flow_works(mock_async_setup_entry, mock_class, hass):
+@patch("custom_components.lamarzocco.config_flow.validate_input", validate_input)
+@patch("custom_components.lamarzocco.LaMarzocco.request_status")
+async def test_zeroconf_flow_works(mock_request_status, hass):
     """Test config flow."""
-    data = {
-        "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
-    }
-    instance = AsyncMock()
-    instance.connect = AsyncMock(return_value=data)
-    instance._current_status = {"POWER": 0}
-    instance.current_status = {"POWER": 0}
-    instance.serial_number = "12345"
-    instance.model_name = "model_name"
-    instance.machine_name = "machine_name"
-    instance.register_callback = mock.Mock()
-    mock_class.return_value = instance
-    mock_async_setup_entry.return_value = instance
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": "zeroconf"},
@@ -165,42 +195,24 @@ async def test_zeroconf_flow_works(mock_async_setup_entry, mock_class, hass):
     assert result["title"] == "buzz"
     assert result["data"] == {
         "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
+        CONF_HOST: "1.2.3.4",
+        CONF_CLIENT_ID: "aabbcc",
+        CONF_CLIENT_SECRET: "bbccdd",
+        CONF_USERNAME: "username",
+        CONF_PASSWORD: "password",
+        CONF_SERIAL_NUMBER: "1234567890",
+        CONF_MACHINE_NAME: "machine_name",
+        CONF_MODEL_NAME: "model_name",
     }
-    print("async_setup: {}".format(mock_async_setup_entry.mock_calls))
-    print("mock_class: {}".format(mock_class.mock_calls))
 
 
 @patch(
     "custom_components.lamarzocco.config_flow.validate_input",
     side_effect=InvalidAuth,
 )
-@patch("custom_components.lamarzocco.config_flow.LaMarzocco")
-@patch("custom_components.lamarzocco.LaMarzocco")
-async def test_user_auth_fail(mock_async_setup_entry, mock_class, mock_func, hass):
+@patch("custom_components.lamarzocco.LaMarzocco.request_status")
+async def test_user_auth_fail(mock_request_status, mock_validate_input, hass):
     """Test config flow."""
-    data = {
-        "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
-    }
-    instance = AsyncMock()
-    instance.connect = AsyncMock(return_value=data)
-    instance._current_status = {"POWER": 0}
-    instance.current_status = {"POWER": 0}
-    instance.serial_number = "12345"
-    instance.model_name = "model_name"
-    instance.machine_name = "machine_name"
-    instance.register_callback = mock.Mock()
-    mock_class.return_value = instance
-    mock_async_setup_entry.return_value = instance
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": "user"}
     )
@@ -227,28 +239,9 @@ async def test_user_auth_fail(mock_async_setup_entry, mock_class, mock_func, has
     "custom_components.lamarzocco.config_flow.validate_input",
     side_effect=InvalidAuth,
 )
-@patch("custom_components.lamarzocco.config_flow.LaMarzocco")
-@patch("custom_components.lamarzocco.LaMarzocco")
-async def test_zeroconf_auth_fail(mock_async_setup_entry, mock_class, mock_func, hass):
+@patch("custom_components.lamarzocco.LaMarzocco.request_status")
+async def test_zeroconf_auth_fail(mock_request_status, mock_validate_input, hass):
     """Test config flow."""
-    data = {
-        "title": "buzz",
-        "host": "1.2.3.4",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
-    }
-    instance = AsyncMock()
-    instance.connect = AsyncMock(return_value=data)
-    instance._current_status = {"POWER": 0}
-    instance.current_status = {"POWER": 0}
-    instance.serial_number = "12345"
-    instance.model_name = "model_name"
-    instance.machine_name = "machine_name"
-    instance.register_callback = mock.Mock()
-    mock_class.return_value = instance
-    mock_async_setup_entry.return_value = instance
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": "zeroconf"},

@@ -1,24 +1,4 @@
 """Test La Marzocco service calls"""
-from copy import deepcopy
-import logging
-
-_LOGGER = logging.getLogger(__name__)
-
-from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    SERVICE_TURN_OFF,
-    SERVICE_TURN_ON,
-)
-from homeassistant.setup import async_setup_component
-
-from pytest_homeassistant_custom_component.async_mock import patch
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-from unittest.mock import call
-import lmdirect
-
 from custom_components.lamarzocco.const import (
     DOMAIN,
     CONF_CLIENT_ID,
@@ -36,6 +16,25 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_DOSE_TEA,
     SERVICE_SET_PREBREW_TIMES,
 )
+
+from copy import deepcopy
+import logging
+
+from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    SERVICE_TURN_OFF,
+    SERVICE_TURN_ON,
+)
+from homeassistant.setup import async_setup_component
+
+from pytest_homeassistant_custom_component.async_mock import patch
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+import lmdirect
+
+_LOGGER = logging.getLogger(__name__)
 
 ENTRY_ID = 1
 CALL_DOMAIN = "call_domain"

@@ -1,11 +1,6 @@
 """Test La Marzocco machine"""
 from copy import deepcopy
 
-import pytest
-
-from homeassistant.components.sensor import DOMAIN as SENSOR_DOMAIN
-from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
-
 from homeassistant.const import (
     CONF_HOST,
     CONF_PASSWORD,

@@ -3,9 +3,14 @@ import logging
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import *
-
-from .api import LaMarzocco
+from .const import (
+    ENTITY_NAME,
+    ENTITY_ICON,
+    DOMAIN,
+    ENTITY_MAP,
+    TEMP_KEYS,
+    ATTR_STATUS_MAP_AUTO_ON_OFF,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

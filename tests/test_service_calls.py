@@ -36,6 +36,7 @@ from custom_components.lamarzocco.const import (
 _LOGGER = logging.getLogger(__name__)
 
 ENTRY_ID = 1
+CALL_SERVICE = "call_service"
 CALL_DOMAIN = "call_domain"
 CALL_DATA = "call_data"
 CALL_RESULTS = "call_result"
@@ -43,6 +44,211 @@ USE_CALLBACK = "use_callback"
 
 SERVICE = 0
 DATA = 1
+
+SET_COFFEE_TEMP = 0
+SET_STEAM_TEMP = 1
+ENABLE_AUTO_ON_OFF = 2
+DISABLE_AUTO_ON_OFF = 3
+SET_AUTO_ON_OFF_HOURS = 4
+SET_DOSE = 5
+SET_PREBREW_TIMES = 6
+SET_DOSE_TEA = 7
+TURN_ON_MAIN = 8
+TURN_OFF_MAIN = 9
+ENABLE_PREBREW = 10
+DISABLE_PREBREW = 11
+ENABLE_GLOBAL_AUTO_ON_OFF = 12
+DISABLE_GLOBAL_AUTO_ON_OFF = 13
+
+TESTS = {
+    # Set coffee temp to 203.1F
+    SET_COFFEE_TEMP: {
+        CALL_SERVICE: SERVICE_SET_COFFEE_TEMP,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "203.1"},
+        CALL_RESULTS: [(8, ["07EF"]), (4, ["07EF"])],
+        USE_CALLBACK: False,
+    },
+    # Set steam temp to 255.1F
+    SET_STEAM_TEMP: {
+        CALL_SERVICE: SERVICE_SET_STEAM_TEMP,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "255.1"},
+        CALL_RESULTS: [(9, ["09F7"]), (4, ["09F7"])],
+        USE_CALLBACK: False,
+    },
+    # Enable auto on/off for Tuesday
+    ENABLE_AUTO_ON_OFF: {
+        CALL_SERVICE: SERVICE_ENABLE_AUTO_ON_OFF,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
+        CALL_RESULTS: [
+            (2, []),
+            (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
+            (2, []),
+        ],
+        USE_CALLBACK: True,
+    },
+    # Disable auto on/off for Tuesday
+    DISABLE_AUTO_ON_OFF: {
+        CALL_SERVICE: SERVICE_DISABLE_AUTO_ON_OFF,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
+        CALL_RESULTS: [
+            (2, []),
+            (11, ["FB06110611061106110611061106110000000000000000000000000000"]),
+            (2, []),
+        ],
+        USE_CALLBACK: True,
+    },
+    # Set auto on/off to 5AM to 12PM on Tuesday
+    SET_AUTO_ON_OFF_HOURS: {
+        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_HOURS,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+            "day_of_week": "tue",
+            "hour_on": "5",
+            "hour_off": "12",
+        },
+        CALL_RESULTS: [
+            (2, []),
+            (11, ["FF06110611050C06110611061106110000000000000000000000000000"]),
+            (2, []),
+        ],
+        USE_CALLBACK: True,
+    },
+    # Set dose for key 2 to 120 pulses
+    SET_DOSE: {
+        CALL_SERVICE: SERVICE_SET_DOSE,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+            "key": "2",
+            "pulses": "120",
+        },
+        CALL_RESULTS: [
+            (12, ["16", "0078"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Set prebrew time for key 4 to 3.1 seconds on and 2.5 seconds off
+    SET_PREBREW_TIMES: {
+        CALL_SERVICE: SERVICE_SET_PREBREW_TIMES,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+            "key": "4",
+            "time_on": "3.1",
+            "time_off": "2.5",
+        },
+        CALL_RESULTS: [
+            (14, ["0F", "1F"]),
+            (14, ["13", "19"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Set tea dose to 16 seconds
+    SET_DOSE_TEA: {
+        CALL_SERVICE: SERVICE_SET_DOSE_TEA,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+            "seconds": "16",
+        },
+        CALL_RESULTS: [
+            (13, ["10"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Turn on the main switch
+    TURN_ON_MAIN: {
+        CALL_SERVICE: SERVICE_TURN_ON,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+        },
+        CALL_RESULTS: [
+            (3, ["01"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Turn off the main switch
+    TURN_OFF_MAIN: {
+        CALL_SERVICE: SERVICE_TURN_OFF,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_main",
+        },
+        CALL_RESULTS: [
+            (3, ["00"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Turn prebew on
+    ENABLE_PREBREW: {
+        CALL_SERVICE: SERVICE_TURN_ON,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_prebrew",
+        },
+        CALL_RESULTS: [
+            (10, ["01"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Turn prebew off
+    DISABLE_PREBREW: {
+        CALL_SERVICE: SERVICE_TURN_OFF,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_prebrew",
+        },
+        CALL_RESULTS: [
+            (10, ["00"]),
+            (1, []),
+        ],
+        USE_CALLBACK: False,
+    },
+    # Enable global auto on/off
+    ENABLE_GLOBAL_AUTO_ON_OFF: {
+        CALL_SERVICE: SERVICE_TURN_ON,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_auto_on_off",
+        },
+        CALL_RESULTS: [
+            (2, []),
+            (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
+            (2, []),
+        ],
+        USE_CALLBACK: True,
+    },
+    # Disable global auto on/off
+    DISABLE_GLOBAL_AUTO_ON_OFF: {
+        CALL_SERVICE: SERVICE_TURN_OFF,
+        CALL_DOMAIN: SWITCH_DOMAIN,
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_auto_on_off",
+        },
+        CALL_RESULTS: [
+            (2, []),
+            (11, ["FE06110611061106110611061106110000000000000000000000000000"]),
+            (2, []),
+        ],
+        USE_CALLBACK: True,
+    },
+}
+
+AUTO_ON_OFF_DATA = (
+    "R0310001DFF061106110611061106110611061100000000000000000000000000002F"
+)
 
 
 async def setup_lm_machine(hass):
@@ -84,348 +290,88 @@ async def unload_lm_machine(hass):
     assert not hass.data[DOMAIN]
 
 
-SERVICE_CALLS = [
-    # Set coffee temp to 203.1F
-    (
-        SERVICE_SET_COFFEE_TEMP,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "203.1"},
-            CALL_RESULTS: [((8,), {"data": "07EF"}), ((4,), {"data": "07EF"})],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Set steam temp to 255.1F
-    (
-        SERVICE_SET_STEAM_TEMP,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "255.1"},
-            CALL_RESULTS: [((9,), {"data": "09F7"}), ((4,), {"data": "09F7"})],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Enable auto on/off for Tuesday
-    (
-        SERVICE_ENABLE_AUTO_ON_OFF,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
-            CALL_RESULTS: [
-                ((2,), {}),
-                (
-                    (11,),
-                    {
-                        "data": "FF06110611061106110611061106110000000000000000000000000000"
-                    },
-                ),
-                ((2,), {}),
-            ],
-            USE_CALLBACK: True,
-        },
-    ),
-    # Disable auto on/off for Tuesday
-    (
-        SERVICE_DISABLE_AUTO_ON_OFF,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
-            CALL_RESULTS: [
-                ((2,), {}),
-                (
-                    (11,),
-                    {
-                        "data": "FB06110611061106110611061106110000000000000000000000000000"
-                    },
-                ),
-                ((2,), {}),
-            ],
-            USE_CALLBACK: True,
-        },
-    ),
-    # Set auto on/off to 5AM to 12PM on Tuesday
-    (
-        SERVICE_SET_AUTO_ON_OFF_HOURS,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-                "day_of_week": "tue",
-                "hour_on": "5",
-                "hour_off": "12",
-            },
-            CALL_RESULTS: [
-                ((2,), {}),
-                (
-                    (11,),
-                    {
-                        "data": "FF06110611050C06110611061106110000000000000000000000000000"
-                    },
-                ),
-                ((2,), {}),
-            ],
-            USE_CALLBACK: True,
-        },
-    ),
-    # Set dose for key 2 to 120 pulses
-    (
-        SERVICE_SET_DOSE,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-                "key": "2",
-                "pulses": "120",
-            },
-            CALL_RESULTS: [
-                ((12,), {"data": "0078", "key": "16"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Set dose for key 2 to 120 pulses
-    (
-        SERVICE_SET_DOSE,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-                "key": "2",
-                "pulses": "120",
-            },
-            CALL_RESULTS: [
-                ((12,), {"data": "0078", "key": "16"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Set prebrew time for key 4 to 3.1 seconds on and 2.5 seconds off
-    (
-        SERVICE_SET_PREBREW_TIMES,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-                "key": "4",
-                "time_on": "3.1",
-                "time_off": "2.5",
-            },
-            CALL_RESULTS: [
-                ((14,), {"data": "1F", "key": "0F"}),
-                ((14,), {"data": "19", "key": "13"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Set tea dose to 16 seconds
-    (
-        SERVICE_SET_DOSE_TEA,
-        {
-            CALL_DOMAIN: DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-                "seconds": "16",
-            },
-            CALL_RESULTS: [
-                ((13,), {"data": "10"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Turn on the main switch
-    (
-        SERVICE_TURN_ON,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-            },
-            CALL_RESULTS: [
-                ((3,), {"data": "01"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Turn off the main switch
-    (
-        SERVICE_TURN_OFF,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_main",
-            },
-            CALL_RESULTS: [
-                ((3,), {"data": "00"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Turn prebew on
-    (
-        SERVICE_TURN_ON,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_prebrew",
-            },
-            CALL_RESULTS: [
-                ((10,), {"data": "01"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Turn prebew off
-    (
-        SERVICE_TURN_OFF,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_prebrew",
-            },
-            CALL_RESULTS: [
-                ((10,), {"data": "00"}),
-                ((1,), {}),
-            ],
-            USE_CALLBACK: False,
-        },
-    ),
-    # Enable auto on/off
-    (
-        SERVICE_TURN_ON,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_auto_on_off",
-            },
-            CALL_RESULTS: [
-                ((2,), {}),
-                (
-                    (11,),
-                    {
-                        "data": "FF06110611061106110611061106110000000000000000000000000000"
-                    },
-                ),
-                ((2,), {}),
-            ],
-            USE_CALLBACK: True,
-        },
-    ),
-    # Disable auto on/off
-    (
-        SERVICE_TURN_OFF,
-        {
-            CALL_DOMAIN: SWITCH_DOMAIN,
-            CALL_DATA: {
-                "entity_id": "switch.bbbbb_auto_on_off",
-            },
-            CALL_RESULTS: [
-                ((2,), {}),
-                (
-                    (11,),
-                    {
-                        "data": "FE06110611061106110611061106110000000000000000000000000000"
-                    },
-                ),
-                ((2,), {}),
-            ],
-            USE_CALLBACK: True,
-        },
-    ),
-]
-
-AUTO_ON_OFF_DATA = (
-    "R0310001DFF061106110611061106110611061100000000000000000000000000002F"
-)
-
-
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestServices:
     async def test_set_coffee_temp(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 0)
+        await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
 
     async def test_set_steam_temp(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 1)
+        await self.make_service_call(mock_send_msg, hass, SET_STEAM_TEMP)
 
     async def test_enable_auto_on_off(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 2)
+        await self.make_service_call(mock_send_msg, hass, ENABLE_AUTO_ON_OFF)
 
     async def test_disable_auto_on_off(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 3)
+        await self.make_service_call(mock_send_msg, hass, DISABLE_AUTO_ON_OFF)
 
     async def test_set_auto_on_off_hours(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 4)
+        await self.make_service_call(mock_send_msg, hass, SET_AUTO_ON_OFF_HOURS)
 
     async def test_set_dose(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 5)
+        await self.make_service_call(mock_send_msg, hass, SET_DOSE)
 
     async def test_set_prebrew_times(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 6)
+        await self.make_service_call(mock_send_msg, hass, SET_PREBREW_TIMES)
 
     async def test_set_dose_tea(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 7)
+        await self.make_service_call(mock_send_msg, hass, SET_DOSE_TEA)
 
     async def test_turn_on_main(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 8)
+        await self.make_service_call(mock_send_msg, hass, TURN_ON_MAIN)
 
     async def test_turn_off_main(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 9)
+        await self.make_service_call(mock_send_msg, hass, TURN_OFF_MAIN)
 
-    async def test_turn_on_prebrew(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 10)
+    async def test_enable_prebrew(self, mock_send_msg, mock_connect, hass):
+        await self.make_service_call(mock_send_msg, hass, ENABLE_PREBREW)
 
-    async def test_turn_off_prebrew(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 11)
+    async def test_disable_prebrew(self, mock_send_msg, mock_connect, hass):
+        await self.make_service_call(mock_send_msg, hass, DISABLE_PREBREW)
 
-    async def test_turn_on_auto_on_off(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 12)
+    async def test_enable_global_auto_on_off(self, mock_send_msg, mock_connect, hass):
+        await self.make_service_call(mock_send_msg, hass, ENABLE_GLOBAL_AUTO_ON_OFF)
 
-    async def test_turn_off_auto_on_off(self, mock_send_msg, mock_connect, hass):
-        await self.make_service_call(mock_send_msg, hass, 13)
+    async def test_disable_global_auto_on_off(self, mock_send_msg, mock_connect, hass):
+        await self.make_service_call(mock_send_msg, hass, DISABLE_GLOBAL_AUTO_ON_OFF)
 
-    async def make_service_call(self, mock_send_msg, hass, index):
+    async def make_service_call(self, mock_send_msg, hass, test):
         """Test one service call"""
 
         def validate_results(arg_list, expected):
             assert len(arg_list) == len(expected)
             expect_iter = iter(expected)
             for call in arg_list:
-                args, kwargs = call
-                _LOGGER.error(f"arg_list={arg_list}, args={args}, kwargs={kwargs}")
-                args = args[1:]
-                elem = next(expect_iter)
-                _LOGGER.debug(f"ARGS=<{args}><{elem[0]}>, KWARGS=<{kwargs}><{elem[1]}>")
-                assert args == elem[0] and kwargs == elem[1]
+                received_args, received_kwargs = call
+                (received_args,) = received_args[1:]
+                received_kwargs = list(received_kwargs.values())
+                expect_args, expect_kwargs = next(expect_iter)
+                _LOGGER.debug(
+                    f"ARGS=<{received_args}><{expect_args}>, KWARGS=<{received_kwargs}><{expect_kwargs}>"
+                )
+                assert received_args == expect_args and received_kwargs == expect_kwargs
 
         async def callback_method(self, param, param2=None):
             mock_send_msg.side_effect = None
             await self._process_data(AUTO_ON_OFF_DATA)
 
+        test_entry = TESTS[test]
+
         await setup_lm_machine(hass)
 
-        service = SERVICE_CALLS[index][SERVICE]
-        data = SERVICE_CALLS[index][DATA]
-
-        if data[USE_CALLBACK]:
+        if test_entry[USE_CALLBACK]:
             mock_send_msg.side_effect = callback_method
 
         mock_send_msg.reset_mock()
 
         await hass.services.async_call(
-            data[CALL_DOMAIN],
-            service,
-            data[CALL_DATA],
+            test_entry[CALL_DOMAIN],
+            test_entry[CALL_SERVICE],
+            test_entry[CALL_DATA],
         )
         await hass.async_block_till_done()
 
-        validate_results(mock_send_msg.call_args_list, data[CALL_RESULTS])
+        validate_results(mock_send_msg.call_args_list, test_entry[CALL_RESULTS])
 
         _LOGGER.debug(f"CALLS: {mock_send_msg.mock_calls}")
 

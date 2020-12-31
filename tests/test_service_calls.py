@@ -351,7 +351,8 @@ class TestServices:
                 )
                 assert received_args == expect_args and received_kwargs == expect_kwargs
 
-        async def callback_method(self, param, param2=None):
+        async def callback_method(self, msg, **kwargs):
+            """Called from LMDirect instance context"""
             mock_send_msg.side_effect = None
             await self._process_data(AUTO_ON_OFF_DATA)
 

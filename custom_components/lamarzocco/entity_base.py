@@ -90,10 +90,6 @@ class EntityBase(RestoreEntity):
 
     """Services"""
 
-    async def call_service(self, func, **kwargs):
-        _LOGGER.debug(f"Calling service {func}")
-        await func(**kwargs)
-
     async def set_coffee_temp(self, temperature=None):
         """Service call to set coffee temp"""
 
@@ -105,7 +101,7 @@ class EntityBase(RestoreEntity):
             temperature = round((temperature - 32) / 9 * 5, 1)
 
         _LOGGER.debug(f"Setting coffee temp to {temperature}")
-        await self.call_service(self._lm.set_coffee_temp, temp=temperature)
+        await self._lm.set_coffee_temp(temp=temperature)
 
     async def set_steam_temp(self, temperature=None):
         """Service call to set steam temp"""
@@ -118,7 +114,7 @@ class EntityBase(RestoreEntity):
             temperature = round((temperature - 32) / 9 * 5, 1)
 
         _LOGGER.debug(f"Setting steam temp to {temperature}")
-        await self.call_service(self._lm.set_steam_temp, temp=temperature)
+        await self._lm.set_steam_temp(temp=temperature)
 
     def findkey(self, find_value, dict):
         """Find a key from the value in a dict"""
@@ -135,7 +131,7 @@ class EntityBase(RestoreEntity):
             return False
 
         _LOGGER.debug(f"Enabling auto on/off for {day_of_week}")
-        await self.call_service(self._lm.set_auto_on_off, day_of_week=key, enable=True)
+        await self._lm.set_auto_on_off(day_of_week=key, enable=True)
 
     async def disable_auto_on_off(self, day_of_week=None):
         """Service call to set steam temp"""
@@ -145,7 +141,7 @@ class EntityBase(RestoreEntity):
             return False
 
         _LOGGER.debug(f"Disabling auto on/off for {day_of_week}")
-        await self.call_service(self._lm.set_auto_on_off, day_of_week=key, enable=False)
+        await self._lm.set_auto_on_off(day_of_week=key, enable=False)
 
     async def set_auto_on_off_hours(
         self, day_of_week=None, hour_on=None, hour_off=None
@@ -171,8 +167,7 @@ class EntityBase(RestoreEntity):
         _LOGGER.debug(
             f"Setting auto on/off hours for {day_of_week} from {hour_on} to {hour_off}"
         )
-        await self.call_service(
-            self._lm.set_auto_on_off_hours,
+        await self._lm.set_auto_on_off_hours(
             day_of_week=key,
             hour_on=hour_on,
             hour_off=hour_off,
@@ -193,7 +188,7 @@ class EntityBase(RestoreEntity):
             return False
 
         _LOGGER.debug(f"Setting dose for key:{key} to pulses:{pulses}")
-        await self.call_service(self._lm.set_dose, key=key, pulses=pulses)
+        await self._lm.set_dose(key=key, pulses=pulses)
 
     async def set_dose_tea(self, seconds=None):
         """Service call to set tea dose"""
@@ -207,7 +202,7 @@ class EntityBase(RestoreEntity):
             return False
 
         _LOGGER.debug(f"Setting tea dose to seconds:{seconds}")
-        await self.call_service(self._lm.set_dose_tea, seconds=seconds)
+        await self._lm.set_dose_tea(seconds=seconds)
 
     async def set_prebrew_times(self, key=None, time_on=None, time_off=None):
         """Service call to set prebrew on time"""
@@ -231,6 +226,4 @@ class EntityBase(RestoreEntity):
         _LOGGER.debug(
             f"Setting prebrew on time for key:{key} to time_on:{time_on} and off_time:{time_off}"
         )
-        await self.call_service(
-            self._lm.set_prebrew_times, key=key, time_on=time_on, time_off=time_off
-        )
+        await self._lm.set_prebrew_times(key=key, time_on=time_on, time_off=time_off)

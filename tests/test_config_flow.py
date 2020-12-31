@@ -1,6 +1,7 @@
 """Tests for the config flow."""
 from unittest import mock
 
+import lmdirect
 from homeassistant import core, data_entry_flow
 from homeassistant.const import (
     CONF_CLIENT_ID,
@@ -20,8 +21,6 @@ from custom_components.lamarzocco.const import (
     CONF_SERIAL_NUMBER,
     DOMAIN,
 )
-
-import lmdirect
 
 
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")

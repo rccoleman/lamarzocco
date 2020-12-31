@@ -1,10 +1,10 @@
 import logging
-from lmdirect.msgs import GLOBAL_AUTO, POWER
 
 import voluptuous as vol
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
+from lmdirect.msgs import GLOBAL_AUTO, POWER
 
 # from .const import *
 from .const import (

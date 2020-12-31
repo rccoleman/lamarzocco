@@ -15,7 +15,6 @@ from .const import (
     TYPE_COFFEE_TEMP,
     TYPE_STEAM_TEMP,
 )
-
 from .entity_base import EntityBase
 
 _LOGGER = logging.getLogger(__name__)

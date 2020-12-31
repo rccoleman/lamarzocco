@@ -1,36 +1,36 @@
 import logging
-from lmdirect.msgs import GLOBAL_AUTO, POWER
 
 import voluptuous as vol
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
+from lmdirect.msgs import GLOBAL_AUTO, POWER
 
 # from .const import *
 from .const import (
-    SERVICE_SET_DOSE,
-    SERVICE_SET_AUTO_ON_OFF_HOURS,
-    SERVICE_SET_PREBREW_TIMES,
-    SERVICE_SET_COFFEE_TEMP,
-    SERVICE_DISABLE_AUTO_ON_OFF,
-    SERVICE_ENABLE_AUTO_ON_OFF,
-    SERVICE_SET_DOSE_TEA,
-    SERVICE_SET_STEAM_TEMP,
-    ENTITY_ICON,
-    ENTITY_TYPE,
-    ENTITY_MAP,
-    ENTITY_NAME,
-    ENTITY_TAG,
-    DOMAIN,
-    ENABLE_PREBREWING,
-    TYPE_AUTO_ON_OFF,
-    TYPE_MAIN,
-    TYPE_STEAM_TEMP,
-    FUNC_BASE,
-    ENTITY_FUNC,
     ATTR_STATUS_MAP_AUTO_ON_OFF,
     ATTR_STATUS_MAP_MAIN,
     ATTR_STATUS_MAP_PREBREW,
+    DOMAIN,
+    ENABLE_PREBREWING,
+    ENTITY_FUNC,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    ENTITY_TAG,
+    ENTITY_TYPE,
+    FUNC_BASE,
+    SERVICE_DISABLE_AUTO_ON_OFF,
+    SERVICE_ENABLE_AUTO_ON_OFF,
+    SERVICE_SET_AUTO_ON_OFF_HOURS,
+    SERVICE_SET_COFFEE_TEMP,
+    SERVICE_SET_DOSE,
+    SERVICE_SET_DOSE_TEA,
+    SERVICE_SET_PREBREW_TIMES,
+    SERVICE_SET_STEAM_TEMP,
+    TYPE_AUTO_ON_OFF,
+    TYPE_MAIN,
+    TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
 

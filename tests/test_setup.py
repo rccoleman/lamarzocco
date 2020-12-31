@@ -25,7 +25,7 @@ from custom_components.lamarzocco.const import (
     CONF_MACHINE_NAME,
 )
 
-CONTROLLER_DATA = {
+DATA = {
     CONF_HOST: "1.2.3.4",
     CONF_CLIENT_ID: "aabbcc",
     CONF_CLIENT_SECRET: "bbccdd",
@@ -36,19 +36,13 @@ CONTROLLER_DATA = {
     CONF_MACHINE_NAME: "bbbbb",
 }
 
-ENTRY_CONFIG = {"lamarzocco": CONTROLLER_DATA}
-ENTRY_OPTIONS = {}
 
-CONFIGURATION = []
-
-
-async def setup_lm_machine(hass, config=ENTRY_CONFIG, options=ENTRY_OPTIONS):
+async def setup_lm_machine(hass, config=DATA):
     await async_setup_component(hass, DOMAIN, {})
 
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         data=deepcopy(config),
-        options=deepcopy(options),
         entry_id=1,
     )
 
@@ -57,14 +51,15 @@ async def setup_lm_machine(hass, config=ENTRY_CONFIG, options=ENTRY_OPTIONS):
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
 
-    if config_entry.entry_id not in hass.data[DOMAIN]:
-        return None
+    assert config_entry.entry_id in hass.data[DOMAIN]
+
     machine = hass.data[DOMAIN][config_entry.entry_id]
+    assert machine is not None
 
     return machine
 
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.init_data")
+@patch("custom_components.lamarzocco.api.LaMarzocco.request_status")
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
 @patch("lmdirect.LMDirect.close")
 async def test_setup_lm_machine(
@@ -72,24 +67,14 @@ async def test_setup_lm_machine(
     mock_connect,
     mock_init_data,
     hass,
-    config=ENTRY_CONFIG,
-    options=ENTRY_OPTIONS,
+    config=DATA,
 ):
-    data = {
-        "title": "buzz",
-        "machine_name": "test_machine",
-        "serial_number": "12345",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
-    }
-
-    mock_connect.return_value = data
-    return await setup_lm_machine(hass, config, options)
+    mock_connect.return_value = DATA
+    lm = await setup_lm_machine(hass, config)
+    assert lm.machine_name == "bbbbb"
 
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.init_data")
+@patch("custom_components.lamarzocco.api.LaMarzocco.request_status")
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
 @patch("lmdirect.LMDirect.close")
 async def test_controller_unload(
@@ -97,18 +82,11 @@ async def test_controller_unload(
     mock_connect,
     mock_init_data,
     hass,
-    config=ENTRY_CONFIG,
-    options=ENTRY_OPTIONS,
 ):
-    data = {
-        "title": "buzz",
-        "machine_name": "test_machine",
-        "serial_number": "12345",
-        "client_id": "aabbcc",
-        "client_secret": "bbccdd",
-        "username": "username",
-        "password": "password",
-    }
-    mock_connect.return_value = data
+    entry_id = 1
+    mock_connect.return_value = DATA
     machine = await setup_lm_machine(hass)
-    assert machine == hass.data[DOMAIN][1]
+    assert machine == hass.data[DOMAIN][entry_id]
+
+    assert await hass.config_entries.async_unload(entry_id)
+    assert not hass.data[DOMAIN]

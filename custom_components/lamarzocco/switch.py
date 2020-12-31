@@ -6,7 +6,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_platform
 
 from .const import *
-from .entity_base import EntityCommon
+from .entity_base import EntityBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -99,19 +99,19 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
             },
         ),
         Service(
+            SERVICE_SET_DOSE_TEA,
+            {
+                vol.Required("entity_id"): cv.string,
+                vol.Required("seconds"): cv.string,
+            },
+        ),
+        Service(
             SERVICE_SET_PREBREW_TIMES,
             {
                 vol.Required("entity_id"): cv.string,
                 vol.Required("key"): cv.string,
                 vol.Required("time_on"): cv.string,
                 vol.Required("time_off"): cv.string,
-            },
-        ),
-        Service(
-            SERVICE_SET_DOSE_TEA,
-            {
-                vol.Required("entity_id"): cv.string,
-                vol.Required("seconds"): cv.string,
             },
         ),
     ]
@@ -126,7 +126,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         service.register()
 
 
-class LaMarzoccoSwitch(EntityCommon, SwitchEntity):
+class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     """Implementation of a La Marzocco integration"""
 
     def __init__(self, lm, switch_type, is_metric):

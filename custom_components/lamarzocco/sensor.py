@@ -2,7 +2,7 @@
 import logging
 
 from .const import *
-from .entity_base import EntityCommon
+from .entity_base import EntityBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     )
 
 
-class LaMarzoccoSensor(EntityCommon):
+class LaMarzoccoSensor(EntityBase):
     """Sensor representing corona virus data."""
 
     def __init__(self, lm, sensor_type, is_metric):

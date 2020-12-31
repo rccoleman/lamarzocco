@@ -14,6 +14,8 @@ CONF_KEY = "key"
 CONF_MACHINE_NAME = "machine_name"
 CONF_MODEL_NAME = "model_name"
 
+DEFAULT_PORT = 1774
+
 DEFAULT_NAME = "Espresso Machine"
 
 ATTRIBUTION = "Data from La Marzocco"

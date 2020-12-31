@@ -4,6 +4,7 @@ from unittest import mock
 from homeassistant import data_entry_flow, core
 from homeassistant.const import (
     CONF_HOST,
+    CONF_PORT,
     CONF_USERNAME,
     CONF_PASSWORD,
     CONF_CLIENT_ID,
@@ -28,6 +29,7 @@ async def test_validate_input(mock_close, mock_connect, mock_init_data, hass):
     data = {
         "title": "buzz",
         "host": "1.2.3.4",
+        "port": 1774,
         "machine_name": "machine_name",
         "serial_number": "1234567890",
         "client_id": "aabbcc",
@@ -80,6 +82,7 @@ async def test_flow_zeroconf_init(hass):
             context={"source": "zeroconf"},
             data={
                 "host": bytes("1.2.3.4", "utf-8"),
+                "port": 1774,
                 "properties": {
                     "_raw": {
                         "type": bytes("machine_type", "utf8"),
@@ -102,11 +105,12 @@ async def test_flow_zeroconf_init(hass):
     assert data == machine_info
 
 
-async def validate_input(hass: core.HomeAssistant, data):
+async def mock_func_validate_input(hass: core.HomeAssistant, data):
     """Validate the user input allows us to connect."""
     data = {
         "title": "buzz",
         CONF_HOST: "1.2.3.4",
+        CONF_PORT: 1774,
         CONF_CLIENT_ID: "aabbcc",
         CONF_CLIENT_SECRET: "bbccdd",
         CONF_USERNAME: "username",
@@ -119,7 +123,9 @@ async def validate_input(hass: core.HomeAssistant, data):
     return data
 
 
-@patch("custom_components.lamarzocco.config_flow.validate_input", validate_input)
+@patch(
+    "custom_components.lamarzocco.config_flow.validate_input", mock_func_validate_input
+)
 @patch("custom_components.lamarzocco.LaMarzocco.request_status")
 async def test_user_flow_works(
     mock_request_status,
@@ -149,6 +155,7 @@ async def test_user_flow_works(
     assert result["data"] == {
         "title": "buzz",
         CONF_HOST: "1.2.3.4",
+        CONF_PORT: 1774,
         CONF_CLIENT_ID: "aabbcc",
         CONF_CLIENT_SECRET: "bbccdd",
         CONF_USERNAME: "username",
@@ -159,7 +166,9 @@ async def test_user_flow_works(
     }
 
 
-@patch("custom_components.lamarzocco.config_flow.validate_input", validate_input)
+@patch(
+    "custom_components.lamarzocco.config_flow.validate_input", mock_func_validate_input
+)
 @patch("custom_components.lamarzocco.LaMarzocco.request_status")
 async def test_zeroconf_flow_works(mock_request_status, hass):
     """Test config flow."""
@@ -168,6 +177,7 @@ async def test_zeroconf_flow_works(mock_request_status, hass):
         context={"source": "zeroconf"},
         data={
             "host": bytes("1.2.3.4", "utf-8"),
+            "port": 1774,
             "properties": {
                 "_raw": {
                     "type": bytes("machine_type", "utf8"),
@@ -184,10 +194,10 @@ async def test_zeroconf_flow_works(mock_request_status, hass):
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={
-            "client_id": "aabbcc",
-            "client_secret": "bbccdd",
-            "username": "username",
-            "password": "password",
+            CONF_CLIENT_ID: "aabbcc",
+            CONF_CLIENT_SECRET: "bbccdd",
+            CONF_USERNAME: "username",
+            CONF_PASSWORD: "password",
         },
     )
 
@@ -196,6 +206,7 @@ async def test_zeroconf_flow_works(mock_request_status, hass):
     assert result["data"] == {
         "title": "buzz",
         CONF_HOST: "1.2.3.4",
+        CONF_PORT: 1774,
         CONF_CLIENT_ID: "aabbcc",
         CONF_CLIENT_SECRET: "bbccdd",
         CONF_USERNAME: "username",
@@ -223,11 +234,11 @@ async def test_user_auth_fail(mock_request_status, mock_validate_input, hass):
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
         user_input={
-            "host": "1.2.3.4",
-            "client_id": "aabbcc",
-            "client_secret": "bbccdd",
-            "username": "username",
-            "password": "password",
+            CONF_HOST: "1.2.3.4",
+            CONF_CLIENT_ID: "aabbcc",
+            CONF_CLIENT_SECRET: "bbccdd",
+            CONF_USERNAME: "username",
+            CONF_PASSWORD: "password",
         },
     )
 
@@ -247,6 +258,7 @@ async def test_zeroconf_auth_fail(mock_request_status, mock_validate_input, hass
         context={"source": "zeroconf"},
         data={
             "host": bytes("1.2.3.4", "utf-8"),
+            "port": bytes("1774", "utf-8"),
             "properties": {
                 "_raw": {
                     "type": bytes("machine_type", "utf8"),

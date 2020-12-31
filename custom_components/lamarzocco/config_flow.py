@@ -7,6 +7,7 @@ from authlib.integrations.base_client.errors import OAuthError
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import (
     CONF_HOST,
+    CONF_PORT,
     CONF_NAME,
     CONF_PASSWORD,
     CONF_TYPE,
@@ -15,7 +16,13 @@ from homeassistant.const import (
 from homeassistant.helpers import config_validation as cv
 
 from .api import LaMarzocco
-from .const import CONF_CLIENT_ID, CONF_CLIENT_SECRET, CONF_SERIAL_NUMBER, DOMAIN
+from .const import (
+    CONF_CLIENT_ID,
+    CONF_CLIENT_SECRET,
+    CONF_SERIAL_NUMBER,
+    DEFAULT_PORT,
+    DOMAIN,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -82,8 +89,11 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
+            data = user_input.copy()
+            data[CONF_PORT] = DEFAULT_PORT
+
             try:
-                return await self._try_create_entry(user_input)
+                return await self._try_create_entry(data)
             except InvalidAuth:
                 errors["base"] = "invalid_auth"
 
@@ -97,25 +107,29 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
 
         """Handle a flow initialized by zeroconf discovery."""
+        _LOGGER.debug(f"LaMarzocco: Discovered {discovery_info}")
+
         raw = discovery_info["properties"]["_raw"]
 
-        type: str = raw["type"].decode("utf-8")
+        # type: str = raw["type"].decode("utf-8")
         serial_number: str = raw["serial_number"].decode("utf-8")
         host: str = discovery_info[CONF_HOST]
+        port: int = discovery_info[CONF_PORT]
 
         self._discovered = {
             CONF_HOST: host,
-            CONF_TYPE: type,
+            CONF_PORT: port,
+            # CONF_TYPE: type,
             CONF_SERIAL_NUMBER: serial_number,
-            CONF_NAME: host,
+            # CONF_NAME: host,
         }
 
-        _LOGGER.debug(
-            "LaMarzocco: Host={}, Name={}, SN={}".format(host, type, serial_number)
-        )
+        _LOGGER.debug(f"LaMarzocco: Host={host}, Port={port}, SN={serial_number}")
 
         await self.async_set_unique_id(serial_number)
         self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
+
+        self.context.update({"title_placeholders": self._discovered})
 
         return await self.async_step_confirm()
 
@@ -129,7 +143,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 data = user_input.copy()
-                data[CONF_HOST] = self._discovered[CONF_HOST]
+                data.update(self._discovered)
 
                 return await self._try_create_entry(data)
             except InvalidAuth:
@@ -139,7 +153,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="confirm",
             data_schema=STEP_DISCOVERY_DATA_SCHEMA,
             errors=errors,
-            description_placeholders=self._discovered,
+            # description_placeholders=self._discovered,
         )
 
 

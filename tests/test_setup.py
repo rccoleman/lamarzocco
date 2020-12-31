@@ -1,25 +1,18 @@
 """Test La Marzocco machine"""
 from copy import deepcopy
-
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-)
-from homeassistant.setup import async_setup_component
-
 import lmdirect
-
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.lamarzocco.const import (
-    DOMAIN,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
-    CONF_SERIAL_NUMBER,
-    CONF_MODEL_NAME,
     CONF_MACHINE_NAME,
+    CONF_MODEL_NAME,
+    CONF_SERIAL_NUMBER,
+    DOMAIN,
 )
 
 DATA = {

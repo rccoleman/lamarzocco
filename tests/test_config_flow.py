@@ -21,11 +21,12 @@ from custom_components.lamarzocco.const import (
     DOMAIN,
 )
 
+import lmdirect
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.init_data")
+
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
-@patch("custom_components.lamarzocco.api.LaMarzocco.close")
-async def test_validate_input(mock_close, mock_connect, mock_init_data, hass):
+@patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
+async def test_validate_input(mock_send_msg, mock_connect, hass):
     data = {
         "title": "buzz",
         "host": "1.2.3.4",

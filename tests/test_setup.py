@@ -8,6 +8,8 @@ from homeassistant.const import (
 )
 from homeassistant.setup import async_setup_component
 
+import lmdirect
+
 from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -54,13 +56,11 @@ async def setup_lm_machine(hass, config=DATA):
     return machine
 
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.request_status")
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
-@patch("lmdirect.LMDirect.close")
+@patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 async def test_setup_lm_machine(
-    mock_close,
+    mock_send_msg,
     mock_connect,
-    mock_init_data,
     hass,
     config=DATA,
 ):
@@ -69,13 +69,11 @@ async def test_setup_lm_machine(
     assert lm.machine_name == "bbbbb"
 
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.request_status")
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
-@patch("lmdirect.LMDirect.close")
+@patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 async def test_controller_unload(
-    mock_close,
+    mock_send_msg,
     mock_connect,
-    mock_init_data,
     hass,
 ):
     entry_id = 1

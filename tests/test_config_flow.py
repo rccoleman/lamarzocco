@@ -1,14 +1,14 @@
 """Tests for the config flow."""
 from unittest import mock
 
-from homeassistant import data_entry_flow, core
+from homeassistant import core, data_entry_flow
 from homeassistant.const import (
-    CONF_HOST,
-    CONF_PORT,
-    CONF_USERNAME,
-    CONF_PASSWORD,
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
+    CONF_HOST,
+    CONF_PASSWORD,
+    CONF_PORT,
+    CONF_USERNAME,
 )
 from pytest_homeassistant_custom_component.async_mock import patch
 
@@ -16,8 +16,8 @@ from custom_components.lamarzocco import config_flow
 from custom_components.lamarzocco.config_flow import InvalidAuth, validate_input
 from custom_components.lamarzocco.const import (
     CONF_MACHINE_NAME,
-    CONF_SERIAL_NUMBER,
     CONF_MODEL_NAME,
+    CONF_SERIAL_NUMBER,
     DOMAIN,
 )
 

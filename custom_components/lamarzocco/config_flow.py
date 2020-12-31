@@ -5,14 +5,7 @@ from typing import Any, Dict, Optional
 import voluptuous as vol
 from authlib.integrations.base_client.errors import OAuthError
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PORT,
-    CONF_NAME,
-    CONF_PASSWORD,
-    CONF_TYPE,
-    CONF_USERNAME,
-)
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
 
 from .api import LaMarzocco
@@ -111,7 +104,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         raw = discovery_info["properties"]["_raw"]
 
-        # type: str = raw["type"].decode("utf-8")
         serial_number: str = raw["serial_number"].decode("utf-8")
         host: str = discovery_info[CONF_HOST]
         port: int = discovery_info[CONF_PORT]
@@ -119,9 +111,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self._discovered = {
             CONF_HOST: host,
             CONF_PORT: port,
-            # CONF_TYPE: type,
             CONF_SERIAL_NUMBER: serial_number,
-            # CONF_NAME: host,
         }
 
         _LOGGER.debug(f"LaMarzocco: Host={host}, Port={port}, SN={serial_number}")

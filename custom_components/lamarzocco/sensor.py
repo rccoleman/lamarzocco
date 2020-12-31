@@ -1,7 +1,22 @@
 """Sensor platform for the Corona virus."""
 import logging
 
-from .const import *
+from .const import (
+    ATTR_STATUS_MAP_COFFEE_TEMP,
+    ATTR_STATUS_MAP_STEAM_TEMP,
+    DOMAIN,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    ENTITY_TAG,
+    ENTITY_TYPE,
+    TEMP_COFFEE,
+    TEMP_STEAM,
+    TYPE_COFFEE_TEMP,
+    TYPE_STEAM_TEMP,
+)
+
+# from .const import *
 from .entity_base import EntityBase
 
 _LOGGER = logging.getLogger(__name__)

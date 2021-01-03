@@ -1,3 +1,5 @@
+"""Switch platform for La Marzocco espresso machines."""
+
 import logging
 
 import voluptuous as vol
@@ -97,7 +99,7 @@ class Service:
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Add a switch entity from a config_entry."""
+    """Set up switch entities and services."""
     SERVICES = [
         Service(
             SERVICE_SET_COFFEE_TEMP,
@@ -181,10 +183,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):
-    """Implementation of a La Marzocco integration"""
+    """Switches representing espresso machine temperature power, prebrew, and auto on/off."""
 
     def __init__(self, lm, switch_type, is_metric, config_entry):
-        """Initialise switches"""
+        """Initialise switches."""
         self._object_id = switch_type
         self._temp_state = None
         self._is_metric = is_metric

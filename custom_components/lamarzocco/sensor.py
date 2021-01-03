@@ -1,4 +1,5 @@
-"""Sensor platform for the Corona virus."""
+"""Sensor platform for La Marzocco espresso machines."""
+
 import logging
 
 from lmdirect.msgs import (
@@ -86,7 +87,7 @@ ENTITIES = {
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Defer sensor setup to the shared sensor module."""
+    """Set up sensor entities."""
     lm = hass.data[DOMAIN][config_entry.entry_id]
 
     async_add_entities(
@@ -97,7 +98,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 
 class LaMarzoccoSensor(EntityBase):
-    """Sensor representing corona virus data."""
+    """Sensor representing espresso machine temperature data."""
 
     def __init__(self, lm, sensor_type, is_metric, config_entry):
         """Initialize sensors"""
@@ -126,7 +127,7 @@ class LaMarzoccoSensor(EntityBase):
 
     @property
     def unit_of_measurement(self):
-        """Return unit of measurement."""
+        """Unit of measurement."""
         return self._entities[self._object_id][ENTITY_UNITS]
 
     @property

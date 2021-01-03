@@ -4,9 +4,10 @@ from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
 
-"""Set polling interval at 20s"""
+"""Set polling interval at 20s."""
 POLLING_INTERVAL = 20
 
+"""Configuration parameters"""
 CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"
@@ -20,6 +21,7 @@ DEFAULT_NAME = "Espresso Machine"
 
 TEMP_KEY = "temp"
 
+"""All models currently Wifi-enabled."""
 MODEL_GS3_AV = "GS3 AV"
 MODEL_GS3_MP = "GS3 MP"
 MODEL_LM = "Linea Mini"
@@ -27,6 +29,7 @@ MODEL_LM = "Linea Mini"
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
 
+"""List of attributes for each entity based on model."""
 ATTR_MAP_MAIN_GS3_AV = [
     DATE_RECEIVED,
     UPDATE_AVAILABLE,
@@ -136,7 +139,7 @@ ENTITY_UNITS = "units"
 
 FUNC_BASE = "self._lm."
 
-# Services
+"""Service call names."""
 SERVICE_SET_COFFEE_TEMP = "set_coffee_temp"
 SERVICE_SET_STEAM_TEMP = "set_steam_temp"
 SERVICE_ENABLE_AUTO_ON_OFF = "enable_auto_on_off"

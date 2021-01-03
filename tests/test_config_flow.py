@@ -1,4 +1,4 @@
-"""Tests for the config flow."""
+"""Tests for the La Marzocco config flow."""
 from unittest import mock
 
 import lmdirect
@@ -26,6 +26,7 @@ from custom_components.lamarzocco.const import (
 @patch("custom_components.lamarzocco.api.LaMarzocco.connect")
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 async def test_validate_input(mock_send_msg, mock_connect, hass):
+    """Test the validate_input function with sample data."""
     data = {
         "title": "buzz",
         "host": "1.2.3.4",
@@ -44,7 +45,7 @@ async def test_validate_input(mock_send_msg, mock_connect, hass):
 
 
 async def test_flow_user_init(hass):
-    """Test the initialization of the form in the first step of the config flow."""
+    """Test the initialization of the form in the first step of the user config flow."""
     data = {
         "title": "buzz",
     }
@@ -69,7 +70,7 @@ async def test_flow_user_init(hass):
 
 
 async def test_flow_zeroconf_init(hass):
-    """Test the initialization of the form in the first step of the config flow."""
+    """Test the initialization of the form in the first step of the zeroconf config flow."""
     data = {
         "title": "buzz",
     }
@@ -131,7 +132,7 @@ async def test_user_flow_works(
     mock_request_status,
     hass,
 ):
-    """Test config flow."""
+    """Test that the user config flow works."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": "user"}
     )
@@ -171,7 +172,7 @@ async def test_user_flow_works(
 )
 @patch("custom_components.lamarzocco.LaMarzocco.request_status")
 async def test_zeroconf_flow_works(mock_request_status, hass):
-    """Test config flow."""
+    """Test zeroconf discovery and config flow."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": "zeroconf"},
@@ -223,7 +224,7 @@ async def test_zeroconf_flow_works(mock_request_status, hass):
 )
 @patch("custom_components.lamarzocco.LaMarzocco.request_status")
 async def test_user_auth_fail(mock_request_status, mock_validate_input, hass):
-    """Test config flow."""
+    """Test that the user config flow fails with invalid auth."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": "user"}
     )
@@ -252,7 +253,7 @@ async def test_user_auth_fail(mock_request_status, mock_validate_input, hass):
 )
 @patch("custom_components.lamarzocco.LaMarzocco.request_status")
 async def test_zeroconf_auth_fail(mock_request_status, mock_validate_input, hass):
-    """Test config flow."""
+    """Test that the zeroconf config flow fails with invalid auth."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": "zeroconf"},

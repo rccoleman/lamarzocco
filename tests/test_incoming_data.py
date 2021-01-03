@@ -1,4 +1,4 @@
-"""Test La Marzocco service calls"""
+"""Test La Marzocco integration with different incoming messages."""
 import logging
 from copy import deepcopy
 
@@ -49,7 +49,6 @@ async def setup_lm_machine(hass):
 
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
-
     assert config_entry.entry_id in hass.data[DOMAIN]
 
     machine = hass.data[DOMAIN][config_entry.entry_id]
@@ -72,6 +71,7 @@ FLOW_DATA = "flow_data"
 SERIAL_NUM_DATA = "serial_num_data"
 TEMP_REPORT_DATA = "temp_report_data"
 
+"""Structure reprsenting all tests to run."""
 DATA = {
     STATUS_DATA: {
         "msg": "R400000200178020000000000000000000000000100000000000000010100001003B804D629",
@@ -240,6 +240,8 @@ DATA = {
 @patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestMessages:
+    """Class containing available tests.  Patches will be applied to all member functions."""
+
     async def test_status_data(self, mock_send_msg, mock_connect, hass):
         await self.send_items(mock_send_msg, hass, [STATUS_DATA])
 
@@ -268,14 +270,14 @@ class TestMessages:
         await self.send_items(mock_send_msg, hass, list(DATA.keys()))
 
     async def send_items(self, mock_send_msg, hass, items):
-        """Test sending data"""
+        """Inject data and compare results."""
 
         expected = {}
         result = {}
 
         async def add_data(self, *args, **kwargs):
             async def send_msg(self, *args, **kwargs):
-                """Populate data structures with sample data"""
+                """Populate data structures with sample data."""
                 nonlocal expected
                 nonlocal result
                 msg = DATA[kwargs["item"]]["msg"]
@@ -293,6 +295,7 @@ class TestMessages:
             print(f"Result: {result}")
             print(f"Expected: {expected}")
 
+        """Populate data every time the _send_msg API is called, simulating lots of incoming data."""
         mock_send_msg.side_effect = add_data
 
         await setup_lm_machine(hass)
@@ -300,6 +303,5 @@ class TestMessages:
         await hass.async_block_till_done()
 
         assert result == expected
-        _LOGGER.debug(f"CALLS: {mock_send_msg.mock_calls}")
 
         await unload_lm_machine(hass)

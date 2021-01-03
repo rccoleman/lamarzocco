@@ -1,3 +1,5 @@
+"""Interface with the lmdirect library."""
+
 import asyncio
 import errno
 import logging
@@ -32,21 +34,24 @@ class LaMarzocco(LMDirect):
         super().__init__(config_entry.data if config_entry else data)
 
     async def init_data(self, hass):
-        """Register the callback to receive updates"""
+        """Initialize the underlying lmdirect package."""
+
+        """Register the callback to receive updates."""
         self.register_callback(self.update_callback)
 
         self._run = True
 
-        """Start polling for status"""
+        """Start polling for status."""
         self._polling_task = hass.loop.create_task(self.fetch_data())
 
-        """Reap the results and any any exceptions"""
+        """Reap the results and any any exceptions."""
         self._poll_reaper_task = hass.loop.create_task(
             self.poll_reaper(), name="Poll Reaper"
         )
 
     @property
     def model_name(self):
+        """Return the model name of the normalized espresso machine."""
         model_name = super().model_name
         if model_name not in MODELS:
             _LOGGER.error(
@@ -56,6 +61,7 @@ class LaMarzocco(LMDirect):
 
     @property
     def true_model_name(self):
+        """Return the model name from the cloud, even if it's not one we know about.  Used for display only."""
         model_name = super().model_name
         return model_name if model_name in MODELS else model_name + " (Unknown)"
 
@@ -69,7 +75,7 @@ class LaMarzocco(LMDirect):
         _LOGGER.debug("Finished reaping polling task")
 
     async def close(self):
-        """Stop the reeive and send loops"""
+        """Tell the read and polling loops to stop."""
         self._run = False
 
         if self._polling_task:
@@ -79,7 +85,7 @@ class LaMarzocco(LMDirect):
 
     @callback
     def update_callback(self, **kwargs):
-        """Callback when new data is available"""
+        """Callback for when new data is available."""
         self._current_status.update(kwargs.get("current_status"))
         self._current_status[DATE_RECEIVED] = datetime.now().replace(microsecond=0)
         self._current_status[UPDATE_AVAILABLE] = self._update_available
@@ -91,7 +97,7 @@ class LaMarzocco(LMDirect):
             self._device_version = self._current_status[FIRMWARE_VER]
 
     async def _update_device_info(self, firmware_version):
-        """Update the device with the firmware version"""
+        """Update the device info with the firmware version."""
 
         _LOGGER.debug(f"Updating firmware version to {firmware_version}")
         device_registry = await dr.async_get_registry(self._hass)
@@ -103,11 +109,11 @@ class LaMarzocco(LMDirect):
         )
 
     async def fetch_data(self):
+        """Loop that periodically polls the machine for new data."""
         while self._run:
-            """Fetch data from API - (current weather and forecast)."""
             _LOGGER.debug("Fetching data")
             try:
-                """Request latest status"""
+                """Request latest status."""
                 await self.request_status()
             except SocketError as e:
                 if e.errno != errno.ECONNRESET:

@@ -1,3 +1,5 @@
+"""Base class for the La Marzocco entities."""
+
 import logging
 
 from homeassistant.core import callback
@@ -9,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class EntityBase(RestoreEntity):
-    """Common elements for all switches"""
+    """Common elements for all switches."""
 
     _device_version = None
     _is_metric = False
@@ -40,12 +42,12 @@ class EntityBase(RestoreEntity):
 
     @property
     def icon(self) -> str:
-        """Return the icon to use in the frontend"""
+        """Return the icon to use in the frontend."""
         return self._entities[self._object_id][ENTITY_ICON]
 
     @callback
     def update_callback(self, **kwargs):
-        """Update the state machine"""
+        """Update the state machine when new data arrives."""
         entity_type = kwargs.get("entity_type")
         if entity_type in [None, self._entity_type]:
             self.schedule_update_ha_state(force_refresh=False)
@@ -68,11 +70,11 @@ class EntityBase(RestoreEntity):
         """Return the state attributes."""
 
         def convert_value(k, v):
-            """Convert boolean values to strings to improve display in Lovelace"""
+            """Convert boolean values to strings to improve display in Lovelace."""
             if isinstance(v, bool):
                 v = str(v)
 
-            """Convert temps to fahrenheit if needed"""
+            """Convert temps to Fahrenheit if needed."""
             if not self._is_metric and TEMP_KEY in k:
                 v = round((v * 9 / 5) + 32, 1)
 
@@ -83,15 +85,15 @@ class EntityBase(RestoreEntity):
 
         return {k: convert_value(k, v) for (k, v) in data.items() if k in map}
 
-    """Services"""
+    # Services
 
     async def set_coffee_temp(self, temperature=None):
-        """Service call to set coffee temp"""
+        """Service call to set coffee temp."""
 
         if not isinstance(temperature, float):
             temperature = float(temperature)
 
-        """Machine expects Celcius"""
+        """Machine expects Celcius, so convert if needed."""
         if not self._is_metric:
             temperature = round((temperature - 32) / 9 * 5, 1)
 
@@ -99,12 +101,12 @@ class EntityBase(RestoreEntity):
         await self._lm.set_coffee_temp(temp=temperature)
 
     async def set_steam_temp(self, temperature=None):
-        """Service call to set steam temp"""
+        """Service call to set steam temp."""
 
         if not isinstance(temperature, float):
             temperature = float(temperature)
 
-        """Machine expects Celcius"""
+        """Machine expects Celcius, so convert if needed."""
         if not self._is_metric:
             temperature = round((temperature - 32) / 9 * 5, 1)
 
@@ -112,7 +114,7 @@ class EntityBase(RestoreEntity):
         await self._lm.set_steam_temp(temp=temperature)
 
     async def enable_auto_on_off(self, day_of_week=None):
-        """Service call to set coffee temp"""
+        """Service call to enable auto on/off."""
         if day_of_week not in DAYS:
             _LOGGER.error(f"Invalid day provided {day_of_week}")
             return False
@@ -121,7 +123,7 @@ class EntityBase(RestoreEntity):
         await self._lm.set_auto_on_off(day_of_week=day_of_week, enable=True)
 
     async def disable_auto_on_off(self, day_of_week=None):
-        """Service call to set steam temp"""
+        """Service call to disable auto on/off."""
         if day_of_week not in DAYS:
             _LOGGER.error(f"Invalid day provided {day_of_week}")
             return False
@@ -132,7 +134,7 @@ class EntityBase(RestoreEntity):
     async def set_auto_on_off_hours(
         self, day_of_week=None, hour_on=None, hour_off=None
     ):
-        """Service call to set steam temp"""
+        """Service call to configure auto on/off hours for a day."""
         if day_of_week not in DAYS:
             _LOGGER.error(f"Invalid day provided {day_of_week}")
             return False
@@ -142,7 +144,7 @@ class EntityBase(RestoreEntity):
         if not isinstance(hour_off, int):
             hour_off = int(hour_off)
 
-        """Validate input"""
+        """Validate the input."""
         if not (24 > hour_on >= 0 and 24 > hour_off >= 0):
             _LOGGER.error(
                 f"Hours out of range (0..23): hour_on:{hour_on} hour_off:{hour_off}"
@@ -159,7 +161,7 @@ class EntityBase(RestoreEntity):
         )
 
     async def set_dose(self, key=None, pulses=None):
-        """Service call to set dose"""
+        """Service call to set the dose for a key."""
 
         if isinstance(key, str):
             key = int(key)
@@ -167,7 +169,7 @@ class EntityBase(RestoreEntity):
         if isinstance(pulses, str):
             pulses = int(pulses)
 
-        """Validate input"""
+        """Validate the input."""
         if not (1 <= pulses <= 1000 and 1 <= key <= 5):
             _LOGGER.error(f"Invalid values pulses:{pulses} key:{key}")
             return False
@@ -176,12 +178,12 @@ class EntityBase(RestoreEntity):
         await self._lm.set_dose(key=key, pulses=pulses)
 
     async def set_dose_tea(self, seconds=None):
-        """Service call to set tea dose"""
+        """Service call to set the tea dose."""
 
         if isinstance(seconds, str):
             seconds = int(seconds)
 
-        """Validate input"""
+        """Validate the input."""
         if not (1 <= seconds <= 30):
             _LOGGER.error(f"Invalid values seconds:{seconds}")
             return False
@@ -190,7 +192,7 @@ class EntityBase(RestoreEntity):
         await self._lm.set_dose_tea(seconds=seconds)
 
     async def set_prebrew_times(self, key=None, time_on=None, time_off=None):
-        """Service call to set prebrew on time"""
+        """Service call to set prebrew on time."""
 
         if isinstance(key, str):
             key = int(key)
@@ -201,7 +203,7 @@ class EntityBase(RestoreEntity):
         if isinstance(time_off, str):
             time_off = float(time_off)
 
-        """Validate input"""
+        """Validate the input."""
         if not (0 <= time_on <= 5.9 and 0 <= time_off <= 5.9 and 1 <= key <= 4):
             _LOGGER.error(
                 f"Invalid values time_on:{time_on} off_time:{time_off} key:{key}"

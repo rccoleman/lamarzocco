@@ -1,4 +1,4 @@
-"""Test La Marzocco entity creation"""
+"""Test La Marzocco model-specific entity creation."""
 import logging
 from copy import deepcopy
 
@@ -133,6 +133,8 @@ DATA = {
 @patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestModels:
+    """Class containing available tests.  Patches will be applied to all member functions."""
+
     async def test_gs3_av(self, mock_send_msg, mock_connect, hass):
         await self.setup_model(mock_send_msg, hass, MODEL_GS3_AV)
 

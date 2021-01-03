@@ -45,6 +45,7 @@ USE_CALLBACK = "use_callback"
 SERVICE = 0
 DATA = 1
 
+"""Services to test."""
 SET_COFFEE_TEMP = 0
 SET_STEAM_TEMP = 1
 ENABLE_AUTO_ON_OFF = 2
@@ -60,6 +61,7 @@ DISABLE_PREBREW = 11
 ENABLE_GLOBAL_AUTO_ON_OFF = 12
 DISABLE_GLOBAL_AUTO_ON_OFF = 13
 
+"""Table of tests to run and respones to expect."""
 TESTS = {
     # Set coffee temp to 203.1F
     SET_COFFEE_TEMP: {
@@ -246,12 +248,15 @@ TESTS = {
     },
 }
 
+"""Data to inject during the auto on/off tests."""
 AUTO_ON_OFF_DATA = (
     "R0310001DFF061106110611061106110611061100000000000000000000000000002F"
 )
 
 
 async def setup_lm_machine(hass):
+    """Set up a test configuration."""
+
     await async_setup_component(hass, DOMAIN, {})
 
     DATA = {
@@ -273,10 +278,8 @@ async def setup_lm_machine(hass):
     )
 
     config_entry.add_to_hass(hass)
-
     await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
-
     assert config_entry.entry_id in hass.data[DOMAIN]
 
     machine = hass.data[DOMAIN][config_entry.entry_id]
@@ -293,6 +296,8 @@ async def unload_lm_machine(hass):
 @patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestServices:
+    """Class containing available tests.  Patches will be applied to all member functions."""
+
     async def test_set_coffee_temp(self, mock_send_msg, mock_connect, hass):
         await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
 
@@ -339,6 +344,7 @@ class TestServices:
         """Test one service call"""
 
         def validate_results(arg_list, expected):
+            """Compared results to expected values."""
             assert len(arg_list) == len(expected)
             expect_iter = iter(expected)
             for call in arg_list:
@@ -352,19 +358,22 @@ class TestServices:
                 assert received_args == expect_args and received_kwargs == expect_kwargs
 
         async def callback_method(self, msg, **kwargs):
-            """Called from LMDirect instance context"""
+            """Callback is called from LMDirect instance context."""
             mock_send_msg.side_effect = None
             await self.process_data(AUTO_ON_OFF_DATA)
 
+        """Retrieve the test to run."""
         test_entry = TESTS[test]
 
         mock_send_msg.side_effect = None
 
         await setup_lm_machine(hass)
 
+        """If we're running an auto on/off test, we need to send simulate incoming data."""
         if test_entry[USE_CALLBACK]:
             mock_send_msg.side_effect = callback_method
 
+        """Make sure that mock calls during setup are zeroed out."""
         mock_send_msg.reset_mock()
 
         await hass.services.async_call(
@@ -375,7 +384,5 @@ class TestServices:
         await hass.async_block_till_done()
 
         validate_results(mock_send_msg.call_args_list, test_entry[CALL_RESULTS])
-
-        _LOGGER.debug(f"CALLS: {mock_send_msg.mock_calls}")
 
         await unload_lm_machine(hass)

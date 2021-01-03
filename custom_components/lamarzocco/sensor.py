@@ -16,12 +16,12 @@ from .const import (
     ATTR_MAP_DRINK_STATS_GS3_MP_LM,
     ATTR_MAP_STEAM_TEMP,
     DOMAIN,
+    ENTITY_CLASS,
     ENTITY_ICON,
     ENTITY_MAP,
     ENTITY_NAME,
     ENTITY_TAG,
     ENTITY_TYPE,
-    ENTITY_CLASS,
     ENTITY_UNITS,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
@@ -29,8 +29,8 @@ from .const import (
     TEMP_COFFEE,
     TEMP_STEAM,
     TYPE_COFFEE_TEMP,
-    TYPE_STEAM_TEMP,
     TYPE_DRINK_STATS,
+    TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
 

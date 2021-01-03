@@ -1,7 +1,6 @@
 """Test La Marzocco entity creation"""
 import logging
 from copy import deepcopy
-import pytest
 
 import lmdirect
 from homeassistant.const import (

@@ -24,6 +24,7 @@ class LaMarzocco(LMDirect):
         self._polling_task = None
         self._config_entry = config_entry
         self._device_version = None
+        self._poll_reaper_task = None
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._current_status[POWER] = 0
@@ -38,6 +39,20 @@ class LaMarzocco(LMDirect):
 
         """Start polling for status"""
         self._polling_task = hass.loop.create_task(self.fetch_data())
+
+        """Reap the results and any any exceptions"""
+        self._poll_reaper_task = hass.loop.create_task(
+            self.poll_reaper(), name="Poll Reaper"
+        )
+
+    async def poll_reaper(self):
+        _LOGGER.debug("Starting poll reaper")
+        try:
+            await asyncio.gather(self._polling_task)
+        except Exception as err:
+            _LOGGER.error(f"Exception in polling task: {err}")
+
+        _LOGGER.debug("Finished reaping polling task")
 
     async def close(self):
         """Stop the reeive and send loops"""
@@ -82,7 +97,6 @@ class LaMarzocco(LMDirect):
                 await self.request_status()
             except SocketError as e:
                 if e.errno != errno.ECONNRESET:
-                    raise
-                else:
-                    _LOGGER.debug("Connection error: {}".format(e))
+                    _LOGGER.error("Connection error: {}".format(e))
             await asyncio.sleep(POLLING_INTERVAL)
+        _LOGGER.error(f"Exiting polling task: {self._run}")

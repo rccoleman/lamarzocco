@@ -99,7 +99,6 @@ class LaMarzocco(LMDirect):
     async def _update_device_info(self, firmware_version):
         """Update the device info with the firmware version."""
 
-        _LOGGER.debug(f"Updating firmware version to {firmware_version}")
         device_registry = await dr.async_get_registry(self._hass)
         device_entry = device_registry.async_get_device(
             {(DOMAIN, self.serial_number)}, set()

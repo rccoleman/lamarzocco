@@ -16,7 +16,6 @@ PLATFORMS = ["switch", "sensor"]
 
 async def async_setup(hass: HomeAssistant, config: dict):
     """Set up the La Marzocco component."""
-    _LOGGER.debug("La Marzocco Setup")
     hass.data.setdefault(DOMAIN, {})
     return True
 

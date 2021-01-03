@@ -180,12 +180,10 @@ class TestModels:
             {(DOMAIN, SERIAL_NUMBER)}, set()
         )
 
-        if model == MODEL_UNKNOWN:
-            _LOGGER.debug(
-                f"model: {model}, {device_entry.model == MODEL_UNKNOWN + '(Unknown)'}"
-            )
-            assert device_entry.model == MODEL_UNKNOWN + " (Unknown)"
-        else:
-            assert device_entry.model == model
+        assert (
+            device_entry.model == MODEL_UNKNOWN + " (Unknown)"
+            if model == MODEL_UNKNOWN
+            else model
+        )
 
         await unload_lm_machine(hass)

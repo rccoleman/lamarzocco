@@ -100,7 +100,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
 
         """Handle a flow initialized by zeroconf discovery."""
-        _LOGGER.debug(f"LaMarzocco: Discovered {discovery_info}")
+        _LOGGER.debug(f"Discovered {discovery_info}")
 
         raw = discovery_info["properties"]["_raw"]
 
@@ -114,7 +114,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_SERIAL_NUMBER: serial_number,
         }
 
-        _LOGGER.debug(f"LaMarzocco: Host={host}, Port={port}, SN={serial_number}")
+        _LOGGER.debug(f"Host={host}, Port={port}, SN={serial_number}")
 
         await self.async_set_unique_id(serial_number)
         self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})

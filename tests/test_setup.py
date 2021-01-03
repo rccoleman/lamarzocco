@@ -1,5 +1,6 @@
 """Test La Marzocco machine"""
 from copy import deepcopy
+
 import lmdirect
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.setup import async_setup_component

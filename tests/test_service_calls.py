@@ -290,7 +290,7 @@ async def unload_lm_machine(hass):
     assert not hass.data[DOMAIN]
 
 
-@patch("custom_components.lamarzocco.api.LaMarzocco.connect")
+@patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestServices:
     async def test_set_coffee_temp(self, mock_send_msg, mock_connect, hass):
@@ -354,9 +354,11 @@ class TestServices:
         async def callback_method(self, msg, **kwargs):
             """Called from LMDirect instance context"""
             mock_send_msg.side_effect = None
-            await self._process_data(AUTO_ON_OFF_DATA)
+            await self.process_data(AUTO_ON_OFF_DATA)
 
         test_entry = TESTS[test]
+
+        mock_send_msg.side_effect = None
 
         await setup_lm_machine(hass)
 

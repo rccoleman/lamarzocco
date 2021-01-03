@@ -8,9 +8,9 @@ from lmdirect.msgs import GLOBAL_AUTO, POWER
 
 # from .const import *
 from .const import (
-    ATTR_STATUS_MAP_AUTO_ON_OFF,
-    ATTR_STATUS_MAP_MAIN,
-    ATTR_STATUS_MAP_PREBREW,
+    ATTR_MAP_AUTO_ON_OFF,
+    ATTR_MAP_MAIN,
+    ATTR_MAP_PREBREW,
     DOMAIN,
     ENABLE_PREBREWING,
     ENTITY_FUNC,
@@ -40,7 +40,7 @@ ENTITIES = {
     "main": {
         ENTITY_TAG: POWER,
         ENTITY_NAME: "Main",
-        ENTITY_MAP: ATTR_STATUS_MAP_MAIN,
+        ENTITY_MAP: ATTR_MAP_MAIN,
         ENTITY_TYPE: TYPE_MAIN,
         ENTITY_ICON: "mdi:coffee-maker",
         ENTITY_FUNC: "set_power",
@@ -48,7 +48,7 @@ ENTITIES = {
     "auto_on_off": {
         ENTITY_TAG: GLOBAL_AUTO,
         ENTITY_NAME: "Auto On Off",
-        ENTITY_MAP: ATTR_STATUS_MAP_AUTO_ON_OFF,
+        ENTITY_MAP: ATTR_MAP_AUTO_ON_OFF,
         ENTITY_TYPE: TYPE_AUTO_ON_OFF,
         ENTITY_ICON: "mdi:alarm",
         ENTITY_FUNC: "set_auto_on_off_global",
@@ -56,7 +56,7 @@ ENTITIES = {
     "prebrew": {
         ENTITY_TAG: ENABLE_PREBREWING,
         ENTITY_NAME: "Prebrew",
-        ENTITY_MAP: ATTR_STATUS_MAP_PREBREW,
+        ENTITY_MAP: ATTR_MAP_PREBREW,
         ENTITY_TYPE: TYPE_STEAM_TEMP,
         ENTITY_ICON: "mdi:location-enter",
         ENTITY_FUNC: "set_prebrewing_enable",
@@ -144,7 +144,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     lm = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
-        LaMarzoccoSwitch(lm, switch_type, hass.config.units.is_metric)
+        LaMarzoccoSwitch(lm, switch_type, hass.config.units.is_metric, config_entry)
         for switch_type in ENTITIES
     )
 
@@ -155,32 +155,33 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     """Implementation of a La Marzocco integration"""
 
-    def __init__(self, lm, switch_type, is_metric):
+    def __init__(self, lm, switch_type, is_metric, config_entry):
         """Initialise switches"""
         self._object_id = switch_type
         self._temp_state = None
         self._is_metric = is_metric
         self._lm = lm
-        self.ENTITIES = ENTITIES
-        self._entity_type = self.ENTITIES[self._object_id][ENTITY_TYPE]
+        self._entities = ENTITIES
+        self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
+        self._config_entry = config_entry
 
         self._lm.register_callback(self.update_callback)
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        await eval(FUNC_BASE + self.ENTITIES[self._object_id][ENTITY_FUNC] + "(True)")
+        await eval(FUNC_BASE + self._entities[self._object_id][ENTITY_FUNC] + "(True)")
         self._temp_state = True
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        await eval(FUNC_BASE + self.ENTITIES[self._object_id][ENTITY_FUNC] + "(False)")
+        await eval(FUNC_BASE + self._entities[self._object_id][ENTITY_FUNC] + "(False)")
         self._temp_state = False
 
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
         reported_state = self._lm.current_status.get(
-            self.ENTITIES[self._object_id][ENTITY_TAG]
+            self._entities[self._object_id][ENTITY_TAG]
         )
         if self._temp_state == reported_state:
             self._temp_state = None

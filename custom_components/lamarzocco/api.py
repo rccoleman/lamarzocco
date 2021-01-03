@@ -5,10 +5,11 @@ from datetime import datetime
 from socket import error as SocketError
 
 from homeassistant.core import callback
+from homeassistant.helpers import device_registry as dr
 from lmdirect import LMDirect
-from lmdirect.msgs import POWER, RECEIVED
+from lmdirect.msgs import FIRMWARE_VER, POWER, DATE_RECEIVED, UPDATE_AVAILABLE
 
-from .const import POLLING_INTERVAL
+from .const import POLLING_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,16 +17,18 @@ _LOGGER = logging.getLogger(__name__)
 class LaMarzocco(LMDirect):
     """Keep data for La Marzocco entities."""
 
-    def __init__(self, hass, config):
-        """Initialise the weather entity data."""
-        self.hass = hass
+    def __init__(self, hass, config_entry=None, data=None):
+        """Initialise the LaMarzocco entity data."""
+        self._hass = hass
         self._current_status = {}
         self._polling_task = None
+        self._config_entry = config_entry
+        self._device_version = None
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._current_status[POWER] = 0
 
-        super().__init__(config)
+        super().__init__(config_entry.data if config_entry else data)
 
     async def init_data(self, hass):
         """Register the callback to receive updates"""
@@ -47,8 +50,28 @@ class LaMarzocco(LMDirect):
 
     @callback
     def update_callback(self, **kwargs):
+        """Callback when new data is available"""
         self._current_status.update(kwargs.get("current_status"))
-        self._current_status[RECEIVED] = datetime.now().replace(microsecond=0)
+        self._current_status[DATE_RECEIVED] = datetime.now().replace(microsecond=0)
+        self._current_status[UPDATE_AVAILABLE] = self._update_available
+
+        if not self._device_version and FIRMWARE_VER in self._current_status:
+            self._hass.loop.create_task(
+                self._update_device_info(self._current_status[FIRMWARE_VER])
+            )
+            self._device_version = self._current_status[FIRMWARE_VER]
+
+    async def _update_device_info(self, firmware_version):
+        """Update the device with the firmware version"""
+
+        _LOGGER.debug(f"Updating firmware version to {firmware_version}")
+        device_registry = await dr.async_get_registry(self._hass)
+        device_entry = device_registry.async_get_device(
+            {(DOMAIN, self.serial_number)}, set()
+        )
+        device_registry.async_update_device(
+            device_entry.id, sw_version=firmware_version
+        )
 
     async def fetch_data(self):
         while self._run:

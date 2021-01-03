@@ -261,7 +261,7 @@ async def setup_lm_machine(hass):
         CONF_USERNAME: "username",
         CONF_PASSWORD: "password",
         CONF_SERIAL_NUMBER: "aabbcc",
-        CONF_MODEL_NAME: "aaaaa",
+        CONF_MODEL_NAME: "GS3 AV",
         CONF_MACHINE_NAME: "bbbbb",
         CONF_KEY: "12345678901234567890123456789012",
     }

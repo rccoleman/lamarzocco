@@ -3,7 +3,14 @@ import logging
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMP_KEYS, DAYS
+from .const import (
+    DOMAIN,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    TEMP_KEY,
+    DAYS,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,8 +64,8 @@ class EntityBase(RestoreEntity):
             "identifiers": {(DOMAIN, self._lm.serial_number)},
             "name": self._lm.machine_name,
             "manufacturer": "La Marzocco",
-            "model": self._lm.model_name,
-            "default_name": "La Marzocco " + self._lm.model_name,
+            "model": self._lm.true_model_name,
+            "default_name": "La Marzocco " + self._lm.true_model_name,
             "entry_type": "None",
             "sw_version": self._lm.firmware_version,
         }
@@ -73,13 +80,13 @@ class EntityBase(RestoreEntity):
                 v = str(v)
 
             """Convert temps to fahrenheit if needed"""
-            if not self._is_metric and any(key in k for key in TEMP_KEYS):
+            if not self._is_metric and TEMP_KEY in k:
                 v = round((v * 9 / 5) + 32, 1)
 
             return v
 
         data = self._lm._current_status
-        map = self._entities[self._object_id][ENTITY_MAP]
+        map = self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
 
         return {k: convert_value(k, v) for (k, v) in data.items() if k in map}
 

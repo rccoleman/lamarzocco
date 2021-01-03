@@ -12,7 +12,8 @@ from lmdirect.msgs import (
 
 from .const import (
     ATTR_MAP_COFFEE_TEMP,
-    ATTR_MAP_DRINK_STATS,
+    ATTR_MAP_DRINK_STATS_GS3_AV,
+    ATTR_MAP_DRINK_STATS_GS3_MP_LM,
     ATTR_MAP_STEAM_TEMP,
     DOMAIN,
     ENTITY_ICON,
@@ -22,6 +23,9 @@ from .const import (
     ENTITY_TYPE,
     ENTITY_CLASS,
     ENTITY_UNITS,
+    MODEL_GS3_AV,
+    MODEL_GS3_MP,
+    MODEL_LM,
     TEMP_COFFEE,
     TEMP_STEAM,
     TYPE_COFFEE_TEMP,
@@ -36,7 +40,11 @@ ENTITIES = {
     "coffee_temp": {
         ENTITY_TAG: [TEMP_COFFEE],
         ENTITY_NAME: "Coffee Temp",
-        ENTITY_MAP: ATTR_MAP_COFFEE_TEMP,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_COFFEE_TEMP,
+            MODEL_GS3_MP: ATTR_MAP_COFFEE_TEMP,
+            MODEL_LM: ATTR_MAP_COFFEE_TEMP,
+        },
         ENTITY_TYPE: TYPE_COFFEE_TEMP,
         ENTITY_ICON: "mdi:water-boiler",
         ENTITY_CLASS: "temperature",
@@ -45,7 +53,10 @@ ENTITIES = {
     "boiler_temp": {
         ENTITY_TAG: [TEMP_STEAM],
         ENTITY_NAME: "Steam Temp",
-        ENTITY_MAP: ATTR_MAP_STEAM_TEMP,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_STEAM_TEMP,
+            MODEL_GS3_MP: ATTR_MAP_STEAM_TEMP,
+        },
         ENTITY_TYPE: TYPE_STEAM_TEMP,
         ENTITY_ICON: "mdi:water-boiler",
         ENTITY_CLASS: "temperature",
@@ -61,7 +72,11 @@ ENTITIES = {
             CONTINUOUS,
         ],
         ENTITY_NAME: "Total Drinks",
-        ENTITY_MAP: ATTR_MAP_DRINK_STATS,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_DRINK_STATS_GS3_AV,
+            MODEL_GS3_MP: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+            MODEL_LM: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+        },
         ENTITY_TYPE: TYPE_DRINK_STATS,
         ENTITY_ICON: "mdi:coffee",
         ENTITY_CLASS: None,
@@ -77,6 +92,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(
         LaMarzoccoSensor(lm, sensor_type, hass.config.units.is_metric, config_entry)
         for sensor_type in ENTITIES
+        if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
 
 

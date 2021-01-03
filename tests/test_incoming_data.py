@@ -102,8 +102,8 @@ DATA = {
             "drinks_k4_offset": 0,
             "continuous_offset": 0,
             "update_available": "none",
-            "tset_coffee": 96.2,
-            "tset_steam": 123.9,
+            "coffee_set_temp": 96.2,
+            "steam_set_temp": 123.9,
             "enable_prebrewing": 0,
             "prebrewing_ton_k1": 11,
             "prebrewing_ton_k2": 22,
@@ -234,8 +234,8 @@ DATA = {
             "drinks_k4_offset": 0,
             "continuous_offset": 0,
             "update_available": "none",
-            "temp_coffee": 95.6,
-            "temp_steam": 124.0,
+            "coffee_temp": 95.6,
+            "steam_temp": 124.0,
         },
     },
 }
@@ -274,19 +274,6 @@ class TestMessages:
     async def send_items(self, mock_send_msg, hass, items):
         """Test sending data"""
 
-        # def validate_results(arg_list, expected):
-        #     assert len(arg_list) == len(expected)
-        #     expect_iter = iter(expected)
-        #     for call in arg_list:
-        #         received_args, received_kwargs = call
-        #         (received_args,) = received_args[1:]
-        #         received_kwargs = list(received_kwargs.values())
-        #         expect_args, expect_kwargs = next(expect_iter)
-        #         _LOGGER.debug(
-        #             f"ARGS=<{received_args}><{expect_args}>, KWARGS=<{received_kwargs}><{expect_kwargs}>"
-        #         )
-        #         assert received_args == expect_args and received_kwargs == expect_kwargs
-
         expected = {}
         result = {}
 
@@ -304,7 +291,6 @@ class TestMessages:
                 )
                 self._current_status.update({UPDATE_AVAILABLE: "none"})
                 await self.process_data(msg)
-                # print(f"Current status: {self._current_status}")
 
             [await send_msg(self, *args, item=x, **kwargs) for x in items]
             result.update(self._current_status)
@@ -314,8 +300,6 @@ class TestMessages:
         mock_send_msg.side_effect = add_data
 
         await setup_lm_machine(hass)
-
-        # mock_send_msg.reset_mock()
 
         await hass.async_block_till_done()
 

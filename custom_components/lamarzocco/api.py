@@ -9,7 +9,7 @@ from homeassistant.helpers import device_registry as dr
 from lmdirect import LMDirect
 from lmdirect.msgs import FIRMWARE_VER, POWER, DATE_RECEIVED, UPDATE_AVAILABLE
 
-from .const import POLLING_INTERVAL, DOMAIN
+from .const import MODEL_GS3_AV, POLLING_INTERVAL, DOMAIN, MODELS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,6 +44,20 @@ class LaMarzocco(LMDirect):
         self._poll_reaper_task = hass.loop.create_task(
             self.poll_reaper(), name="Poll Reaper"
         )
+
+    @property
+    def model_name(self):
+        model_name = super().model_name
+        if model_name not in MODELS:
+            _LOGGER.error(
+                f"Unsupported model, falling back to all entities and services: {super().model_name}"
+            )
+        return model_name if model_name in MODELS else MODEL_GS3_AV
+
+    @property
+    def true_model_name(self):
+        model_name = super().model_name
+        return model_name if model_name in MODELS else model_name + " (Unknown)"
 
     async def poll_reaper(self):
         _LOGGER.debug("Starting poll reaper")

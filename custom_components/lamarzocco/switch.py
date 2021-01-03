@@ -9,8 +9,9 @@ from lmdirect.msgs import GLOBAL_AUTO, POWER
 # from .const import *
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
-    ATTR_MAP_MAIN,
-    ATTR_MAP_PREBREW,
+    ATTR_MAP_MAIN_GS3_AV,
+    ATTR_MAP_MAIN_GS3_MP_LM,
+    ATTR_MAP_PREBREW_GS3_AV,
     DOMAIN,
     ENABLE_PREBREWING,
     ENTITY_FUNC,
@@ -20,6 +21,9 @@ from .const import (
     ENTITY_TAG,
     ENTITY_TYPE,
     FUNC_BASE,
+    MODEL_GS3_AV,
+    MODEL_GS3_MP,
+    MODEL_LM,
     SERVICE_DISABLE_AUTO_ON_OFF,
     SERVICE_ENABLE_AUTO_ON_OFF,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
@@ -40,7 +44,11 @@ ENTITIES = {
     "main": {
         ENTITY_TAG: POWER,
         ENTITY_NAME: "Main",
-        ENTITY_MAP: ATTR_MAP_MAIN,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_MAIN_GS3_AV,
+            MODEL_GS3_MP: ATTR_MAP_MAIN_GS3_MP_LM,
+            MODEL_LM: ATTR_MAP_MAIN_GS3_MP_LM,
+        },
         ENTITY_TYPE: TYPE_MAIN,
         ENTITY_ICON: "mdi:coffee-maker",
         ENTITY_FUNC: "set_power",
@@ -48,7 +56,11 @@ ENTITIES = {
     "auto_on_off": {
         ENTITY_TAG: GLOBAL_AUTO,
         ENTITY_NAME: "Auto On Off",
-        ENTITY_MAP: ATTR_MAP_AUTO_ON_OFF,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_AUTO_ON_OFF,
+            MODEL_GS3_MP: ATTR_MAP_AUTO_ON_OFF,
+            MODEL_LM: ATTR_MAP_AUTO_ON_OFF,
+        },
         ENTITY_TYPE: TYPE_AUTO_ON_OFF,
         ENTITY_ICON: "mdi:alarm",
         ENTITY_FUNC: "set_auto_on_off_global",
@@ -56,7 +68,10 @@ ENTITIES = {
     "prebrew": {
         ENTITY_TAG: ENABLE_PREBREWING,
         ENTITY_NAME: "Prebrew",
-        ENTITY_MAP: ATTR_MAP_PREBREW,
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_PREBREW_GS3_AV,
+            MODEL_LM: ATTR_MAP_PREBREW_GS3_AV,
+        },
         ENTITY_TYPE: TYPE_STEAM_TEMP,
         ENTITY_ICON: "mdi:location-enter",
         ENTITY_FUNC: "set_prebrewing_enable",
@@ -65,10 +80,15 @@ ENTITIES = {
 
 
 class Service:
-    def __init__(self, name, params):
+    def __init__(self, name, params, supported):
         self._name = name
         self._params = params
+        self._supported = supported
         self._platform = entity_platform.current_platform.get()
+
+    @property
+    def supported(self):
+        return self._supported
 
     def register(self):
         self._platform.async_register_entity_service(
@@ -85,6 +105,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("entity_id"): cv.string,
                 vol.Required("temperature"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
         ),
         Service(
             SERVICE_SET_STEAM_TEMP,
@@ -92,6 +113,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("entity_id"): cv.string,
                 vol.Required("temperature"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP],
         ),
         Service(
             SERVICE_ENABLE_AUTO_ON_OFF,
@@ -99,6 +121,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("entity_id"): cv.string,
                 vol.Required("day_of_week"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
         ),
         Service(
             SERVICE_DISABLE_AUTO_ON_OFF,
@@ -106,6 +129,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("entity_id"): cv.string,
                 vol.Required("day_of_week"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
         ),
         Service(
             SERVICE_SET_AUTO_ON_OFF_HOURS,
@@ -115,6 +139,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("hour_on"): cv.string,
                 vol.Required("hour_off"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
         ),
         Service(
             SERVICE_SET_DOSE,
@@ -123,6 +148,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("key"): cv.string,
                 vol.Required("pulses"): cv.string,
             },
+            [MODEL_GS3_AV],
         ),
         Service(
             SERVICE_SET_DOSE_TEA,
@@ -130,6 +156,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("entity_id"): cv.string,
                 vol.Required("seconds"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_GS3_MP],
         ),
         Service(
             SERVICE_SET_PREBREW_TIMES,
@@ -139,6 +166,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 vol.Required("time_on"): cv.string,
                 vol.Required("time_off"): cv.string,
             },
+            [MODEL_GS3_AV, MODEL_LM],
         ),
     ]
 
@@ -146,10 +174,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     async_add_entities(
         LaMarzoccoSwitch(lm, switch_type, hass.config.units.is_metric, config_entry)
         for switch_type in ENTITIES
+        if lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
     )
 
-    for service in SERVICES:
-        service.register()
+    [service.register() for service in SERVICES if lm.model_name in service.supported]
 
 
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):

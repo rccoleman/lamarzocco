@@ -7,9 +7,9 @@ from socket import error as SocketError
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 from lmdirect import LMDirect
-from lmdirect.msgs import FIRMWARE_VER, POWER, DATE_RECEIVED, UPDATE_AVAILABLE
+from lmdirect.msgs import DATE_RECEIVED, FIRMWARE_VER, POWER, UPDATE_AVAILABLE
 
-from .const import MODEL_GS3_AV, POLLING_INTERVAL, DOMAIN, MODELS
+from .const import DOMAIN, MODEL_GS3_AV, MODELS, POLLING_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 

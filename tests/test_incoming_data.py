@@ -3,13 +3,9 @@ import logging
 from copy import deepcopy
 
 import lmdirect
-from lmdirect.msgs import GATEWAY_DRINK_MAP, UPDATE_AVAILABLE
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-)
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.setup import async_setup_component
+from lmdirect.msgs import GATEWAY_DRINK_MAP, UPDATE_AVAILABLE
 from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 

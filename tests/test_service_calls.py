@@ -8,7 +8,7 @@ from custom_components.lamarzocco.switch import LaMarzoccoSwitch
 from voluptuous.error import MultipleInvalid
 
 import lmdirect
-from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
+import pytest
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
 from homeassistant.const import (
     CONF_HOST,
@@ -19,8 +19,10 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import ServiceNotFound
 from homeassistant.setup import async_setup_component
-import pytest
+from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
+from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
+from voluptuous.error import MultipleInvalid
 
 from custom_components.lamarzocco.const import (
     CONF_CLIENT_ID,
@@ -40,6 +42,7 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_STEAM_TEMP,
 )
+from custom_components.lamarzocco.switch import LaMarzoccoSwitch
 
 _LOGGER = logging.getLogger(__name__)
 

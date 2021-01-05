@@ -55,11 +55,9 @@ async def setup_lm_machine(hass):
     return machine
 
 
-@patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 async def test_setup_lm_machine(
     mock_send_msg,
-    mock_connect,
     hass,
 ):
     """Test set up and tear down."""

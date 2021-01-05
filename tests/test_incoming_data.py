@@ -263,42 +263,41 @@ DATA = {
 }
 
 
-@patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 class TestMessages:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
-    async def test_status_data(self, mock_send_msg, mock_connect, hass):
+    async def test_status_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [STATUS_DATA])
 
-    async def test_config_data(self, mock_send_msg, mock_connect, hass):
+    async def test_config_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [CONFIG_DATA])
 
-    async def test_auto_on_off_data(self, mock_send_msg, mock_connect, hass):
+    async def test_auto_on_off_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [AUTO_ON_OFF_DATA])
 
-    async def test_datetime_data(self, mock_send_msg, mock_connect, hass):
+    async def test_datetime_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [DATETIME_DATA])
 
-    async def test_drinks_data(self, mock_send_msg, mock_connect, hass):
+    async def test_drinks_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [DRINKS_DATA])
 
-    async def test_flow_data(self, mock_send_msg, mock_connect, hass):
+    async def test_flow_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [FLOW_DATA])
 
-    async def test_serial_number_data(self, mock_send_msg, mock_connect, hass):
+    async def test_serial_number_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [SERIAL_NUM_DATA])
 
-    async def test_temp_report_data(self, mock_send_msg, mock_connect, hass):
+    async def test_temp_report_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [TEMP_REPORT_DATA])
 
-    async def test_prebrew_time_on(self, mock_send_msg, mock_connect, hass):
+    async def test_prebrew_time_on(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [PREBREW_TIME_ON])
 
-    async def test_prebrew_time_off(self, mock_send_msg, mock_connect, hass):
+    async def test_prebrew_time_off(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, [PREBREW_TIME_OFF])
 
-    async def test_send_all_data(self, mock_send_msg, mock_connect, hass):
+    async def test_send_all_data(self, mock_send_msg, hass):
         await self.send_items(mock_send_msg, hass, list(DATA.keys()))
 
     async def send_items(self, mock_send_msg, hass, items):

@@ -29,6 +29,8 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
+    MODELS_SUPPORTED,
+    SCHEMA,
     SERVICE_DISABLE_AUTO_ON_OFF,
     SERVICE_ENABLE_AUTO_ON_OFF,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
@@ -84,62 +86,38 @@ ENTITIES = {
 }
 
 
-class Service:
-    def __init__(self, name, params, supported):
-        self._name = name
-        self._params = params
-        self._supported = supported
-        self._platform = entity_platform.current_platform.get()
-
-    @property
-    def supported(self):
-        return self._supported
-
-    def register(self):
-        self._platform.async_register_entity_service(
-            self._name, self._params, self._name
-        )
-
-
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up switch entities and services."""
 
-    max_prebrew_button = 4
-
-    SERVICES = [
-        Service(
-            SERVICE_SET_COFFEE_TEMP,
-            {
+    SERVICES = {
+        SERVICE_SET_COFFEE_TEMP: {
+            SCHEMA: {
                 vol.Required("temperature"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=210)
                 ),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-        ),
-        Service(
-            SERVICE_SET_STEAM_TEMP,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+        },
+        SERVICE_SET_STEAM_TEMP: {
+            SCHEMA: {
                 vol.Required("temperature"): vol.Coerce(float),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP],
-        ),
-        Service(
-            SERVICE_ENABLE_AUTO_ON_OFF,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP],
+        },
+        SERVICE_ENABLE_AUTO_ON_OFF: {
+            SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-        ),
-        Service(
-            SERVICE_DISABLE_AUTO_ON_OFF,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+        },
+        SERVICE_DISABLE_AUTO_ON_OFF: {
+            SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-        ),
-        Service(
-            SERVICE_SET_AUTO_ON_OFF_HOURS,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+        },
+        SERVICE_SET_AUTO_ON_OFF_HOURS: {
+            SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
                 vol.Required("hour_on"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=23)
@@ -148,33 +126,27 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                     vol.Coerce(int), vol.Range(min=0, max=23)
                 ),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-        ),
-        Service(
-            SERVICE_SET_DOSE,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+        },
+        SERVICE_SET_DOSE: {
+            SCHEMA: {
                 vol.Required("key"): vol.All(vol.Coerce(int), vol.Range(min=1, max=5)),
                 vol.Required("pulses"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=1000)
                 ),
             },
-            [MODEL_GS3_AV],
-        ),
-        Service(
-            SERVICE_SET_DOSE_TEA,
-            {
+            MODELS_SUPPORTED: [MODEL_GS3_AV],
+        },
+        SERVICE_SET_DOSE_TEA: {
+            SCHEMA: {
                 vol.Required("seconds"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=30)
                 ),
             },
-            [MODEL_GS3_AV, MODEL_GS3_MP],
-        ),
-        Service(
-            SERVICE_SET_PREBREW_TIMES,
-            {
-                vol.Required("key"): vol.All(
-                    vol.Coerce(int), vol.Range(min=1, max=max_prebrew_button)
-                ),
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP],
+        },
+        SERVICE_SET_PREBREW_TIMES: {
+            SCHEMA: {
                 vol.Required("time_on"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=5)
                 ),
@@ -182,9 +154,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                     vol.Coerce(float), vol.Range(min=0, max=5)
                 ),
             },
-            [MODEL_GS3_AV, MODEL_LM],
-        ),
-    ]
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
+        },
+    }
 
     lm = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
@@ -193,11 +165,28 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
     )
 
+    """Set the max prebrew button based on model"""
     if lm.model_name in [MODEL_GS3_AV, MODEL_LM]:
-        """Set the max prebrew button based on model"""
-        max_prebrew_button = 4 if lm.model_name == MODEL_GS3_AV else 1
+        max_button_number = 4 if lm.model_name == MODEL_GS3_AV else 1
+        SERVICES[SERVICE_SET_PREBREW_TIMES][SCHEMA].update(
+            {
+                vol.Required("key"): vol.All(
+                    vol.Coerce(int), vol.Range(min=1, max=max_button_number)
+                )
+            },
+        )
 
-    [service.register() for service in SERVICES if lm.model_name in service.supported]
+        _LOGGER.debug(f"SCHEMA: {SERVICES[SERVICE_SET_PREBREW_TIMES][SCHEMA]}")
+
+    platform = entity_platform.current_platform.get()
+
+    [
+        platform.async_register_entity_service(
+            service, SERVICES[service][SCHEMA], service
+        )
+        for service in SERVICES
+        if lm.model_name in SERVICES[service][MODELS_SUPPORTED]
+    ]
 
 
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):

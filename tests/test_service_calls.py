@@ -5,6 +5,7 @@ from asynctest.mock import PropertyMock
 
 from pytest_homeassistant_custom_component.async_mock import patch
 from custom_components.lamarzocco.switch import LaMarzoccoSwitch
+from voluptuous.error import MultipleInvalid
 
 import lmdirect
 from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
@@ -302,26 +303,29 @@ async def unload_lm_machine(hass):
     assert not hass.data[DOMAIN]
 
 
-def mock_catch_exception(func):
-    _LOGGER.debug(f"Mock catch exception {args} {kwargs}")
-    return func
+async def mock_call_service(self, func, *args, **kwargs):
+    await func(*args, **kwargs)
+    return True
 
 
 @patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 @patch("lmdirect.LMDirect.model_name", new_callable=PropertyMock, return_value="none")
+@patch.object(
+    LaMarzoccoSwitch, "call_service", autospec=True, side_effect=mock_call_service
+)
 class TestServices:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
     async def test_set_coffee_temp(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
 
     async def test_set_steam_temp(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
@@ -332,27 +336,29 @@ class TestServices:
                 await self.make_service_call(mock_send_msg, hass, SET_STEAM_TEMP)
 
     async def test_enable_auto_on_off(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, ENABLE_AUTO_ON_OFF)
 
     async def test_disable_auto_on_off(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, DISABLE_AUTO_ON_OFF)
 
     async def test_set_auto_on_off_hours(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, SET_AUTO_ON_OFF_HOURS)
 
-    async def test_set_dose(self, mock_model_name, mock_send_msg, mock_connect, hass):
+    async def test_set_dose(
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
+    ):
         for model in MODELS:
             mock_model_name.return_value = model
             if model in [MODEL_GS3_MP, MODEL_LM]:
@@ -362,15 +368,15 @@ class TestServices:
                 await self.make_service_call(mock_send_msg, hass, SET_DOSE)
 
     async def test_set_prebrew_times(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         expected_exceptions = {
             MODEL_GS3_MP: ServiceNotFound,
-            MODEL_LM: lmdirect.InvalidInput,
+            MODEL_LM: (lmdirect.InvalidInput, MultipleInvalid),
         }
         for model in MODELS:
             mock_model_name.return_value = model
-            # mock_catch_exception.side_effect = mock_catch_exception
+
             _LOGGER.debug(f"Testing {model}")
             if model in [MODEL_GS3_MP, MODEL_LM]:
                 with pytest.raises(expected_exceptions[model]):
@@ -379,7 +385,7 @@ class TestServices:
                 await self.make_service_call(mock_send_msg, hass, SET_PREBREW_TIMES)
 
     async def test_set_dose_tea(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
@@ -390,42 +396,42 @@ class TestServices:
                 await self.make_service_call(mock_send_msg, hass, SET_DOSE_TEA)
 
     async def test_turn_on_main(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, TURN_ON_MAIN)
 
     async def test_turn_off_main(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, TURN_OFF_MAIN)
 
     async def test_enable_prebrew(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in [MODEL_GS3_AV, MODEL_LM]:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, ENABLE_PREBREW)
 
     async def test_disable_prebrew(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in [MODEL_GS3_AV, MODEL_LM]:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, DISABLE_PREBREW)
 
     async def test_enable_global_auto_on_off(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, ENABLE_GLOBAL_AUTO_ON_OFF)
 
     async def test_disable_global_auto_on_off(
-        self, mock_model_name, mock_send_msg, mock_connect, hass
+        self, mock_call, mock_model_name, mock_send_msg, mock_connect, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model

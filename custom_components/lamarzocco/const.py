@@ -21,6 +21,9 @@ DEFAULT_NAME = "Espresso Machine"
 
 TEMP_KEY = "temp"
 
+SCHEMA = "schema"
+MODELS_SUPPORTED = "supported"
+
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
 

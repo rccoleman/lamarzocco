@@ -88,18 +88,13 @@ class EntityBase(RestoreEntity):
 
     # Services
 
-    def catch_exception(func):
-        async def catch_invalid(*args, **kwargs):
-            try:
-                await func(*args, **kwargs)
-            except InvalidInput as err:
-                _LOGGER.error(f"{err}")
-                _LOGGER.debug("Returning False")
-                return False
+    async def call_service(self, func, *args, **kwargs):
+        try:
+            await func(*args, **kwargs)
+        except InvalidInput as err:
+            _LOGGER.error(f"{err}, returning FALSE")
+            return False
 
-        return catch_invalid
-
-    @catch_exception
     async def set_coffee_temp(self, temperature=None):
         """Service call to set coffee temp."""
 
@@ -108,10 +103,9 @@ class EntityBase(RestoreEntity):
             temperature = round((temperature - 32) / 9 * 5, 1)
 
         _LOGGER.debug(f"Setting coffee temp to {temperature}")
-        await self._lm.set_coffee_temp(temp=temperature)
+        await self.call_service(self._lm.set_coffee_temp, temp=temperature)
         return True
 
-    @catch_exception
     async def set_steam_temp(self, temperature=None):
         """Service call to set steam temp."""
 
@@ -120,26 +114,27 @@ class EntityBase(RestoreEntity):
             temperature = round((temperature - 32) / 9 * 5, 1)
 
         _LOGGER.debug(f"Setting steam temp to {temperature}")
-        await self._lm.set_steam_temp(temp=temperature)
+        await self.call_service(self._lm.set_steam_temp, temp=temperature)
         return True
 
-    @catch_exception
     async def enable_auto_on_off(self, day_of_week=None):
         """Service call to enable auto on/off."""
 
         _LOGGER.debug(f"Enabling auto on/off for {day_of_week}")
-        await self._lm.set_auto_on_off(day_of_week=day_of_week, enable=True)
+        await self.call_service(
+            self._lm.set_auto_on_off, day_of_week=day_of_week, enable=True
+        )
         return True
 
-    @catch_exception
     async def disable_auto_on_off(self, day_of_week=None):
         """Service call to disable auto on/off."""
 
         _LOGGER.debug(f"Disabling auto on/off for {day_of_week}")
-        await self._lm.set_auto_on_off(day_of_week=day_of_week, enable=False)
+        await self.call_service(
+            self._lm.set_auto_on_off, day_of_week=day_of_week, enable=False
+        )
         return True
 
-    @catch_exception
     async def set_auto_on_off_hours(
         self, day_of_week=None, hour_on=None, hour_off=None
     ):
@@ -148,36 +143,39 @@ class EntityBase(RestoreEntity):
         _LOGGER.debug(
             f"Setting auto on/off hours for {day_of_week} from {hour_on} to {hour_off}"
         )
-        await self._lm.set_auto_on_off_hours(
+        await self.call_service(
+            self._lm.set_auto_on_off_hours,
             day_of_week=day_of_week,
             hour_on=hour_on,
             hour_off=hour_off,
         )
         return True
 
-    @catch_exception
     async def set_dose(self, key=None, pulses=None):
         """Service call to set the dose for a key."""
 
         _LOGGER.debug(f"Setting dose for key:{key} to pulses:{pulses}")
-        await self._lm.set_dose(key=key, pulses=pulses)
+        await self.call_service(self._lm.set_dose, key=key, pulses=pulses)
         return True
 
-    @catch_exception
     async def set_dose_tea(self, seconds=None):
         """Service call to set the tea dose."""
 
         _LOGGER.debug(f"Setting tea dose to seconds:{seconds}")
-        await self._lm.set_dose_tea(seconds=seconds)
+        await self.call_service(self._lm.set_dose_tea, seconds=seconds)
         return True
 
-    # @catch_exception
     async def set_prebrew_times(self, key=None, time_on=None, time_off=None):
         """Service call to set prebrew on time."""
 
         _LOGGER.debug(
             f"Setting prebrew on time for key:{key} to time_on:{time_on} and off_time:{time_off}"
         )
-        await self._lm.set_prebrew_times(key=key, time_on=time_on, time_off=time_off)
+        await self.call_service(
+            self._lm.set_prebrew_times,
+            key=key,
+            time_on=time_on,
+            time_off=time_off,
+        )
         _LOGGER.debug("Returning True")
         return True

@@ -70,6 +70,8 @@ DRINKS_DATA = "drinks_data"
 FLOW_DATA = "flow_data"
 SERIAL_NUM_DATA = "serial_num_data"
 TEMP_REPORT_DATA = "temp_report_data"
+PREBREW_TIME_ON = "prebrew_time_on"
+PREBREW_TIME_OFF = "prebrew_time_off"
 
 """Structure reprsenting all tests to run."""
 DATA = {
@@ -101,14 +103,14 @@ DATA = {
             "coffee_set_temp": 96.2,
             "steam_set_temp": 123.9,
             "enable_prebrewing": 0,
-            "prebrewing_ton_k1": 11,
-            "prebrewing_ton_k2": 22,
-            "prebrewing_ton_k3": 33,
-            "prebrewing_ton_k4": 44,
-            "prebrewing_toff_k1": 11,
-            "prebrewing_toff_k2": 22,
-            "prebrewing_toff_k3": 33,
-            "prebrewing_toff_k4": 44,
+            "prebrewing_ton_k1": 1.1,
+            "prebrewing_ton_k2": 2.2,
+            "prebrewing_ton_k3": 3.3,
+            "prebrewing_ton_k4": 4.4,
+            "prebrewing_toff_k1": 1.1,
+            "prebrewing_toff_k2": 2.2,
+            "prebrewing_toff_k3": 3.3,
+            "prebrewing_toff_k4": 4.4,
             "dose_k1": 120,
             "dose_k2": 118,
             "dose_k3": 110,
@@ -234,6 +236,30 @@ DATA = {
             "steam_temp": 124.0,
         },
     },
+    PREBREW_TIME_ON: {
+        "msg": "W000F0001OK88",
+        "resp": {
+            "hot_water_offset": 0,
+            "drinks_k1_offset": 0,
+            "drinks_k2_offset": 0,
+            "drinks_k3_offset": 0,
+            "drinks_k4_offset": 0,
+            "continuous_offset": 0,
+            "update_available": "none",
+        },
+    },
+    PREBREW_TIME_OFF: {
+        "msg": "W00130001OK76",
+        "resp": {
+            "hot_water_offset": 0,
+            "drinks_k1_offset": 0,
+            "drinks_k2_offset": 0,
+            "drinks_k3_offset": 0,
+            "drinks_k4_offset": 0,
+            "continuous_offset": 0,
+            "update_available": "none",
+        },
+    },
 }
 
 
@@ -266,6 +292,12 @@ class TestMessages:
     async def test_temp_report_data(self, mock_send_msg, mock_connect, hass):
         await self.send_items(mock_send_msg, hass, [TEMP_REPORT_DATA])
 
+    async def test_prebrew_time_on(self, mock_send_msg, mock_connect, hass):
+        await self.send_items(mock_send_msg, hass, [PREBREW_TIME_ON])
+
+    async def test_prebrew_time_off(self, mock_send_msg, mock_connect, hass):
+        await self.send_items(mock_send_msg, hass, [PREBREW_TIME_OFF])
+
     async def test_send_all_data(self, mock_send_msg, mock_connect, hass):
         await self.send_items(mock_send_msg, hass, list(DATA.keys()))
 
@@ -288,7 +320,7 @@ class TestMessages:
                     {GATEWAY_DRINK_MAP[x]: 0 for x in range(-1, 5)}
                 )
                 self._current_status.update({UPDATE_AVAILABLE: "none"})
-                await self.process_data(msg)
+                assert await self.process_data(msg)
 
             [await send_msg(self, *args, item=x, **kwargs) for x in items]
             result.update(self._current_status)

@@ -15,6 +15,7 @@ from .const import (
     ATTR_MAP_MAIN_GS3_AV,
     ATTR_MAP_MAIN_GS3_MP_LM,
     ATTR_MAP_PREBREW_GS3_AV,
+    ATTR_MAP_PREBREW_LM,
     DAYS,
     DOMAIN,
     ENABLE_PREBREWING,
@@ -74,7 +75,7 @@ ENTITIES = {
         ENTITY_NAME: "Prebrew",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_PREBREW_GS3_AV,
-            MODEL_LM: ATTR_MAP_PREBREW_GS3_AV,
+            MODEL_LM: ATTR_MAP_PREBREW_LM,
         },
         ENTITY_TYPE: TYPE_STEAM_TEMP,
         ENTITY_ICON: "mdi:location-enter",
@@ -98,7 +99,6 @@ class Service:
         self._platform.async_register_entity_service(
             self._name, self._params, self._name
         )
-        _LOGGER.debug(f"SERVICE: {self._name} {self._params}")
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -193,8 +193,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
     )
 
-    """Set the max prebrew button based on model"""
-    max_prebrew_button = 4 if lm.model_name == MODEL_GS3_AV else 1
+    if lm.model_name in [MODEL_GS3_AV, MODEL_LM]:
+        """Set the max prebrew button based on model"""
+        max_prebrew_button = 4 if lm.model_name == MODEL_GS3_AV else 1
 
     [service.register() for service in SERVICES if lm.model_name in service.supported]
 

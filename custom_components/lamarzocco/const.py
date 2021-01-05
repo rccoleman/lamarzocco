@@ -21,11 +21,6 @@ DEFAULT_NAME = "Espresso Machine"
 
 TEMP_KEY = "temp"
 
-"""All models currently Wifi-enabled."""
-MODEL_GS3_AV = "GS3 AV"
-MODEL_GS3_MP = "GS3 MP"
-MODEL_LM = "Linea Mini"
-
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
 

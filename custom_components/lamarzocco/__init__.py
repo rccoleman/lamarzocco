@@ -37,11 +37,14 @@ async def async_setup_entry(hass, config_entry):
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     """Unload a config entry."""
+    services = list(hass.services.async_services().get(DOMAIN).keys())
+    [hass.services.async_remove(DOMAIN, service) for service in services]
+
     unload_ok = all(
         await asyncio.gather(
             *[
-                hass.config_entries.async_forward_entry_unload(config_entry, component)
-                for component in PLATFORMS
+                hass.config_entries.async_forward_entry_unload(config_entry, platform)
+                for platform in PLATFORMS
             ]
         )
     )

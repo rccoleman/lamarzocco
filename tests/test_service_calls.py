@@ -1,9 +1,7 @@
 """Test La Marzocco service calls"""
 import logging
 from copy import deepcopy
-from asynctest.mock import PropertyMock
-
-from custom_components.lamarzocco.switch import LaMarzoccoSwitch
+from unittest.mock import PropertyMock
 
 import lmdirect
 import pytest
@@ -40,6 +38,7 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_STEAM_TEMP,
 )
+from custom_components.lamarzocco.switch import LaMarzoccoSwitch
 
 _LOGGER = logging.getLogger(__name__)
 

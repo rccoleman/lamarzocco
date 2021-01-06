@@ -4,7 +4,6 @@ import asyncio
 import errno
 import logging
 from datetime import datetime
-from socket import error as SocketError
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
@@ -114,8 +113,10 @@ class LaMarzocco(LMDirect):
             try:
                 """Request latest status."""
                 await self.request_status()
-            except SocketError as e:
-                if e.errno != errno.ECONNRESET:
-                    _LOGGER.error("Connection error: {}".format(e))
+            except Exception as err:
+                if err.errno != errno.ECONNRESET:
+                    _LOGGER.error("Connection error: {err}")
+                else:
+                    _LOGGER.error("Caught exception: {err}")
             await asyncio.sleep(POLLING_INTERVAL)
         _LOGGER.error(f"Exiting polling task: {self._run}")

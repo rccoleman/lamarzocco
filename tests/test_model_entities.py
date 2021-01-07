@@ -3,6 +3,13 @@ import logging
 from copy import deepcopy
 
 import lmdirect
+from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers.entity_registry import async_entries_for_config_entry
+from homeassistant.setup import async_setup_component
+from pytest_homeassistant_custom_component.async_mock import patch
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
 from custom_components.lamarzocco.const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -15,12 +22,6 @@ from custom_components.lamarzocco.const import (
     MODEL_GS3_MP,
     MODEL_LM,
 )
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.entity_registry import async_entries_for_config_entry
-from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.async_mock import patch
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
 

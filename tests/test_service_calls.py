@@ -5,6 +5,21 @@ from unittest.mock import PropertyMock
 
 import lmdirect
 import pytest
+from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_PASSWORD,
+    CONF_USERNAME,
+    SERVICE_TURN_OFF,
+    SERVICE_TURN_ON,
+)
+from homeassistant.exceptions import ServiceNotFound
+from homeassistant.setup import async_setup_component
+from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
+from pytest_homeassistant_custom_component.async_mock import patch
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+from voluptuous.error import MultipleInvalid
+
 from custom_components.lamarzocco.const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -24,20 +39,6 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_STEAM_TEMP,
 )
 from custom_components.lamarzocco.switch import LaMarzoccoSwitch
-from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
-from homeassistant.const import (
-    CONF_HOST,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    SERVICE_TURN_OFF,
-    SERVICE_TURN_ON,
-)
-from homeassistant.exceptions import ServiceNotFound
-from homeassistant.setup import async_setup_component
-from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
-from pytest_homeassistant_custom_component.async_mock import patch
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-from voluptuous.error import MultipleInvalid
 
 _LOGGER = logging.getLogger(__name__)
 

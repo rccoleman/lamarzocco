@@ -5,6 +5,7 @@ from unittest.mock import PropertyMock
 
 import lmdirect
 import pytest
+
 from custom_components.lamarzocco.const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -19,7 +20,7 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_COFFEE_TEMP,
     SERVICE_SET_DOSE,
-    SERVICE_SET_DOSE_TEA,
+    SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_STEAM_TEMP,
 )
@@ -59,15 +60,13 @@ DISABLE_AUTO_ON_OFF = 3
 SET_AUTO_ON_OFF_HOURS = 4
 SET_DOSE = 5
 SET_PREBREW_TIMES = 6
-SET_DOSE_TEA = 7
+SET_DOSE_HOT_WATER = 7
 TURN_ON_MAIN = 8
 TURN_OFF_MAIN = 9
 ENABLE_PREBREW = 10
 DISABLE_PREBREW = 11
 ENABLE_GLOBAL_AUTO_ON_OFF = 12
 DISABLE_GLOBAL_AUTO_ON_OFF = 13
-
-model_name = "GS3 MP"
 
 """Table of tests to run and respones to expect."""
 TESTS = {
@@ -160,9 +159,9 @@ TESTS = {
         ],
         USE_CALLBACK: False,
     },
-    # Set tea dose to 16 seconds
-    SET_DOSE_TEA: {
-        CALL_SERVICE: SERVICE_SET_DOSE_TEA,
+    # Set hot water dose to 16 seconds
+    SET_DOSE_HOT_WATER: {
+        CALL_SERVICE: SERVICE_SET_DOSE_HOT_WATER,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_main",
@@ -380,14 +379,18 @@ class TestServices:
             else:
                 await self.make_service_call(mock_send_msg, hass, SET_PREBREW_TIMES)
 
-    async def test_set_dose_tea(self, mock_call, mock_model_name, mock_send_msg, hass):
+    async def test_set_dose_hot_water(
+        self, mock_call, mock_model_name, mock_send_msg, hass
+    ):
         for model in MODELS:
             mock_model_name.return_value = model
             if model == MODEL_LM:
                 with pytest.raises(ServiceNotFound):
-                    await self.make_service_call(mock_send_msg, hass, SET_DOSE_TEA)
+                    await self.make_service_call(
+                        mock_send_msg, hass, SET_DOSE_HOT_WATER
+                    )
             else:
-                await self.make_service_call(mock_send_msg, hass, SET_DOSE_TEA)
+                await self.make_service_call(mock_send_msg, hass, SET_DOSE_HOT_WATER)
 
     async def test_turn_on_main(self, mock_call, mock_model_name, mock_send_msg, hass):
         for model in MODELS:

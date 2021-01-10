@@ -36,7 +36,7 @@ from .const import (
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_COFFEE_TEMP,
     SERVICE_SET_DOSE,
-    SERVICE_SET_DOSE_TEA,
+    SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_STEAM_TEMP,
     TYPE_AUTO_ON_OFF,
@@ -137,7 +137,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
             },
             MODELS_SUPPORTED: [MODEL_GS3_AV],
         },
-        SERVICE_SET_DOSE_TEA: {
+        SERVICE_SET_DOSE_HOT_WATER: {
             SCHEMA: {
                 vol.Required("seconds"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=30)
@@ -175,8 +175,6 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 )
             },
         )
-
-        _LOGGER.debug(f"SCHEMA: {SERVICES[SERVICE_SET_PREBREW_TIMES][SCHEMA]}")
 
     platform = entity_platform.current_platform.get()
 

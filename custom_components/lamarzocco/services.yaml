@@ -1,4 +1,3 @@
-
 set_coffee_temp:
   # Description of the service
   description: Sets the target temperature of the coffee/brew boiler
@@ -98,9 +97,9 @@ set_dose:
       description: "The dose in pulses (roughly ~0.5ml per pulse)"
       example: 122
 
-set_dose_tea:
+set_dose_hot_water:
   # Description of the service
-  description: Sets the dose for tea
+  description: Sets the dose for hot water
   # Different fields that your service accepts
   fields:
     # Key of the field

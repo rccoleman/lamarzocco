@@ -88,6 +88,8 @@ DATA = {
             "firmware_ver": "1.20",
             "module_ser_num": "",
             "power": 1,
+            "heating_state": ["heating_on"],
+            "power_mystery": 1,
         },
     },
     CONFIG_DATA: {
@@ -116,7 +118,7 @@ DATA = {
             "dose_k3": 110,
             "dose_k4": 130,
             "dose_k5": 1000,
-            "dose_tea": 8,
+            "dose_hot_water": 8,
         },
     },
     AUTO_ON_OFF_DATA: {
@@ -191,7 +193,7 @@ DATA = {
             "drink_mystery": 10,
             "total_drinks": 2798,
             "hot_water_2": 24,
-            "drinks_tea": 58,
+            "drinks_hot_water": 58,
         },
     },
     FLOW_DATA: {
@@ -204,9 +206,10 @@ DATA = {
             "drinks_k4_offset": 0,
             "continuous_offset": 0,
             "update_available": "none",
-            "flow_mystery": 1025,
-            "flow_pulses": 10,
-            "flow_seconds": 14,
+            "flow_seconds": 10,
+            "flow_pulses": 14,
+            "flow_key": 4,
+            "flow_rate": 1,
         },
     },
     SERIAL_NUM_DATA: {

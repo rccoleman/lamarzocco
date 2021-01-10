@@ -90,7 +90,7 @@ DATA = {
             "disable_auto_on_off",
             "set_auto_on_off_hours",
             "set_dose",
-            "set_dose_tea",
+            "set_dose_hot_water",
             "set_prebrew_times",
         ],
     },
@@ -108,7 +108,7 @@ DATA = {
             "enable_auto_on_off",
             "disable_auto_on_off",
             "set_auto_on_off_hours",
-            "set_dose_tea",
+            "set_dose_hot_water",
         ],
     },
     MODEL_LM: {

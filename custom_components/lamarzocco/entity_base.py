@@ -84,7 +84,7 @@ class EntityBase(RestoreEntity):
         data = self._lm._current_status
         map = self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
 
-        return {k: convert_value(k, v) for (k, v) in data.items() if k in map}
+        return {k: convert_value(k, data[k]) for k in map if k in data}
 
     # Services
 
@@ -158,11 +158,11 @@ class EntityBase(RestoreEntity):
         await self.call_service(self._lm.set_dose, key=key, pulses=pulses)
         return True
 
-    async def set_dose_tea(self, seconds=None):
-        """Service call to set the tea dose."""
+    async def set_dose_hot_water(self, seconds=None):
+        """Service call to set the hot water dose."""
 
-        _LOGGER.debug(f"Setting tea dose to seconds:{seconds}")
-        await self.call_service(self._lm.set_dose_tea, seconds=seconds)
+        _LOGGER.debug(f"Setting hot water dose to seconds:{seconds}")
+        await self.call_service(self._lm.set_dose_hot_water, seconds=seconds)
         return True
 
     async def set_prebrew_times(self, key=None, time_on=None, time_off=None):

@@ -78,7 +78,7 @@ DATA = {
     STATUS_DATA: {
         "msg": "R400000200178020000000000000000000000000100000000000000010100001003B804D629",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -87,7 +87,6 @@ DATA = {
             "update_available": "none",
             "firmware_ver": "1.20",
             "module_ser_num": "",
-            "power": 1,
             "heating_state": ["heating_on"],
             "power_mystery": 1,
         },
@@ -95,7 +94,7 @@ DATA = {
     CONFIG_DATA: {
         "msg": "R0000001F010000026E313903C204D7000B16212C0B16212C00780076006E008203E808B9",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -105,6 +104,7 @@ DATA = {
             "coffee_set_temp": 96.2,
             "steam_set_temp": 123.9,
             "enable_prebrewing": 0,
+            "power": 1,
             "prebrewing_ton_k1": 1.1,
             "prebrewing_ton_k2": 2.2,
             "prebrewing_ton_k3": 3.3,
@@ -124,7 +124,7 @@ DATA = {
     AUTO_ON_OFF_DATA: {
         "msg": "R0310001DFF061106110611061106110611061100000000000000000000000000002F",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -158,7 +158,7 @@ DATA = {
     DATETIME_DATA: {
         "msg": "R03000007001A0906020115A6",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -176,7 +176,7 @@ DATA = {
     DRINKS_DATA: {
         "msg": "R0020002C0000014B00000098000001B1000000250000056A00000923000000180000000A00000AEE000000180000003A48",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -189,9 +189,10 @@ DATA = {
             "drinks_k4": 37,
             "continuous": 1386,
             "total_coffee": 2339,
+            "total_coffee_activations": 2798,
+            "total_flushing": 459,
             "hot_water": 24,
             "drink_mystery": 10,
-            "total_drinks": 2798,
             "hot_water_2": 24,
             "drinks_hot_water": 58,
         },
@@ -199,7 +200,7 @@ DATA = {
     FLOW_DATA: {
         "msg": "Z600000160000000000000000000000000401000A000E03B604D4E604",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -215,7 +216,7 @@ DATA = {
     SERIAL_NUM_DATA: {
         "msg": "R010000115A000000000000000000000000000000004B",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -228,7 +229,7 @@ DATA = {
     TEMP_REPORT_DATA: {
         "msg": "R401C000403BC04D8B6",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -242,7 +243,7 @@ DATA = {
     PREBREW_TIME_ON: {
         "msg": "W000F0001OK88",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,
@@ -254,7 +255,7 @@ DATA = {
     PREBREW_TIME_OFF: {
         "msg": "W00130001OK76",
         "resp": {
-            "hot_water_offset": 0,
+            "flushing_offset": 0,
             "drinks_k1_offset": 0,
             "drinks_k2_offset": 0,
             "drinks_k3_offset": 0,

@@ -8,7 +8,7 @@ from lmdirect.msgs import (
     DRINKS_K2,
     DRINKS_K3,
     DRINKS_K4,
-    HOT_WATER,
+    TOTAL_FLUSHING,
 )
 
 from .const import (
@@ -65,12 +65,12 @@ ENTITIES = {
     },
     "drink_stats": {
         ENTITY_TAG: [
-            HOT_WATER,
             DRINKS_K1,
             DRINKS_K2,
             DRINKS_K3,
             DRINKS_K4,
             CONTINUOUS,
+            TOTAL_FLUSHING,
         ],
         ENTITY_NAME: "Total Drinks",
         ENTITY_MAP: {

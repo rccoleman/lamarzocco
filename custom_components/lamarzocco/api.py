@@ -1,7 +1,6 @@
 """Interface with the lmdirect library."""
 
 import asyncio
-import errno
 import logging
 from datetime import datetime
 
@@ -41,7 +40,9 @@ class LaMarzocco(LMDirect):
         self._run = True
 
         """Start polling for status."""
-        self._polling_task = hass.loop.create_task(self.fetch_data())
+        self._polling_task = hass.loop.create_task(
+            self.fetch_data(), name="Polling Loop"
+        )
 
         """Reap the results and any any exceptions."""
         self._poll_reaper_task = hass.loop.create_task(
@@ -112,11 +113,10 @@ class LaMarzocco(LMDirect):
             _LOGGER.debug("Fetching data")
             try:
                 """Request latest status."""
+                _LOGGER.debug("Before requesting")
                 await self.request_status()
+                _LOGGER.debug("After requesting")
             except Exception as err:
-                if err.errno != errno.ECONNRESET:
-                    _LOGGER.error("Connection error: {err}")
-                else:
-                    _LOGGER.error("Caught exception: {err}")
+                _LOGGER.error(f"Caught exception: {err}")
             await asyncio.sleep(POLLING_INTERVAL)
         _LOGGER.error(f"Exiting polling task: {self._run}")

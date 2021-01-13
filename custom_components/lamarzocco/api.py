@@ -66,7 +66,7 @@ class LaMarzocco(LMDirect):
         return model_name if model_name in MODELS else model_name + " (Unknown)"
 
     async def poll_reaper(self):
-        _LOGGER.debug("Starting poll reaper")
+        _LOGGER.debug("Starting polling reaper")
         try:
             await asyncio.gather(self._polling_task)
         except Exception as err:
@@ -113,9 +113,7 @@ class LaMarzocco(LMDirect):
             _LOGGER.debug("Fetching data")
             try:
                 """Request latest status."""
-                _LOGGER.debug("Before requesting")
                 await self.request_status()
-                _LOGGER.debug("After requesting")
             except Exception as err:
                 _LOGGER.error(f"Caught exception: {err}")
             await asyncio.sleep(POLLING_INTERVAL)

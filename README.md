@@ -68,11 +68,18 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ## Usage
 
-In Dev->States, you should see something like this, initially called `switch.your_machine_name`:
+In Dev->States, you should see 5 new entities:
+* 2 sensors named `sensor.<machine_name>_coffee_temp` and `sensor.<machine_name>_steam_temp`
+* 3 switches named `switch.<machine_name>_main`, `switch.<machine_name>_auto_on_off`, `switch.<machine_name>_prebrew`
 
-![](https://github.com/rccoleman/lamarzocco/blob/master/images/States.png)
-
-You should be able to turn your machine on and off by toggling the switch and the switch should reflect the current state.
+The integration also exposes several services:
+* `set_temp` - Set the temperature of the coffee or steam boilers. Specify the `sensor.<machine_name>_coffee_temp` or `sensor.<machine_name>_steam_temp` to indicate which you want to change.
+* `enable_auto_on_off` - Enable auto on/off for specific day
+* `disable_auto_on_off` - Disable auto on/off for a specific day
+* `set_auto_on_off_hours` - Set the hours of the day for auto on/off hours for a specific day
+* `set_dose` - Set the coffee dose in pulses (~0.5ml) for a specific key for the GS/3 AV.  Not applicable for the GS/3 MP or Linea Mini
+* `set_dose_hot_water` - Set the hot water dose in seconds for the GS/3 AV and MP.  Not applicable for the Linea Mini.
+* `set_prebrew_times` - Set the prebrew on/off times in seconds for the GS/3 AV and Linea Mini.  Not applicable for the GS/3 MP.
 
 > **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running.  The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
 

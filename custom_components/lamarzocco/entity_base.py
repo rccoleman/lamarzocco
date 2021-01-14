@@ -6,13 +6,7 @@ from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 from lmdirect import InvalidInput
 
-from .const import (
-    DOMAIN,
-    ENTITY_ICON,
-    ENTITY_MAP,
-    ENTITY_NAME,
-    TEMP_KEY,
-)
+from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMP_KEY
 
 _LOGGER = logging.getLogger(__name__)
 

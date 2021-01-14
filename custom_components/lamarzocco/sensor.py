@@ -1,8 +1,9 @@
 """Sensor platform for La Marzocco espresso machines."""
 
-from homeassistant.helpers import entity_platform
 import logging
 
+import voluptuous as vol
+from homeassistant.helpers import entity_platform
 from lmdirect.msgs import (
     CONTINUOUS,
     DRINKS_K1,
@@ -11,8 +12,6 @@ from lmdirect.msgs import (
     DRINKS_K4,
     TOTAL_FLUSHING,
 )
-
-import voluptuous as vol
 
 from .const import (
     ATTR_MAP_COFFEE_TEMP,

@@ -1,4 +1,5 @@
 """Test La Marzocco service calls"""
+from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 import logging
 from copy import deepcopy
 from unittest.mock import PropertyMock
@@ -38,7 +39,7 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_STEAM_TEMP,
 )
-from custom_components.lamarzocco.switch import LaMarzoccoSwitch
+from custom_components.lamarzocco.entity_base import EntityBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ TESTS = {
     SET_COFFEE_TEMP: {
         CALL_SERVICE: SERVICE_SET_COFFEE_TEMP,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "203.1"},
+        CALL_DATA: {"entity_id": "sensor.bbbbb_coffee_temp", "temperature": "203.1"},
         CALL_RESULTS: [(8, ["07EF"]), (4, ["07EF"])],
         USE_CALLBACK: False,
     },
@@ -82,7 +83,7 @@ TESTS = {
     SET_STEAM_TEMP: {
         CALL_SERVICE: SERVICE_SET_STEAM_TEMP,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_main", "temperature": "255.1"},
+        CALL_DATA: {"entity_id": "sensor.bbbbb_steam_temp", "temperature": "255.1"},
         CALL_RESULTS: [(9, ["09F7"]), (4, ["09F7"])],
         USE_CALLBACK: False,
     },
@@ -90,7 +91,7 @@ TESTS = {
     ENABLE_AUTO_ON_OFF: {
         CALL_SERVICE: SERVICE_ENABLE_AUTO_ON_OFF,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
+        CALL_DATA: {"entity_id": "switch.bbbbb_auto_on_off", "day_of_week": "tue"},
         CALL_RESULTS: [
             (2, []),
             (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
@@ -102,7 +103,7 @@ TESTS = {
     DISABLE_AUTO_ON_OFF: {
         CALL_SERVICE: SERVICE_DISABLE_AUTO_ON_OFF,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_main", "day_of_week": "tue"},
+        CALL_DATA: {"entity_id": "switch.bbbbb_auto_on_off", "day_of_week": "tue"},
         CALL_RESULTS: [
             (2, []),
             (11, ["FB06110611061106110611061106110000000000000000000000000000"]),
@@ -115,7 +116,7 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_HOURS,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_main",
+            "entity_id": "switch.bbbbb_auto_on_off",
             "day_of_week": "tue",
             "hour_on": "5",
             "hour_off": "12",
@@ -147,7 +148,7 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_PREBREW_TIMES,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_main",
+            "entity_id": "switch.bbbbb_prebrew",
             "key": "4",
             "time_on": "3.1",
             "time_off": "2.5",
@@ -305,32 +306,37 @@ async def mock_call_service(self, func, *args, **kwargs):
     return True
 
 
-# @patch.object(lmdirect.LMDirect, "_connect", autospec=True)
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 @patch("lmdirect.LMDirect.model_name", new_callable=PropertyMock, return_value="none")
-@patch.object(
-    LaMarzoccoSwitch, "call_service", autospec=True, side_effect=mock_call_service
-)
+@patch.object(EntityBase, "call_service", autospec=True, side_effect=mock_call_service)
 class TestServices:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
     async def test_set_coffee_temp(
         self, mock_call, mock_model_name, mock_send_msg, hass
     ):
-        for model in MODELS:
-            mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
+        with patch.object(
+            LaMarzoccoSensor, "available", new_callable=PropertyMock, return_value=True
+        ):
+            for model in MODELS:
+                mock_model_name.return_value = model
+                await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
 
     async def test_set_steam_temp(
         self, mock_call, mock_model_name, mock_send_msg, hass
     ):
-        for model in MODELS:
-            mock_model_name.return_value = model
-            if model == MODEL_LM:
-                with pytest.raises(ServiceNotFound):
+        with patch.object(
+            LaMarzoccoSensor, "available", new_callable=PropertyMock, return_value=True
+        ):
+            for model in MODELS:
+                mock_model_name.return_value = model
+                if model == MODEL_LM:
+                    with pytest.raises(ServiceNotFound):
+                        await self.make_service_call(
+                            mock_send_msg, hass, SET_STEAM_TEMP
+                        )
+                else:
                     await self.make_service_call(mock_send_msg, hass, SET_STEAM_TEMP)
-            else:
-                await self.make_service_call(mock_send_msg, hass, SET_STEAM_TEMP)
 
     async def test_enable_auto_on_off(
         self, mock_call, mock_model_name, mock_send_msg, hass
@@ -485,6 +491,5 @@ class TestServices:
             _LOGGER.debug(f"Got exception, re-raising: {err}")
             raise
         finally:
-            _LOGGER.debug("Still unloading")
             await unload_lm_machine(hass)
             await hass.async_block_till_done()

@@ -1,5 +1,6 @@
 """Sensor platform for La Marzocco espresso machines."""
 
+from homeassistant.helpers import entity_platform
 import logging
 
 from lmdirect.msgs import (
@@ -11,6 +12,8 @@ from lmdirect.msgs import (
     TOTAL_FLUSHING,
 )
 
+import voluptuous as vol
+
 from .const import (
     ATTR_MAP_COFFEE_TEMP,
     ATTR_MAP_DRINK_STATS_GS3_AV,
@@ -21,12 +24,17 @@ from .const import (
     ENTITY_ICON,
     ENTITY_MAP,
     ENTITY_NAME,
+    ENTITY_SERVICES,
     ENTITY_TAG,
     ENTITY_TYPE,
     ENTITY_UNITS,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
+    MODELS_SUPPORTED,
+    SCHEMA,
+    SERVICE_SET_COFFEE_TEMP,
+    SERVICE_SET_STEAM_TEMP,
     TEMP_COFFEE,
     TEMP_STEAM,
     TYPE_COFFEE_TEMP,
@@ -50,8 +58,18 @@ ENTITIES = {
         ENTITY_ICON: "mdi:water-boiler",
         ENTITY_CLASS: "temperature",
         ENTITY_UNITS: "°C",
+        ENTITY_SERVICES: {
+            SERVICE_SET_COFFEE_TEMP: {
+                SCHEMA: {
+                    vol.Required("temperature"): vol.All(
+                        vol.Coerce(float), vol.Range(min=0, max=210)
+                    ),
+                },
+                MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+            },
+        },
     },
-    "boiler_temp": {
+    "steam_temp": {
         ENTITY_TAG: [TEMP_STEAM],
         ENTITY_NAME: "Steam Temp",
         ENTITY_MAP: {
@@ -62,6 +80,14 @@ ENTITIES = {
         ENTITY_ICON: "mdi:water-boiler",
         ENTITY_CLASS: "temperature",
         ENTITY_UNITS: "°C",
+        ENTITY_SERVICES: {
+            SERVICE_SET_STEAM_TEMP: {
+                SCHEMA: {
+                    vol.Required("temperature"): vol.Coerce(float),
+                },
+                MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP],
+            },
+        },
     },
     "drink_stats": {
         ENTITY_TAG: [
@@ -82,6 +108,7 @@ ENTITIES = {
         ENTITY_ICON: "mdi:coffee",
         ENTITY_CLASS: None,
         ENTITY_UNITS: "drinks",
+        ENTITY_SERVICES: {},
     },
 }
 
@@ -95,6 +122,19 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         for sensor_type in ENTITIES
         if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
+
+    platform = entity_platform.current_platform.get()
+
+    [
+        [
+            platform.async_register_entity_service(
+                service, entity[ENTITY_SERVICES][service][SCHEMA], service
+            )
+            for service in entity[ENTITY_SERVICES]
+            if lm.model_name in entity[ENTITY_SERVICES][service][MODELS_SUPPORTED]
+        ]
+        for entity in ENTITIES.values()
+    ]
 
 
 class LaMarzoccoSensor(EntityBase):
@@ -134,3 +174,25 @@ class LaMarzoccoSensor(EntityBase):
     def device_class(self):
         """Device class for sensor"""
         return self._entities[self._object_id][ENTITY_CLASS]
+
+    async def set_coffee_temp(self, temperature=None):
+        """Service call to set coffee temp."""
+
+        """Machine expects Celcius, so convert if needed."""
+        if not self._is_metric:
+            temperature = round((temperature - 32) / 9 * 5, 1)
+
+        _LOGGER.debug(f"Setting coffee temp to {temperature}")
+        await self.call_service(self._lm.set_coffee_temp, temp=temperature)
+        return True
+
+    async def set_steam_temp(self, temperature=None):
+        """Service call to set steam temp."""
+
+        """Machine expects Celcius, so convert if needed."""
+        if not self._is_metric:
+            temperature = round((temperature - 32) / 9 * 5, 1)
+
+        _LOGGER.debug(f"Setting steam temp to {temperature}")
+        await self.call_service(self._lm.set_steam_temp, temp=temperature)
+        return True

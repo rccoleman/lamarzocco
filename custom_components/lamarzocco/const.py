@@ -154,6 +154,7 @@ ENTITY_ICON = "icon"
 ENTITY_FUNC = "func"
 ENTITY_CLASS = "class"
 ENTITY_UNITS = "units"
+ENTITY_SERVICES = "entity_services"
 
 FUNC_BASE = "self._lm."
 

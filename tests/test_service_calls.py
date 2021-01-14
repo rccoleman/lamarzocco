@@ -1,5 +1,4 @@
 """Test La Marzocco service calls"""
-from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 import logging
 from copy import deepcopy
 from unittest.mock import PropertyMock
@@ -39,6 +38,7 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_TEMP,
 )
 from custom_components.lamarzocco.entity_base import EntityBase
+from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 
 _LOGGER = logging.getLogger(__name__)
 

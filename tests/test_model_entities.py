@@ -84,8 +84,7 @@ DATA = {
             "switch.bbbbb_prebrew",
         ],
         SERVICES: [
-            "set_coffee_temp",
-            "set_steam_temp",
+            "set_temp",
             "enable_auto_on_off",
             "disable_auto_on_off",
             "set_auto_on_off_hours",
@@ -103,8 +102,7 @@ DATA = {
             "sensor.bbbbb_total_drinks",
         ],
         SERVICES: [
-            "set_coffee_temp",
-            "set_steam_temp",
+            "set_temp",
             "enable_auto_on_off",
             "disable_auto_on_off",
             "set_auto_on_off_hours",
@@ -120,7 +118,7 @@ DATA = {
             "sensor.bbbbb_total_drinks",
         ],
         SERVICES: [
-            "set_coffee_temp",
+            "set_temp",
             "enable_auto_on_off",
             "disable_auto_on_off",
             "set_auto_on_off_hours",

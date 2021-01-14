@@ -24,7 +24,6 @@ from .const import (
     ENTITY_SERVICES,
     ENTITY_TAG,
     ENTITY_TYPE,
-    FUNC_BASE,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
@@ -195,12 +194,12 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""
-        await eval(FUNC_BASE + self._entities[self._object_id][ENTITY_FUNC] + "(True)")
+        await getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC])(True)
         self._temp_state = True
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
-        await eval(FUNC_BASE + self._entities[self._object_id][ENTITY_FUNC] + "(False)")
+        await getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC])(False)
         self._temp_state = False
 
     @property

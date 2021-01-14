@@ -33,8 +33,7 @@ from .const import (
     MODEL_LM,
     MODELS_SUPPORTED,
     SCHEMA,
-    SERVICE_SET_COFFEE_TEMP,
-    SERVICE_SET_STEAM_TEMP,
+    SERVICE_SET_TEMP,
     TEMP_COFFEE,
     TEMP_STEAM,
     TYPE_COFFEE_TEMP,
@@ -59,12 +58,8 @@ ENTITIES = {
         ENTITY_CLASS: "temperature",
         ENTITY_UNITS: "°C",
         ENTITY_SERVICES: {
-            SERVICE_SET_COFFEE_TEMP: {
-                SCHEMA: {
-                    vol.Required("temperature"): vol.All(
-                        vol.Coerce(float), vol.Range(min=0, max=210)
-                    ),
-                },
+            SERVICE_SET_TEMP: {
+                SCHEMA: {vol.Required("temperature"): vol.Coerce(float)},
                 MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
             },
         },
@@ -80,14 +75,7 @@ ENTITIES = {
         ENTITY_ICON: "mdi:water-boiler",
         ENTITY_CLASS: "temperature",
         ENTITY_UNITS: "°C",
-        ENTITY_SERVICES: {
-            SERVICE_SET_STEAM_TEMP: {
-                SCHEMA: {
-                    vol.Required("temperature"): vol.Coerce(float),
-                },
-                MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP],
-            },
-        },
+        ENTITY_SERVICES: {},
     },
     "drink_stats": {
         ENTITY_TAG: [
@@ -175,24 +163,16 @@ class LaMarzoccoSensor(EntityBase):
         """Device class for sensor"""
         return self._entities[self._object_id][ENTITY_CLASS]
 
-    async def set_coffee_temp(self, temperature=None):
+    async def set_temp(self, temperature=None):
         """Service call to set coffee temp."""
 
         """Machine expects Celcius, so convert if needed."""
         if not self._is_metric:
             temperature = round((temperature - 32) / 9 * 5, 1)
 
-        _LOGGER.debug(f"Setting coffee temp to {temperature}")
-        await self.call_service(self._lm.set_coffee_temp, temp=temperature)
-        return True
+        func = getattr(self._lm, "set_" + self._object_id)
 
-    async def set_steam_temp(self, temperature=None):
-        """Service call to set steam temp."""
+        _LOGGER.debug(f"Setting {self._object_id} to {temperature}")
 
-        """Machine expects Celcius, so convert if needed."""
-        if not self._is_metric:
-            temperature = round((temperature - 32) / 9 * 5, 1)
-
-        _LOGGER.debug(f"Setting steam temp to {temperature}")
-        await self.call_service(self._lm.set_steam_temp, temp=temperature)
+        await self.call_service(func, temp=temperature)
         return True

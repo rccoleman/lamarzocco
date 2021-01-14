@@ -4,7 +4,6 @@ import logging
 
 import voluptuous as vol
 from homeassistant.components.switch import SwitchEntity
-
 from homeassistant.helpers import entity_platform
 from lmdirect.msgs import GLOBAL_AUTO, POWER
 

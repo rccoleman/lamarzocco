@@ -3,6 +3,8 @@
 from homeassistant.helpers import entity_platform
 import logging
 
+import voluptuous as vol
+from homeassistant.helpers import entity_platform
 from lmdirect.msgs import (
     CONTINUOUS,
     DRINKS_K1,

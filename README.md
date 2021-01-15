@@ -74,7 +74,7 @@ In Dev->States, you should see 5 new entities:
 
 Thw switches control their respective functions globally, i.e., enable/disable auto on/off for the whole machine, enable/disable prebrewing for all front-panel keys.
 
-The integration also exposes several services:
+## Services
 
 #### Service `lamarzocco.set_temp`
 

@@ -23,6 +23,7 @@ TEMP_KEY = "temp"
 
 SCHEMA = "schema"
 MODELS_SUPPORTED = "supported"
+FUNC = "func"
 
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
@@ -154,11 +155,10 @@ ENTITY_ICON = "icon"
 ENTITY_FUNC = "func"
 ENTITY_CLASS = "class"
 ENTITY_UNITS = "units"
-ENTITY_SERVICES = "entity_services"
 
 """Service call names."""
 SERVICE_SET_TEMP = "set_temp"
-SERVICE_AUTO_ON_OFF_ENABLE = "auto_on_off_enable"
+SERVICE_SET_AUTO_ON_OFF_ENABLE = "set_auto_on_off_enable"
 SERVICE_SET_AUTO_ON_OFF_HOURS = "set_auto_on_off_hours"
 SERVICE_SET_DOSE = "set_dose"
 SERVICE_SET_DOSE_HOT_WATER = "set_dose_hot_water"

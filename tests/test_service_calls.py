@@ -29,14 +29,13 @@ from custom_components.lamarzocco.const import (
     CONF_SERIAL_NUMBER,
     DOMAIN,
     MODELS,
-    SERVICE_AUTO_ON_OFF_ENABLE,
+    SERVICE_SET_AUTO_ON_OFF_ENABLE,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
     SERVICE_SET_TEMP,
 )
-from custom_components.lamarzocco.entity_base import EntityBase
 from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,10 +86,9 @@ TESTS = {
     },
     # Enable auto on/off for Tuesday
     ENABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_AUTO_ON_OFF_ENABLE,
+        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_auto_on_off",
             "day_of_week": "tue",
             "enable": "on",
         },
@@ -103,10 +101,9 @@ TESTS = {
     },
     # Disable auto on/off for Tuesday
     DISABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_AUTO_ON_OFF_ENABLE,
+        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_auto_on_off",
             "day_of_week": "tue",
             "enable": "off",
         },
@@ -122,7 +119,6 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_HOURS,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_auto_on_off",
             "day_of_week": "tue",
             "hour_on": "5",
             "hour_off": "12",
@@ -139,7 +135,6 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_DOSE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_main",
             "key": "2",
             "pulses": "120",
         },
@@ -154,7 +149,6 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_PREBREW_TIMES,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_prebrew",
             "key": "4",
             "time_on": "3.1",
             "time_off": "2.5",
@@ -171,7 +165,6 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_DOSE_HOT_WATER,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
-            "entity_id": "switch.bbbbb_main",
             "seconds": "16",
         },
         CALL_RESULTS: [
@@ -307,14 +300,18 @@ async def unload_lm_machine(hass):
     assert not hass.data[DOMAIN]
 
 
-async def mock_call_service(self, func, *args, **kwargs):
+async def mock_call_service(func, *args, **kwargs):
     await func(*args, **kwargs)
     return True
 
 
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
 @patch("lmdirect.LMDirect.model_name", new_callable=PropertyMock, return_value="none")
-@patch.object(EntityBase, "call_service", autospec=True, side_effect=mock_call_service)
+@patch(
+    "custom_components.lamarzocco.services.call_service",
+    autospec=True,
+    side_effect=mock_call_service,
+)
 class TestServices:
     """Class containing available tests.  Patches will be applied to all member functions."""
 

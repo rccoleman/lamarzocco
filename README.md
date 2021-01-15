@@ -12,6 +12,8 @@ Based on the investigation from Plonx on the Home Assistant forum [here](https:/
 
 Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token and encryption key for the local API.  I wrote a Python script to use with `mitmproxy` to get this information and you can find instructions [here](https://github.com/rccoleman/lmdirect/blob/master/Credentials.md).
 
+This integration currently only supports a single espresso machine.  It's possible to support multiple machines, but I only have one and I suspect that'll be the case for most folks.  If anyone has a fleet of espresso machines and is willing to provide data and feedback, I'm happy to entertain adding support for more than one machine.
+
 ## Installation
 
 ### HACS

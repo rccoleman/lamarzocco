@@ -73,12 +73,68 @@ In Dev->States, you should see 5 new entities:
 * 3 switches named `switch.<machine_name>_main`, `switch.<machine_name>_auto_on_off`, `switch.<machine_name>_prebrew`
 
 The integration also exposes several services:
-* `set_temp` - Set the temperature of the coffee or steam boilers based on the entity_id
-* `auto_on_off_enable` - Enable/disable auto on/off for specific day
-* `set_auto_on_off_hours` - Set the hours of the day for auto on/off hours for a specific day
-* `set_dose` - Set the coffee dose in pulses (~0.5ml) for a specific key for the GS/3 AV.  Not applicable for the GS/3 MP or Linea Mini
-* `set_dose_hot_water` - Set the hot water dose in seconds for the GS/3 AV and MP.  Not applicable for the Linea Mini.
-* `set_prebrew_times` - Set the prebrew on/off times in seconds for the GS/3 AV and Linea Mini.  Not applicable for the GS/3 MP.
+
+#### Service `lamarzocco.set_temp`
+
+Set the temperature of the coffee or steam boilers based on the entity_id.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entity whose temp you want to modify.  Use `sensor.<machine_name>_coffee_temp to set the coffee boiler temp and sensor.<machine_name>_steam_temp to set the steam boiler temp.  Both temperatures are pre-adjustment. |
+| `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
+
+#### Service `lamarzocco.auto_on_off_enable`
+
+Enable or disable auto on/off for a specific day of the week.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_auto_on_off`. |
+| `day_of_week` | no | The day of the week to enable (sun, mon, tue, wed, thu, fri, sat) |
+| `enable` | no | Boolean value indicating whether to enable or disable auto on/off, e.g. "on" or "off" |
+
+#### Service `lamarzocco.set_auto_on_off_hours`
+
+Set the auto on and off times for each day of the week.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_auto_on_off` |
+| `day_of_week` | no | The day of the week to enable (sun, mon, tue, wed, thu, fri, sat) |
+| `hour_on` | no | The hour to turn the machine on (0..23) |
+| `hour_off` | no | The hour to turn the machine off (0..23) |
+
+
+#### Service `lamarzocco.set_dose`
+
+Sets the dose for a specific key.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_main` |
+| `key` | no | The key to program (1-5)` |
+| `pulses` | no | The dose in pulses (roughly ~0.5ml per pulse), e.g. 120 |
+
+#### Service `lamarzocco.set_dose_hot_water`
+
+Sets the dose for hot water.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_main` |
+| `seconds` | no | The number of seconds to stream hot water`, e.g. 8 |
+
+#### Service `lamarzocco.set_prebrew_times`
+
+Set the prebrewing "on" and "off" times for a specific key.
+
+| Service data attribute | Optional | Description |
+| ---------------------- | -------- | ----------- |
+| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_prebrew` |
+| `key` | no | The key to program (1-4) |
+| `time_on` | no | The time in seconds for the pump to run during prebrewing (0-5.9s) |
+| `time_off` | no | The time in seconds for the pump to stop during prebrewing (0-5.9s) |
+
 
 > **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running.  The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
 

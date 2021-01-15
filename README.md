@@ -92,7 +92,7 @@ Set the temperature of the coffee or steam boilers based on the entity_id.
 | `entity_id`            |     no  | Name of the entity whose temp you want to modify, `sensor.<machine_name>_coffee_temp` or `sensor.<machine_name>_steam_temp`. Temperatures are pre-offset. |
 | `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
 
-#### Service `lamarzocco.auto_on_off_enable`
+#### Service `lamarzocco.set_auto_on_off_enable`
 
 Enable or disable auto on/off for a specific day of the week.
 

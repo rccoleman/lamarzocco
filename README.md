@@ -73,9 +73,8 @@ In Dev->States, you should see 5 new entities:
 * 3 switches named `switch.<machine_name>_main`, `switch.<machine_name>_auto_on_off`, `switch.<machine_name>_prebrew`
 
 The integration also exposes several services:
-* `set_temp` - Set the temperature of the coffee or steam boilers. Specify the `sensor.<machine_name>_coffee_temp` or `sensor.<machine_name>_steam_temp` to indicate which you want to change.
-* `enable_auto_on_off` - Enable auto on/off for specific day
-* `disable_auto_on_off` - Disable auto on/off for a specific day
+* `set_temp` - Set the temperature of the coffee or steam boilers based on the entity_id
+* `auto_on_off_enable` - Enable/disable auto on/off for specific day
 * `set_auto_on_off_hours` - Set the hours of the day for auto on/off hours for a specific day
 * `set_dose` - Set the coffee dose in pulses (~0.5ml) for a specific key for the GS/3 AV.  Not applicable for the GS/3 MP or Linea Mini
 * `set_dose_hot_water` - Set the hot water dose in seconds for the GS/3 AV and MP.  Not applicable for the Linea Mini.

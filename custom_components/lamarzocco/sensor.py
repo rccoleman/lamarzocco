@@ -2,8 +2,6 @@
 
 import logging
 
-import voluptuous as vol
-from homeassistant.helpers import entity_platform
 from lmdirect.msgs import (
     CONTINUOUS,
     DRINKS_K1,
@@ -29,9 +27,6 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
-    MODELS_SUPPORTED,
-    SCHEMA,
-    SERVICE_SET_TEMP,
     TEMP_COFFEE,
     TEMP_STEAM,
     TYPE_COFFEE_TEMP,
@@ -39,7 +34,7 @@ from .const import (
     TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
-from .services import call_service
+from .services import async_setup_entity_services, call_service
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -91,13 +86,6 @@ ENTITIES = {
     },
 }
 
-ENTITY_SERVICES = {
-    SERVICE_SET_TEMP: {
-        SCHEMA: {vol.Required("temperature"): vol.Coerce(float)},
-        MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-    }
-}
-
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up sensor entities."""
@@ -109,15 +97,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
         if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
 
-    platform = entity_platform.current_platform.get()
-
-    [
-        platform.async_register_entity_service(
-            service, ENTITY_SERVICES[service][SCHEMA], service
-        )
-        for service in ENTITY_SERVICES
-        if lm.model_name in ENTITY_SERVICES[service][MODELS_SUPPORTED]
-    ]
+    await async_setup_entity_services(lm)
 
 
 class LaMarzoccoSensor(EntityBase):

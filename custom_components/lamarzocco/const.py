@@ -156,6 +156,10 @@ ENTITY_FUNC = "func"
 ENTITY_CLASS = "class"
 ENTITY_UNITS = "units"
 
+PLATFORM = "platform"
+PLATFORM_SENSOR = "sensor"
+PLATFORM_SWITCH = "switch"
+
 """Service call names."""
 SERVICE_SET_TEMP = "set_temp"
 SERVICE_SET_AUTO_ON_OFF_ENABLE = "set_auto_on_off_enable"

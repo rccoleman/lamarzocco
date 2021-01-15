@@ -1,22 +1,28 @@
 """Global services for the La Marzocco integration."""
 
-import voluptuous as vol
-from lmdirect import InvalidInput
 import logging
+
+import voluptuous as vol
+from homeassistant.helpers import entity_platform
+from lmdirect import InvalidInput
+
 from .const import (
     DAYS,
     DOMAIN,
+    FUNC,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
     MODELS_SUPPORTED,
+    PLATFORM,
+    PLATFORM_SENSOR,
     SCHEMA,
     SERVICE_SET_AUTO_ON_OFF_ENABLE,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
-    FUNC,
+    SERVICE_SET_TEMP,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -178,4 +184,28 @@ async def async_setup_services(hass, config_entry):
         )
         for service in INTEGRATION_SERVICES
         if lm.model_name in INTEGRATION_SERVICES[service][MODELS_SUPPORTED]
+    ]
+
+
+ENTITY_SERVICES = {
+    SERVICE_SET_TEMP: {
+        SCHEMA: {vol.Required("temperature"): vol.Coerce(float)},
+        MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+        PLATFORM: PLATFORM_SENSOR,
+    }
+}
+
+
+async def async_setup_entity_services(lm):
+    """Create and register entity services for the La Marzocco integration."""
+    platform = entity_platform.current_platform.get()
+    _LOGGER.debug(f"Platform: {platform} {platform.domain}")
+
+    [
+        platform.async_register_entity_service(
+            service, ENTITY_SERVICES[service][SCHEMA], service
+        )
+        for service in ENTITY_SERVICES
+        if lm.model_name in ENTITY_SERVICES[service][MODELS_SUPPORTED]
+        and ENTITY_SERVICES[service][PLATFORM] == platform.domain
     ]

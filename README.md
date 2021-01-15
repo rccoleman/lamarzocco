@@ -68,7 +68,7 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ## Usage
 
-In Dev->States, you should see 5 new entities:
+In Dev->States, you should see 6 new entities:
 
 * 3 sensors
   * `sensor.<machine_name>_coffee_temp`
@@ -89,7 +89,7 @@ Set the temperature of the coffee or steam boilers based on the entity_id.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entity whose temp you want to modify, e.g., `sensor.<machine_name>_coffee_temp` for the coffee boiler temp or `sensor.<machine_name>_steam_temp` for the steam boiler temp.  Both temperatures are pre-offset. |
+| `entity_id`            |     no  | Name of the entity whose temp you want to modify, `sensor.<machine_name>_coffee_temp` or `sensor.<machine_name>_steam_temp`. Temperatures are pre-offset. |
 | `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
 
 #### Service `lamarzocco.auto_on_off_enable`

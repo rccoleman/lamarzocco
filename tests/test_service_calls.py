@@ -29,8 +29,7 @@ from custom_components.lamarzocco.const import (
     CONF_SERIAL_NUMBER,
     DOMAIN,
     MODELS,
-    SERVICE_DISABLE_AUTO_ON_OFF,
-    SERVICE_ENABLE_AUTO_ON_OFF,
+    SERVICE_AUTO_ON_OFF_ENABLE,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
@@ -88,9 +87,13 @@ TESTS = {
     },
     # Enable auto on/off for Tuesday
     ENABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_ENABLE_AUTO_ON_OFF,
+        CALL_SERVICE: SERVICE_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_auto_on_off", "day_of_week": "tue"},
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_auto_on_off",
+            "day_of_week": "tue",
+            "enable": "on",
+        },
         CALL_RESULTS: [
             (2, []),
             (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
@@ -100,9 +103,13 @@ TESTS = {
     },
     # Disable auto on/off for Tuesday
     DISABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_DISABLE_AUTO_ON_OFF,
+        CALL_SERVICE: SERVICE_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "switch.bbbbb_auto_on_off", "day_of_week": "tue"},
+        CALL_DATA: {
+            "entity_id": "switch.bbbbb_auto_on_off",
+            "day_of_week": "tue",
+            "enable": "off",
+        },
         CALL_RESULTS: [
             (2, []),
             (11, ["FB06110611061106110611061106110000000000000000000000000000"]),

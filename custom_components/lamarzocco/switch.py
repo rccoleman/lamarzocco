@@ -28,8 +28,7 @@ from .const import (
     MODEL_LM,
     MODELS_SUPPORTED,
     SCHEMA,
-    SERVICE_DISABLE_AUTO_ON_OFF,
-    SERVICE_ENABLE_AUTO_ON_OFF,
+    SERVICE_AUTO_ON_OFF_ENABLE,
     SERVICE_SET_AUTO_ON_OFF_HOURS,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
@@ -88,15 +87,10 @@ ENTITIES = {
         ENTITY_ICON: "mdi:alarm",
         ENTITY_FUNC: "set_auto_on_off_global",
         ENTITY_SERVICES: {
-            SERVICE_ENABLE_AUTO_ON_OFF: {
+            SERVICE_AUTO_ON_OFF_ENABLE: {
                 SCHEMA: {
                     vol.Required("day_of_week"): vol.In(DAYS),
-                },
-                MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-            },
-            SERVICE_DISABLE_AUTO_ON_OFF: {
-                SCHEMA: {
-                    vol.Required("day_of_week"): vol.In(DAYS),
+                    vol.Required("enable"): vol.Boolean(),
                 },
                 MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
             },
@@ -212,21 +206,12 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
 
         return self._temp_state if self._temp_state is not None else reported_state
 
-    async def enable_auto_on_off(self, day_of_week=None):
+    async def auto_on_off_enable(self, day_of_week=None, enable=None):
         """Service call to enable auto on/off."""
 
-        _LOGGER.debug(f"Enabling auto on/off for {day_of_week}")
+        _LOGGER.debug(f"Setting auto on/off for {day_of_week} to {enable}")
         await self.call_service(
-            self._lm.set_auto_on_off, day_of_week=day_of_week, enable=True
-        )
-        return True
-
-    async def disable_auto_on_off(self, day_of_week=None):
-        """Service call to disable auto on/off."""
-
-        _LOGGER.debug(f"Disabling auto on/off for {day_of_week}")
-        await self.call_service(
-            self._lm.set_auto_on_off, day_of_week=day_of_week, enable=False
+            self._lm.set_auto_on_off, day_of_week=day_of_week, enable=enable
         )
         return True
 

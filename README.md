@@ -82,7 +82,7 @@ Set the temperature of the coffee or steam boilers based on the entity_id.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entity whose temp you want to modify.  Use `sensor.<machine_name>_coffee_temp` to set the coffee boiler temp and `sensor.<machine_name>_steam_temp` to set the steam boiler temp.  Both temperatures are pre-adjustment. |
+| `entity_id`            |     no  | Name of the entity whose temp you want to modify, e.g., `sensor.<machine_name>_coffee_temp` for the coffee boiler temp or `sensor.<machine_name>_steam_temp` for the steam boiler temp.  Both temperatures are pre-offset. |
 | `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
 
 #### Service `lamarzocco.auto_on_off_enable`
@@ -91,7 +91,6 @@ Enable or disable auto on/off for a specific day of the week.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_auto_on_off`. |
 | `day_of_week` | no | The day of the week to enable (sun, mon, tue, wed, thu, fri, sat) |
 | `enable` | no | Boolean value indicating whether to enable or disable auto on/off, e.g. "on" or "off" |
 
@@ -101,7 +100,6 @@ Set the auto on and off times for each day of the week.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_auto_on_off` |
 | `day_of_week` | no | The day of the week to enable (sun, mon, tue, wed, thu, fri, sat) |
 | `hour_on` | no | The hour to turn the machine on (0..23) |
 | `hour_off` | no | The hour to turn the machine off (0..23) |
@@ -113,7 +111,6 @@ Sets the dose for a specific key.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_main` |
 | `key` | no | The key to program (1-5)` |
 | `pulses` | no | The dose in pulses (roughly ~0.5ml per pulse), e.g. 120 |
 
@@ -123,7 +120,6 @@ Sets the dose for hot water.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_main` |
 | `seconds` | no | The number of seconds to stream hot water`, e.g. 8 |
 
 #### Service `lamarzocco.set_prebrew_times`
@@ -132,7 +128,6 @@ Set the prebrewing "on" and "off" times for a specific key.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entities to set.  Should be `switch.<machine_name>_prebrew` |
 | `key` | no | The key to program (1-4) |
 | `time_on` | no | The time in seconds for the pump to run during prebrewing (0-5.9s) |
 | `time_off` | no | The time in seconds for the pump to stop during prebrewing (0-5.9s) |

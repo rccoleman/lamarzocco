@@ -72,6 +72,8 @@ In Dev->States, you should see 5 new entities:
 * 3 sensors named `sensor.<machine_name>_coffee_temp`, `sensor.<machine_name>_steam_temp`, and `sensor.<machine_name>_total_drinks`
 * 3 switches named `switch.<machine_name>_main`, `switch.<machine_name>_auto_on_off`, `switch.<machine_name>_prebrew`
 
+Thw switches control their respective functions globally, i.e., enable/disable auto on/off for the whole machine, enable/disable prebrewing for all front-panel keys.
+
 The integration also exposes several services:
 
 #### Service `lamarzocco.set_temp`
@@ -80,7 +82,7 @@ Set the temperature of the coffee or steam boilers based on the entity_id.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entity whose temp you want to modify.  Use `sensor.<machine_name>_coffee_temp to set the coffee boiler temp and sensor.<machine_name>_steam_temp to set the steam boiler temp.  Both temperatures are pre-adjustment. |
+| `entity_id`            |     no  | Name of the entity whose temp you want to modify.  Use `sensor.<machine_name>_coffee_temp` to set the coffee boiler temp and `sensor.<machine_name>_steam_temp` to set the steam boiler temp.  Both temperatures are pre-adjustment. |
 | `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
 
 #### Service `lamarzocco.auto_on_off_enable`

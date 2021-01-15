@@ -69,8 +69,15 @@ Regardless of how you configured the integration, you should see this in Configu
 ## Usage
 
 In Dev->States, you should see 5 new entities:
-* 3 sensors named `sensor.<machine_name>_coffee_temp`, `sensor.<machine_name>_steam_temp`, and `sensor.<machine_name>_total_drinks`
-* 3 switches named `switch.<machine_name>_main`, `switch.<machine_name>_auto_on_off`, `switch.<machine_name>_prebrew`
+
+* 3 sensors
+  * `sensor.<machine_name>_coffee_temp`
+  * `sensor.<machine_name>_steam_temp`
+  * `sensor.<machine_name>_total_drinks`
+* 3 switches
+  * `switch.<machine_name>_main`
+  * `switch.<machine_name>_auto_on_off`
+  * `switch.<machine_name>_prebrew`
 
 Thw switches control their respective functions globally, i.e., enable/disable auto on/off for the whole machine, enable/disable prebrewing for all front-panel keys.
 

@@ -73,8 +73,8 @@ Regardless of how you configured the integration, you should see this in Configu
 In Dev->States, you should see 6 new entities:
 
 * 3 sensors
-  * `sensor.<machine_name>_coffee_temp`
-  * `sensor.<machine_name>_steam_temp`
+  * `water_heater.<machine_name>_coffee`
+  * `water_heater.<machine_name>_steam`
   * `sensor.<machine_name>_total_drinks`
 * 3 switches
   * `switch.<machine_name>_main`
@@ -85,13 +85,13 @@ Thw switches control their respective functions globally, i.e., enable/disable a
 
 ## Services
 
-#### Service `lamarzocco.set_temp`
+#### Service `water_heater.set_temp`
 
 Set the temperature of the coffee or steam boilers based on the entity_id.
 
 | Service data attribute | Optional | Description |
 | ---------------------- | -------- | ----------- |
-| `entity_id`            |     no  | Name of the entity whose temp you want to modify, `sensor.<machine_name>_coffee_temp` or `sensor.<machine_name>_steam_temp`. Temperatures are pre-offset. |
+| `entity_id`            |     no  | Name of the entity whose temp you want to modify, `water_heater.<machine_name>_coffee` or `water_heater.<machine_name>_steam`. Temperatures are pre-offset. |
 | `temperature` | no | The temperature to set, in local units, e.g., 205.2 |
 
 #### Service `lamarzocco.set_auto_on_off_enable`

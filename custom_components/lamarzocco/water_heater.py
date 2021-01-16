@@ -2,6 +2,12 @@
 
 import logging
 
+from homeassistant.components.water_heater import (
+    SUPPORT_TARGET_TEMPERATURE,
+    WaterHeaterEntity,
+)
+from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
+from homeassistant.helpers.temperature import display_temp as show_temp
 from lmdirect.msgs import TSET_COFFEE, TSET_STEAM
 
 from .const import (
@@ -23,14 +29,7 @@ from .const import (
     TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
-from .services import call_service, async_setup_entity_services
-
-from homeassistant.components.water_heater import (
-    SUPPORT_TARGET_TEMPERATURE,
-    WaterHeaterEntity,
-)
-from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
-from homeassistant.helpers.temperature import display_temp as show_temp
+from .services import async_setup_entity_services, call_service
 
 _LOGGER = logging.getLogger(__name__)
 

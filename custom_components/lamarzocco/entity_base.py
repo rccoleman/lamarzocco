@@ -1,10 +1,11 @@
 """Base class for the La Marzocco entities."""
 
 import logging
-from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 
+from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.helpers.temperature import display_temp as show_temp
 
 from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMP_KEY
 

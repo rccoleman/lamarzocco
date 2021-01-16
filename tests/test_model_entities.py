@@ -76,15 +76,14 @@ async def unload_lm_machine(hass):
 DATA = {
     MODEL_GS3_AV: {
         ENTITIES: [
-            "sensor.bbbbb_coffee_temp",
-            "sensor.bbbbb_steam_temp",
+            "water_heater.bbbbb_coffee",
+            "water_heater.bbbbb_steam",
             "sensor.bbbbb_total_drinks",
             "switch.bbbbb_main",
             "switch.bbbbb_auto_on_off",
             "switch.bbbbb_prebrew",
         ],
         SERVICES: [
-            "set_temp",
             "set_auto_on_off_enable",
             "set_auto_on_off_hours",
             "set_dose",
@@ -96,12 +95,11 @@ DATA = {
         ENTITIES: [
             "switch.bbbbb_main",
             "switch.bbbbb_auto_on_off",
-            "sensor.bbbbb_coffee_temp",
-            "sensor.bbbbb_steam_temp",
+            "water_heater.bbbbb_coffee",
+            "water_heater.bbbbb_steam",
             "sensor.bbbbb_total_drinks",
         ],
         SERVICES: [
-            "set_temp",
             "set_auto_on_off_enable",
             "set_auto_on_off_hours",
             "set_dose_hot_water",
@@ -112,11 +110,10 @@ DATA = {
             "switch.bbbbb_main",
             "switch.bbbbb_auto_on_off",
             "switch.bbbbb_prebrew",
-            "sensor.bbbbb_coffee_temp",
+            "water_heater.bbbbb_coffee",
             "sensor.bbbbb_total_drinks",
         ],
         SERVICES: [
-            "set_temp",
             "set_auto_on_off_enable",
             "set_auto_on_off_hours",
             "set_prebrew_times",

@@ -6,6 +6,8 @@ from unittest.mock import PropertyMock
 import lmdirect
 import pytest
 from homeassistant.components.switch import DOMAIN as SWITCH_DOMAIN
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
+from homeassistant.components.water_heater import SERVICE_SET_TEMPERATURE
 from homeassistant.const import (
     CONF_HOST,
     CONF_PASSWORD,
@@ -34,7 +36,6 @@ from custom_components.lamarzocco.const import (
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
-    SERVICE_SET_TEMP,
 )
 from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 
@@ -70,17 +71,17 @@ DISABLE_GLOBAL_AUTO_ON_OFF = 13
 TESTS = {
     # Set coffee temp to 203.1F
     SET_COFFEE_TEMP: {
-        CALL_SERVICE: SERVICE_SET_TEMP,
-        CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "sensor.bbbbb_coffee_temp", "temperature": "203.1"},
+        CALL_SERVICE: SERVICE_SET_TEMPERATURE,
+        CALL_DOMAIN: WATER_HEATER_DOMAIN,
+        CALL_DATA: {"entity_id": "water_heater.bbbbb_coffee", "temperature": "203.1"},
         CALL_RESULTS: [(8, ["07EF"]), (4, ["07EF"])],
         USE_CALLBACK: False,
     },
     # Set steam temp to 255.1F
     SET_STEAM_TEMP: {
-        CALL_SERVICE: SERVICE_SET_TEMP,
-        CALL_DOMAIN: DOMAIN,
-        CALL_DATA: {"entity_id": "sensor.bbbbb_steam_temp", "temperature": "255.1"},
+        CALL_SERVICE: SERVICE_SET_TEMPERATURE,
+        CALL_DOMAIN: WATER_HEATER_DOMAIN,
+        CALL_DATA: {"entity_id": "water_heater.bbbbb_steam", "temperature": "255.1"},
         CALL_RESULTS: [(9, ["09F7"]), (4, ["09F7"])],
         USE_CALLBACK: False,
     },

@@ -8,7 +8,8 @@ from lmdirect.msgs import GLOBAL_AUTO, POWER
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
     ATTR_MAP_MAIN_GS3_AV,
-    ATTR_MAP_MAIN_GS3_MP_LM,
+    ATTR_MAP_MAIN_GS3_MP,
+    ATTR_MAP_MAIN_LM,
     ATTR_MAP_PREBREW_GS3_AV,
     ATTR_MAP_PREBREW_LM,
     DOMAIN,
@@ -37,8 +38,8 @@ ENTITIES = {
         ENTITY_NAME: "Main",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_MAIN_GS3_AV,
-            MODEL_GS3_MP: ATTR_MAP_MAIN_GS3_MP_LM,
-            MODEL_LM: ATTR_MAP_MAIN_GS3_MP_LM,
+            MODEL_GS3_MP: ATTR_MAP_MAIN_GS3_MP,
+            MODEL_LM: ATTR_MAP_MAIN_LM,
         },
         ENTITY_TYPE: TYPE_MAIN,
         ENTITY_ICON: "mdi:coffee-maker",
@@ -75,7 +76,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
     lm = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
-        LaMarzoccoSwitch(lm, switch_type, hass.config.units.is_metric, config_entry)
+        LaMarzoccoSwitch(lm, switch_type, hass, config_entry)
         for switch_type in ENTITIES
         if lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
     )
@@ -86,11 +87,11 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     """Switches representing espresso machine power, prebrew, and auto on/off."""
 
-    def __init__(self, lm, switch_type, is_metric, config_entry):
+    def __init__(self, lm, switch_type, hass, config_entry):
         """Initialise switches."""
         self._object_id = switch_type
         self._temp_state = None
-        self._is_metric = is_metric
+        self._hass = hass
         self._lm = lm
         self._entities = ENTITIES
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]

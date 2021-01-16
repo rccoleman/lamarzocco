@@ -1,6 +1,7 @@
 """Base class for the La Marzocco entities."""
 
 import logging
+from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -72,9 +73,13 @@ class EntityBase(RestoreEntity):
                 v = str(v)
 
             """Convert temps to Fahrenheit if needed."""
-            if not self._is_metric and TEMP_KEY in k:
-                v = round((v * 9 / 5) + 32, 1)
-
+            if TEMP_KEY in k:
+                v = show_temp(
+                    self._hass,
+                    v,
+                    TEMP_CELSIUS,
+                    PRECISION_TENTHS,
+                )
             return v
 
         data = self._lm._current_status

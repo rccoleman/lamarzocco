@@ -1,17 +1,3 @@
-set_temp:
-  # Description of the service
-  description: Sets the target temperature of the coffee or steam boiler
-  # Different fields that your service accepts
-  fields:
-    entity_id:
-      # Description of the field
-      description: Name of the boiler entity
-      # Example value that can be passed for this field
-      example: "sensor.buzz_coffee_temp"
-    temperature:
-      description: Temperature setting in your native units (F or C)
-      example: "205.2"
-
 set_auto_on_off_enable:
   # Description of the service
   description: Enable or disable auto on/off for a specific day of the week

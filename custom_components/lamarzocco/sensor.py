@@ -12,10 +12,8 @@ from lmdirect.msgs import (
 )
 
 from .const import (
-    ATTR_MAP_COFFEE_TEMP,
     ATTR_MAP_DRINK_STATS_GS3_AV,
     ATTR_MAP_DRINK_STATS_GS3_MP_LM,
-    ATTR_MAP_STEAM_TEMP,
     DOMAIN,
     ENTITY_CLASS,
     ENTITY_ICON,
@@ -27,43 +25,14 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
-    TEMP_COFFEE,
-    TEMP_STEAM,
-    TYPE_COFFEE_TEMP,
     TYPE_DRINK_STATS,
-    TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
-from .services import async_setup_entity_services, call_service
+from .services import async_setup_entity_services
 
 _LOGGER = logging.getLogger(__name__)
 
 ENTITIES = {
-    "coffee_temp": {
-        ENTITY_TAG: [TEMP_COFFEE],
-        ENTITY_NAME: "Coffee Temp",
-        ENTITY_MAP: {
-            MODEL_GS3_AV: ATTR_MAP_COFFEE_TEMP,
-            MODEL_GS3_MP: ATTR_MAP_COFFEE_TEMP,
-            MODEL_LM: ATTR_MAP_COFFEE_TEMP,
-        },
-        ENTITY_TYPE: TYPE_COFFEE_TEMP,
-        ENTITY_ICON: "mdi:water-boiler",
-        ENTITY_CLASS: "temperature",
-        ENTITY_UNITS: "°C",
-    },
-    "steam_temp": {
-        ENTITY_TAG: [TEMP_STEAM],
-        ENTITY_NAME: "Steam Temp",
-        ENTITY_MAP: {
-            MODEL_GS3_AV: ATTR_MAP_STEAM_TEMP,
-            MODEL_GS3_MP: ATTR_MAP_STEAM_TEMP,
-        },
-        ENTITY_TYPE: TYPE_STEAM_TEMP,
-        ENTITY_ICON: "mdi:water-boiler",
-        ENTITY_CLASS: "temperature",
-        ENTITY_UNITS: "°C",
-    },
     "drink_stats": {
         ENTITY_TAG: [
             DRINKS_K1,
@@ -92,7 +61,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     lm = hass.data[DOMAIN][config_entry.entry_id]
 
     async_add_entities(
-        LaMarzoccoSensor(lm, sensor_type, hass.config.units.is_metric, config_entry)
+        LaMarzoccoSensor(lm, sensor_type, hass, config_entry)
         for sensor_type in ENTITIES
         if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
@@ -103,12 +72,12 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoSensor(EntityBase):
     """Sensor representing espresso machine temperature data."""
 
-    def __init__(self, lm, sensor_type, is_metric, config_entry):
+    def __init__(self, lm, sensor_type, hass, config_entry):
         """Initialize sensors"""
         self._object_id = sensor_type
         self._lm = lm
         self._entities = ENTITIES
-        self._is_metric = is_metric
+        self._hass = hass
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
 
         self._lm.register_callback(self.update_callback)
@@ -136,23 +105,3 @@ class LaMarzoccoSensor(EntityBase):
     def device_class(self):
         """Device class for sensor"""
         return self._entities[self._object_id][ENTITY_CLASS]
-
-    async def set_temp(self, temperature=None):
-        """Service call to set the temp of either the coffee or steam boilers."""
-
-        if self._entity_type not in [TYPE_COFFEE_TEMP, TYPE_STEAM_TEMP]:
-            _LOGGER.error(
-                f"set_temp service used on a non-boiler entity: {self.entity_id}"
-            )
-            return False
-
-        """Machine expects Celcius, so convert if needed."""
-        if not self._is_metric:
-            temperature = round((temperature - 32) / 9 * 5, 1)
-
-        func = getattr(self._lm, "set_" + self._object_id)
-
-        _LOGGER.debug(f"Setting {self._object_id} to {temperature}")
-
-        await call_service(func, temp=temperature)
-        return True

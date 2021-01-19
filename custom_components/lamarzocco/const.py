@@ -5,7 +5,7 @@ from lmdirect.msgs import *
 DOMAIN = "lamarzocco"
 
 """Set polling interval at 20s."""
-POLLING_INTERVAL = 20
+POLLING_INTERVAL = 30
 
 """Configuration parameters"""
 CONF_SERIAL_NUMBER = "serial_number"
@@ -48,7 +48,24 @@ ATTR_MAP_MAIN_GS3_AV = [
     DAYS_SINCE_BUILT,
     WATER_ON_SECONDS,
     FRONT_PANEL_DISPLAY,
-    MYSTERY_VALUES,
+    VAL_1,
+    VAL_2,
+    VAL_3,
+    VAL_4,
+    VAL_5,
+    VAL_6,
+    VAL_7,
+    VAL_8,
+    VAL_9,
+    VAL_10,
+    VAL_11,
+    VAL_12,
+    VAL_13,
+    VAL_14,
+    VAL_15,
+    VAL_16,
+    VAL_17,
+    VAL_18,
 ]
 
 ATTR_MAP_MAIN_GS3_MP = [
@@ -62,7 +79,6 @@ ATTR_MAP_MAIN_GS3_MP = [
     DAYS_SINCE_BUILT,
     WATER_ON_SECONDS,
     FRONT_PANEL_DISPLAY,
-    MYSTERY_VALUES,
 ]
 
 ATTR_MAP_MAIN_LM = [
@@ -71,11 +87,8 @@ ATTR_MAP_MAIN_LM = [
     UPDATE_AVAILABLE,
     POWER_MYSTERY,
     HEATING_STATE,
-    COFFEE_HEATING_ELEMENT_HOURS,
-    STEAM_HEATING_ELEMENT_HOURS,
     DAYS_SINCE_BUILT,
     WATER_ON_SECONDS,
-    MYSTERY_VALUES,
 ]
 
 ATTR_MAP_PREBREW_GS3_AV = [
@@ -98,10 +111,12 @@ ATTR_MAP_PREBREW_LM = [
 
 ATTR_MAP_COFFEE = [
     DATE_RECEIVED,
+    COFFEE_HEATING_ELEMENT_HOURS,
 ]
 
 ATTR_MAP_STEAM = [
     DATE_RECEIVED,
+    STEAM_HEATING_ELEMENT_HOURS,
 ]
 
 ATTR_MAP_AUTO_ON_OFF = [

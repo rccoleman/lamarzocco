@@ -16,6 +16,7 @@ class EntityBase(RestoreEntity):
     """Common elements for all switches."""
 
     _entities = []
+    _entity_type = None
 
     @property
     def entity_registry_enabled_default(self) -> bool:

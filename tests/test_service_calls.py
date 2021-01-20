@@ -74,7 +74,7 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_TEMPERATURE,
         CALL_DOMAIN: WATER_HEATER_DOMAIN,
         CALL_DATA: {"entity_id": "water_heater.bbbbb_coffee", "temperature": "203.1"},
-        CALL_RESULTS: [(8, ["07EF"]), (4, ["07EF"])],
+        CALL_RESULTS: [(8, ["07EF"])],
         USE_CALLBACK: False,
     },
     # Set steam temp to 255.1F
@@ -82,7 +82,7 @@ TESTS = {
         CALL_SERVICE: SERVICE_SET_TEMPERATURE,
         CALL_DOMAIN: WATER_HEATER_DOMAIN,
         CALL_DATA: {"entity_id": "water_heater.bbbbb_steam", "temperature": "255.1"},
-        CALL_RESULTS: [(9, ["09F7"]), (4, ["09F7"])],
+        CALL_RESULTS: [(9, ["09F7"])],
         USE_CALLBACK: False,
     },
     # Enable auto on/off for Tuesday
@@ -96,7 +96,6 @@ TESTS = {
         CALL_RESULTS: [
             (2, []),
             (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
-            (2, []),
         ],
         USE_CALLBACK: True,
     },
@@ -111,7 +110,6 @@ TESTS = {
         CALL_RESULTS: [
             (2, []),
             (11, ["FB06110611061106110611061106110000000000000000000000000000"]),
-            (2, []),
         ],
         USE_CALLBACK: True,
     },
@@ -126,8 +124,7 @@ TESTS = {
         },
         CALL_RESULTS: [
             (2, []),
-            (11, ["FF06110611050C06110611061106110000000000000000000000000000"]),
-            (2, []),
+            (11, ["FF0611050C061106110611061106110000000000000000000000000000"]),
         ],
         USE_CALLBACK: True,
     },
@@ -141,7 +138,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (12, ["16", "0078"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -157,7 +153,6 @@ TESTS = {
         CALL_RESULTS: [
             (14, ["0F", "1F"]),
             (14, ["13", "19"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -170,7 +165,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (13, ["10"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -183,7 +177,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (3, ["01"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -196,7 +189,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (3, ["00"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -209,7 +201,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (10, ["01"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -222,7 +213,6 @@ TESTS = {
         },
         CALL_RESULTS: [
             (10, ["00"]),
-            (1, []),
         ],
         USE_CALLBACK: False,
     },
@@ -236,7 +226,6 @@ TESTS = {
         CALL_RESULTS: [
             (2, []),
             (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
-            (2, []),
         ],
         USE_CALLBACK: True,
     },
@@ -250,7 +239,6 @@ TESTS = {
         CALL_RESULTS: [
             (2, []),
             (11, ["FE06110611061106110611061106110000000000000000000000000000"]),
-            (2, []),
         ],
         USE_CALLBACK: True,
     },

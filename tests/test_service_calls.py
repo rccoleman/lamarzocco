@@ -32,7 +32,7 @@ from custom_components.lamarzocco.const import (
     DOMAIN,
     MODELS,
     SERVICE_SET_AUTO_ON_OFF_ENABLE,
-    SERVICE_SET_AUTO_ON_OFF_HOURS,
+    SERVICE_SET_AUTO_ON_OFF_TIMES,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
@@ -56,7 +56,7 @@ SET_COFFEE_TEMP = 0
 SET_STEAM_TEMP = 1
 ENABLE_AUTO_ON_OFF = 2
 DISABLE_AUTO_ON_OFF = 3
-SET_AUTO_ON_OFF_HOURS = 4
+SET_AUTO_ON_OFF_TIMES = 4
 SET_DOSE = 5
 SET_PREBREW_TIMES = 6
 SET_DOSE_HOT_WATER = 7
@@ -94,8 +94,7 @@ TESTS = {
             "enable": "on",
         },
         CALL_RESULTS: [
-            (2, []),
-            (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
+            (5, ["FF"]),
         ],
         USE_CALLBACK: True,
     },
@@ -108,25 +107,23 @@ TESTS = {
             "enable": "off",
         },
         CALL_RESULTS: [
-            (2, []),
-            (11, ["FB06110611061106110611061106110000000000000000000000000000"]),
+            (5, ["FB"]),
         ],
         USE_CALLBACK: True,
     },
-    # Set auto on/off to 5AM to 12PM on Tuesday
-    SET_AUTO_ON_OFF_HOURS: {
-        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_HOURS,
+    # Set auto on/off to 5:05AM to 12:10PM on Tuesday
+    SET_AUTO_ON_OFF_TIMES: {
+        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_TIMES,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "day_of_week": "tue",
             "hour_on": "5",
+            "minute_on": "5",
             "hour_off": "12",
+            "minute_off": "10",
         },
-        CALL_RESULTS: [
-            (2, []),
-            (11, ["FF0611050C061106110611061106110000000000000000000000000000"]),
-        ],
-        USE_CALLBACK: True,
+        CALL_RESULTS: [(11, ["13", "050C"]), (11, ["22", "050A"])],
+        USE_CALLBACK: False,
     },
     # Set dose for key 2 to 120 pulses
     SET_DOSE: {
@@ -147,8 +144,8 @@ TESTS = {
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "key": "4",
-            "time_on": "3.1",
-            "time_off": "2.5",
+            "seconds_on": "3.1",
+            "seconds_off": "2.5",
         },
         CALL_RESULTS: [
             (14, ["0F", "1F"]),
@@ -224,8 +221,7 @@ TESTS = {
             "entity_id": "switch.bbbbb_auto_on_off",
         },
         CALL_RESULTS: [
-            (2, []),
-            (11, ["FF06110611061106110611061106110000000000000000000000000000"]),
+            (5, ["FF"]),
         ],
         USE_CALLBACK: True,
     },
@@ -237,8 +233,7 @@ TESTS = {
             "entity_id": "switch.bbbbb_auto_on_off",
         },
         CALL_RESULTS: [
-            (2, []),
-            (11, ["FE06110611061106110611061106110000000000000000000000000000"]),
+            (5, ["FE"]),
         ],
         USE_CALLBACK: True,
     },
@@ -338,12 +333,12 @@ class TestServices:
             mock_model_name.return_value = model
             await self.make_service_call(mock_send_msg, hass, DISABLE_AUTO_ON_OFF)
 
-    async def test_set_auto_on_off_hours(
+    async def test_set_auto_on_off_times(
         self, mock_call, mock_model_name, mock_send_msg, hass
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, SET_AUTO_ON_OFF_HOURS)
+            await self.make_service_call(mock_send_msg, hass, SET_AUTO_ON_OFF_TIMES)
 
     async def test_set_dose(self, mock_call, mock_model_name, mock_send_msg, hass):
         for model in MODELS:
@@ -428,7 +423,7 @@ class TestServices:
         """Test one service call"""
 
         def validate_results(arg_list, expected):
-            """Compared results to expected values."""
+            """Compare results to expected values."""
             assert len(arg_list) == len(expected)
             expect_iter = iter(expected)
             for call in arg_list:
@@ -445,6 +440,7 @@ class TestServices:
             """Callback is called from LMDirect instance context."""
             mock_send_msg.side_effect = None
             await self.process_data(AUTO_ON_OFF_DATA)
+            _LOGGER.debug(f"{self._current_status}")
 
         """Retrieve the test to run."""
         test_entry = TESTS[test]
@@ -456,6 +452,16 @@ class TestServices:
         """If we're running an auto on/off test, we need to send simulate incoming data."""
         if test_entry[USE_CALLBACK]:
             mock_send_msg.side_effect = callback_method
+
+            """We won't have done a query yet, so make a call that we can verify failure and mock."""
+            with pytest.raises(lmdirect.NotReady):
+                result = await hass.services.async_call(
+                    test_entry[CALL_DOMAIN],
+                    test_entry[CALL_SERVICE],
+                    test_entry[CALL_DATA],
+                    blocking=True,
+                )
+                await hass.async_block_till_done()
 
         """Make sure that mock calls during setup are zeroed out."""
         mock_send_msg.reset_mock()

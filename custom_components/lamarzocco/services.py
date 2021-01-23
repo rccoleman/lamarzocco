@@ -17,7 +17,7 @@ from .const import (
     PLATFORM,
     SCHEMA,
     SERVICE_SET_AUTO_ON_OFF_ENABLE,
-    SERVICE_SET_AUTO_ON_OFF_HOURS,
+    SERVICE_SET_AUTO_ON_OFF_TIMES,
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
@@ -46,20 +46,24 @@ async def async_setup_services(hass, config_entry):
         await call_service(lm.set_auto_on_off, day_of_week=day_of_week, enable=enable)
         return True
 
-    async def set_auto_on_off_hours(service):
+    async def set_auto_on_off_times(service):
         """Service call to configure auto on/off hours for a day."""
         day_of_week = service.data.get("day_of_week", None)
         hour_on = service.data.get("hour_on", None)
+        minute_on = service.data.get("minute_on", None)
         hour_off = service.data.get("hour_off", None)
+        minute_off = service.data.get("minute_off", None)
 
         _LOGGER.debug(
-            f"Setting auto on/off hours for {day_of_week} from {hour_on} to {hour_off}"
+            f"Setting auto on/off hours for {day_of_week} from {hour_on}:{minute_on} to {hour_off}:{minute_off}"
         )
         await call_service(
-            lm.set_auto_on_off_hours,
+            lm.set_auto_on_off_times,
             day_of_week=day_of_week,
             hour_on=hour_on,
+            minute_on=minute_on,
             hour_off=hour_off,
+            minute_off=minute_off,
         )
         return True
 
@@ -83,17 +87,17 @@ async def async_setup_services(hass, config_entry):
     async def set_prebrew_times(service):
         """Service call to set prebrew on time."""
         key = service.data.get("key", None)
-        time_on = service.data.get("time_on", None)
-        time_off = service.data.get("time_off", None)
+        seconds_on = service.data.get("seconds_on", None)
+        seconds_off = service.data.get("seconds_off", None)
 
         _LOGGER.debug(
-            f"Setting prebrew on time for key:{key} to time_on:{time_on} and off_time:{time_off}"
+            f"Setting prebrew on time for {key=} to {seconds_on=} and {seconds_off=}"
         )
         await call_service(
             lm.set_prebrew_times,
             key=key,
-            time_on=time_on,
-            time_off=time_off,
+            seconds_on=seconds_on,
+            seconds_off=seconds_off,
         )
         return True
 
@@ -125,25 +129,31 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
             FUNC: set_auto_on_off_enable,
         },
-        SERVICE_SET_AUTO_ON_OFF_HOURS: {
+        SERVICE_SET_AUTO_ON_OFF_TIMES: {
             SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
                 vol.Required("hour_on"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=23)
                 ),
+                vol.Optional("minute_on", default=0): vol.All(
+                    vol.Coerce(int), vol.Range(min=0, max=59)
+                ),
                 vol.Required("hour_off"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=23)
                 ),
+                vol.Optional("minute_off", default=0): vol.All(
+                    vol.Coerce(int), vol.Range(min=0, max=59)
+                ),
             },
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
-            FUNC: set_auto_on_off_hours,
+            FUNC: set_auto_on_off_times,
         },
         SERVICE_SET_PREBREW_TIMES: {
             SCHEMA: {
-                vol.Required("time_on"): vol.All(
+                vol.Required("seconds_on"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=5)
                 ),
-                vol.Required("time_off"): vol.All(
+                vol.Required("seconds_off"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=5)
                 ),
             },

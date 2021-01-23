@@ -93,6 +93,7 @@ ATTR_MAP_MAIN_LM = [
 
 ATTR_MAP_PREBREW_GS3_AV = [
     DATE_RECEIVED,
+    ENABLE_PREBREWING,
     PREBREWING_TON_K1,
     PREBREWING_TON_K2,
     PREBREWING_TON_K3,
@@ -105,6 +106,7 @@ ATTR_MAP_PREBREW_GS3_AV = [
 
 ATTR_MAP_PREBREW_LM = [
     DATE_RECEIVED,
+    ENABLE_PREBREWING,
     PREBREWING_TON_K1,
     PREBREWING_TOFF_K1,
 ]
@@ -122,26 +124,39 @@ ATTR_MAP_STEAM = [
 ATTR_MAP_AUTO_ON_OFF = [
     DATE_RECEIVED,
     SUN_AUTO,
-    SUN_ON,
-    SUN_OFF,
+    SUN_ON_HOUR,
+    SUN_ON_MIN,
+    SUN_OFF_HOUR,
+    SUN_OFF_MIN,
     MON_AUTO,
-    MON_ON,
-    MON_OFF,
+    MON_ON_HOUR,
+    MON_ON_MIN,
+    MON_OFF_HOUR,
+    MON_OFF_MIN,
     TUE_AUTO,
-    TUE_ON,
-    TUE_OFF,
+    TUE_ON_HOUR,
+    TUE_ON_MIN,
+    TUE_OFF_HOUR,
+    TUE_OFF_MIN,
     WED_AUTO,
-    WED_ON,
-    WED_OFF,
+    WED_ON_HOUR,
+    WED_ON_MIN,
+    WED_OFF_HOUR,
+    WED_OFF_MIN,
     THU_AUTO,
-    THU_ON,
-    THU_OFF,
+    THU_ON_HOUR,
+    THU_ON_MIN,
+    THU_OFF_HOUR,
+    THU_OFF_MIN,
     FRI_AUTO,
-    FRI_ON,
-    FRI_OFF,
+    FRI_ON_HOUR,
+    FRI_ON_MIN,
+    FRI_OFF_HOUR,
     SAT_AUTO,
-    SAT_ON,
-    SAT_OFF,
+    SAT_ON_HOUR,
+    SAT_ON_MIN,
+    SAT_OFF_HOUR,
+    SAT_OFF_MIN,
 ]
 
 ATTR_MAP_DRINK_STATS_GS3_AV = [
@@ -194,7 +209,7 @@ PLATFORM_SWITCH = "switch"
 
 """Service call names."""
 SERVICE_SET_AUTO_ON_OFF_ENABLE = "set_auto_on_off_enable"
-SERVICE_SET_AUTO_ON_OFF_HOURS = "set_auto_on_off_hours"
+SERVICE_SET_AUTO_ON_OFF_TIMES = "set_auto_on_off_times"
 SERVICE_SET_DOSE = "set_dose"
 SERVICE_SET_DOSE_HOT_WATER = "set_dose_hot_water"
 SERVICE_SET_PREBREW_TIMES = "set_prebrew_times"

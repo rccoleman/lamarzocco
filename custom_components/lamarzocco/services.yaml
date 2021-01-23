@@ -10,7 +10,7 @@ set_auto_on_off_enable:
       description: "Boolean value indicating whether to enable or disable auto on/off"
       example: "on"
 
-set_auto_on_off_hours:
+set_auto_on_off_times:
   # Description of the service
   description: Set the auto on and off times for each day of the week
   # Different fields that your service accepts
@@ -21,9 +21,15 @@ set_auto_on_off_hours:
     hour_on:
       description: The hour to turn the machine on (0..23)
       example: 6
+    minute_on:
+      description: The minute to turn the machine on (0..59)
+      example: 6
     hour_off:
       description: The hour to turn the machine off (0..23)
-      example: 17
+      example: 5
+    minute_off:
+      description: The minute to turn the machine off (0..59)
+      example: 10
 
 set_dose:
   # Description of the service
@@ -54,9 +60,9 @@ set_prebrew_times:
     key:
       description: "The key to program (1-4)"
       example: 1
-    time_on:
+    seconds_on:
       description: The time in seconds for the pump to run during prebrewing (0-5.9s)
       example: 1.1
-    time_off:
+    seconds_off:
       description: The time in seconds for the pump to stop during prebrewing (0-5.9s)
       example: 1.1

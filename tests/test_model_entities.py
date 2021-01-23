@@ -85,7 +85,7 @@ DATA = {
         ],
         SERVICES: [
             "set_auto_on_off_enable",
-            "set_auto_on_off_hours",
+            "set_auto_on_off_times",
             "set_dose",
             "set_dose_hot_water",
             "set_prebrew_times",
@@ -101,7 +101,7 @@ DATA = {
         ],
         SERVICES: [
             "set_auto_on_off_enable",
-            "set_auto_on_off_hours",
+            "set_auto_on_off_times",
             "set_dose_hot_water",
         ],
     },
@@ -115,7 +115,7 @@ DATA = {
         ],
         SERVICES: [
             "set_auto_on_off_enable",
-            "set_auto_on_off_hours",
+            "set_auto_on_off_times",
             "set_prebrew_times",
         ],
     },

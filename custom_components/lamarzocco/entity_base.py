@@ -6,8 +6,9 @@ from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.temperature import display_temp as show_temp
+from lmdirect.msgs import TEMP_KEYS, TSET_KEYS
 
-from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMP_KEY
+from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMPERATURE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -65,6 +66,12 @@ class EntityBase(RestoreEntity):
             "sw_version": self._lm.firmware_version,
         }
 
+    def _get_key(self, k):
+        """Construct tag name if needed."""
+        if isinstance(k, tuple):
+            k = "_".join(k)
+        return k
+
     @property
     def state_attributes(self):
         """Return the state attributes."""
@@ -75,7 +82,7 @@ class EntityBase(RestoreEntity):
                 v = str(v)
 
             """Convert temps to Fahrenheit if needed."""
-            if TEMP_KEY in k:
+            if k in TEMP_KEYS:
                 v = show_temp(
                     self._hass,
                     v,
@@ -84,7 +91,13 @@ class EntityBase(RestoreEntity):
                 )
             return v
 
-        data = self._lm._current_status
-        map = self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
+        def convert_key(k):
+            return TEMPERATURE if k in TSET_KEYS else k
 
-        return {k: convert_value(k, data[k]) for k in map if k in data}
+        data = self._lm._current_status
+        map = [
+            self._get_key(k)
+            for k in self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
+        ]
+
+        return {convert_key(k): convert_value(k, data[k]) for k in map if k in data}

@@ -7,8 +7,6 @@ from homeassistant.components.water_heater import (
     WaterHeaterEntity,
 )
 from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
-from homeassistant.helpers.temperature import display_temp as show_temp
-from lmdirect.msgs import TSET_COFFEE, TSET_STEAM
 
 from .const import (
     ATTR_MAP_COFFEE,
@@ -108,25 +106,6 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         return self._lm.current_status.get(
             self._entities[self._object_id][ENTITY_TAG], 0
         )
-
-    @property
-    def state_attributes(self):
-        """Return the state attributes."""
-        tag = (
-            TSET_COFFEE
-            if self._entities[self._object_id][ENTITY_TYPE] == TYPE_COFFEE_TEMP
-            else TSET_STEAM
-        )
-        value = self._lm.current_status.get(tag, 0)
-        return {
-            **super().state_attributes,
-            "temperature": show_temp(
-                self._hass,
-                value,
-                TEMP_CELSIUS,
-                PRECISION_TENTHS,
-            ),
-        }
 
     @property
     def unit_of_measurement(self):

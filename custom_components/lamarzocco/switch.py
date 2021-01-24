@@ -3,7 +3,7 @@
 import logging
 
 from homeassistant.components.switch import SwitchEntity
-from lmdirect.msgs import GLOBAL_AUTO, POWER
+from lmdirect.msgs import AUTO, GLOBAL, POWER
 
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
@@ -46,7 +46,7 @@ ENTITIES = {
         ENTITY_FUNC: "set_power",
     },
     "auto_on_off": {
-        ENTITY_TAG: GLOBAL_AUTO,
+        ENTITY_TAG: (GLOBAL, AUTO),
         ENTITY_NAME: "Auto On Off",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_AUTO_ON_OFF,
@@ -90,7 +90,6 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     def __init__(self, lm, switch_type, hass, config_entry):
         """Initialise switches."""
         self._object_id = switch_type
-        self._temp_state = None
         self._hass = hass
         self._lm = lm
         self._entities = ENTITIES
@@ -103,22 +102,16 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
         await call_service(
             getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC]), True
         )
-        self._temp_state = True
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
         await call_service(
             getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC]), False
         )
-        self._temp_state = False
 
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        reported_state = self._lm.current_status.get(
-            self._entities[self._object_id][ENTITY_TAG]
+        return self._lm.current_status.get(
+            self._get_key(self._entities[self._object_id][ENTITY_TAG]), False
         )
-        if self._temp_state == reported_state:
-            self._temp_state = None
-
-        return self._temp_state if self._temp_state is not None else reported_state

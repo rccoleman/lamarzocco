@@ -2,14 +2,7 @@
 
 import logging
 
-from lmdirect.msgs import (
-    CONTINUOUS,
-    DRINKS_K1,
-    DRINKS_K2,
-    DRINKS_K3,
-    DRINKS_K4,
-    TOTAL_FLUSHING,
-)
+from lmdirect.msgs import CONTINUOUS, DRINKS, TOTAL_FLUSHING
 
 from .const import (
     ATTR_MAP_DRINK_STATS_GS3_AV,
@@ -35,10 +28,10 @@ _LOGGER = logging.getLogger(__name__)
 ENTITIES = {
     "drink_stats": {
         ENTITY_TAG: [
-            DRINKS_K1,
-            DRINKS_K2,
-            DRINKS_K3,
-            DRINKS_K4,
+            (DRINKS, "k1"),
+            (DRINKS, "k2"),
+            (DRINKS, "k3"),
+            (DRINKS, "k4"),
             CONTINUOUS,
             TOTAL_FLUSHING,
         ],
@@ -86,7 +79,7 @@ class LaMarzoccoSensor(EntityBase):
     def available(self):
         """Return if sensor is available."""
         return all(
-            self._lm.current_status.get(x) is not None
+            self._lm.current_status.get(self._get_key(x)) is not None
             for x in self._entities[self._object_id][ENTITY_TAG]
         )
 
@@ -94,7 +87,7 @@ class LaMarzoccoSensor(EntityBase):
     def state(self):
         """State of the sensor."""
         entities = self._entities[self._object_id][ENTITY_TAG]
-        return sum([self._lm.current_status.get(x, 0) for x in entities])
+        return sum([self._lm.current_status.get(self._get_key(x), 0) for x in entities])
 
     @property
     def unit_of_measurement(self):

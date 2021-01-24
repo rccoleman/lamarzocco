@@ -132,41 +132,55 @@ DATA = {
             "continuous_offset": 0,
             "update_available": "none",
             "global_auto": "Enabled",
-            "mon": "Enabled",
-            "tue": "Enabled",
-            "wed": "Enabled",
-            "thu": "Enabled",
-            "fri": "Enabled",
-            "sat": "Enabled",
-            "sun": "Enabled",
+            "mon_auto": "Enabled",
+            "tue_auto": "Enabled",
+            "wed_auto": "Enabled",
+            "thu_auto": "Enabled",
+            "fri_auto": "Enabled",
+            "sat_auto": "Enabled",
+            "sun_auto": "Enabled",
             "sun_on_hour": 6,
             "sun_on_min": 0,
+            "sun_on_time": "06:00",
             "sun_off_hour": 17,
             "sun_off_min": 0,
+            "sun_off_time": "17:00",
             "mon_on_hour": 6,
             "mon_on_min": 0,
+            "mon_on_time": "06:00",
             "mon_off_hour": 17,
             "mon_off_min": 0,
+            "mon_off_time": "17:00",
             "tue_on_hour": 6,
             "tue_on_min": 0,
+            "tue_on_time": "06:00",
             "tue_off_hour": 17,
             "tue_off_min": 0,
+            "tue_off_time": "17:00",
             "wed_on_hour": 6,
             "wed_on_min": 0,
+            "wed_on_time": "06:00",
             "wed_off_hour": 17,
             "wed_off_min": 0,
+            "wed_off_time": "17:00",
             "thu_on_hour": 6,
             "thu_on_min": 0,
+            "thu_on_time": "06:00",
             "thu_off_hour": 17,
             "thu_off_min": 0,
+            "thu_off_time": "17:00",
             "fri_on_hour": 6,
             "fri_on_min": 0,
+            "fri_on_time": "06:00",
             "fri_off_hour": 17,
             "fri_off_min": 0,
+            "fri_off_time": "17:00",
             "sat_on_hour": 6,
             "sat_on_min": 0,
+            "sat_on_time": "06:00",
             "sat_off_hour": 17,
             "sat_off_min": 0,
+            "sat_off_time": "17:00",
             "auto_bitfield": 0xFF,
         },
     },
@@ -322,6 +336,12 @@ class TestMessages:
     async def send_items(self, mock_send_msg, hass, items):
         """Inject data and compare results."""
 
+        def _get_key(k):
+            """Construct tag name if needed."""
+            if isinstance(k, tuple):
+                k = "_".join(k)
+            return k
+
         expected = {}
         result = {}
 
@@ -335,7 +355,7 @@ class TestMessages:
                 expected.update(resp)
                 print(f"SENDING {msg} expecting {resp}")
                 self._current_status.update(
-                    {GATEWAY_DRINK_MAP[x]: 0 for x in range(-1, 5)}
+                    {_get_key(GATEWAY_DRINK_MAP[x]): 0 for x in range(-1, 5)}
                 )
                 self._current_status.update({UPDATE_AVAILABLE: "none"})
                 assert await self.process_data(msg)

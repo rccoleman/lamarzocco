@@ -111,6 +111,9 @@ ATTR_MAP_STEAM = [
 
 ATTR_MAP_AUTO_ON_OFF = [
     DATE_RECEIVED,
+    (SUN, AUTO),
+    (SUN, ON, TIME),
+    (SUN, OFF, TIME),
     (MON, AUTO),
     (MON, ON, TIME),
     (MON, OFF, TIME),
@@ -129,9 +132,6 @@ ATTR_MAP_AUTO_ON_OFF = [
     (SAT, AUTO),
     (SAT, ON, TIME),
     (SAT, OFF, TIME),
-    (SUN, AUTO),
-    (SUN, ON, TIME),
-    (SUN, OFF, TIME),
 ]
 
 ATTR_MAP_DRINK_STATS_GS3_AV = [

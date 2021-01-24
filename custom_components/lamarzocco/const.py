@@ -1,5 +1,6 @@
 """Constants for the La Marzocco integration."""
 
+from lmdirect.const import MODEL_NAME
 from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
@@ -32,6 +33,7 @@ MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
 ATTR_MAP_MAIN_GS3_AV = [
     DATE_RECEIVED,
     MACHINE_NAME,
+    MODEL_NAME,
     UPDATE_AVAILABLE,
     POWER_MYSTERY,
     HEATING_STATE,
@@ -53,6 +55,7 @@ ATTR_MAP_MAIN_GS3_AV = [
 ATTR_MAP_MAIN_GS3_MP = [
     DATE_RECEIVED,
     MACHINE_NAME,
+    MODEL_NAME,
     UPDATE_AVAILABLE,
     POWER_MYSTERY,
     HEATING_STATE,
@@ -66,6 +69,7 @@ ATTR_MAP_MAIN_GS3_MP = [
 ATTR_MAP_MAIN_LM = [
     DATE_RECEIVED,
     MACHINE_NAME,
+    MODEL_NAME,
     UPDATE_AVAILABLE,
     POWER_MYSTERY,
     HEATING_STATE,

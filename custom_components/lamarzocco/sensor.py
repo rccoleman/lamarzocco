@@ -1,80 +1,100 @@
-"""Sensor platform for the Corona virus."""
+"""Sensor platform for La Marzocco espresso machines."""
+
 import logging
 
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from lmdirect.msgs import CONTINUOUS, DRINKS, TOTAL_FLUSHING
 
-from .const import *
-from .entity_base import EntityCommon
+from .const import (
+    ATTR_MAP_DRINK_STATS_GS3_AV,
+    ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+    DOMAIN,
+    ENTITY_CLASS,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    ENTITY_TAG,
+    ENTITY_TYPE,
+    ENTITY_UNITS,
+    MODEL_GS3_AV,
+    MODEL_GS3_MP,
+    MODEL_LM,
+    TYPE_DRINK_STATS,
+)
+from .entity_base import EntityBase
+from .services import async_setup_entity_services
 
 _LOGGER = logging.getLogger(__name__)
 
 ENTITIES = {
-    "coffee_temp": {
-        ENTITY_TAG: TEMP_COFFEE,
-        ENTITY_NAME: "Coffee Temp",
-        ENTITY_MAP: ATTR_STATUS_MAP_COFFEE_TEMP,
-        ENTITY_TYPE: TYPE_COFFEE_TEMP,
-        ENTITY_ICON: "mdi:water-boiler",
-    },
-    "boiler_temp": {
-        ENTITY_TAG: TEMP_STEAM,
-        ENTITY_NAME: "Steam Temp",
-        ENTITY_MAP: ATTR_STATUS_MAP_STEAM_TEMP,
-        ENTITY_TYPE: TYPE_STEAM_TEMP,
-        ENTITY_ICON: "mdi:water-boiler",
+    "drink_stats": {
+        ENTITY_TAG: [
+            (DRINKS, "k1"),
+            (DRINKS, "k2"),
+            (DRINKS, "k3"),
+            (DRINKS, "k4"),
+            CONTINUOUS,
+            TOTAL_FLUSHING,
+        ],
+        ENTITY_NAME: "Total Drinks",
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_DRINK_STATS_GS3_AV,
+            MODEL_GS3_MP: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+            MODEL_LM: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+        },
+        ENTITY_TYPE: TYPE_DRINK_STATS,
+        ENTITY_ICON: "mdi:coffee",
+        ENTITY_CLASS: None,
+        ENTITY_UNITS: "drinks",
     },
 }
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Defer sensor setup to the shared sensor module."""
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    """Set up sensor entities."""
+    lm = hass.data[DOMAIN][config_entry.entry_id]
 
     async_add_entities(
-        LaMarzoccoSensor(coordinator, sensor_type, hass.config.units.is_metric)
+        LaMarzoccoSensor(lm, sensor_type, hass, config_entry)
         for sensor_type in ENTITIES
+        if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
 
+    await async_setup_entity_services(lm)
 
-class LaMarzoccoSensor(EntityCommon):
-    """Sensor representing corona virus data."""
 
-    def __init__(self, coordinator, sensor_type, is_metric):
-        """Initialize coronavirus sensor."""
-        super().__init__(coordinator)
+class LaMarzoccoSensor(EntityBase):
+    """Sensor representing espresso machine temperature data."""
+
+    def __init__(self, lm, sensor_type, hass, config_entry):
+        """Initialize sensors"""
         self._object_id = sensor_type
-        self._coordinator = coordinator
-        self._is_metric = is_metric
-        self.ENTITIES = ENTITIES
-        self._entity_type = self.ENTITIES[self._object_id][ENTITY_TYPE]
+        self._lm = lm
+        self._entities = ENTITIES
+        self._hass = hass
+        self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
 
-        self.coordinator._device.register_callback(self.update_callback)
+        self._lm.register_callback(self.update_callback)
 
     @property
     def available(self):
         """Return if sensor is available."""
-        return (
-            self.coordinator._device.current_status.get(
-                self.ENTITIES[self._object_id][ENTITY_TAG]
-            )
-            is not None
+        return all(
+            self._lm.current_status.get(self._get_key(x)) is not None
+            for x in self._entities[self._object_id][ENTITY_TAG]
         )
 
     @property
     def state(self):
         """State of the sensor."""
-        return self.coordinator._device.current_status.get(
-            self.ENTITIES[self._object_id][ENTITY_TAG]
-        )
+        entities = self._entities[self._object_id][ENTITY_TAG]
+        return sum([self._lm.current_status.get(self._get_key(x), 0) for x in entities])
 
     @property
     def unit_of_measurement(self):
-        """Return unit of measurement."""
-
-        """Machine returns temperature in C, but HA will convert to the right locale"""
-        return "°C"
+        """Unit of measurement."""
+        return self._entities[self._object_id][ENTITY_UNITS]
 
     @property
     def device_class(self):
         """Device class for sensor"""
-        return "temperature"
+        return self._entities[self._object_id][ENTITY_CLASS]

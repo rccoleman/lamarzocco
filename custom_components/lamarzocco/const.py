@@ -1,80 +1,171 @@
 """Constants for the La Marzocco integration."""
 
+from lmdirect.const import MODEL_NAME
 from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
 
+"""Set polling interval at 20s."""
+POLLING_INTERVAL = 30
+
+"""Configuration parameters"""
 CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
 CONF_CLIENT_SECRET = "client_secret"
+CONF_KEY = "key"
+CONF_MACHINE_NAME = "machine_name"
+CONF_MODEL_NAME = "model_name"
+
+DEFAULT_PORT = 1774
 
 DEFAULT_NAME = "Espresso Machine"
 
-ATTRIBUTION = "Data from La Marzocco"
+TEMPERATURE = "temperature"
 
-COMMAND_ON = {"status": "ON"}
-COMMAND_STANDBY = {"status": "STANDBY"}
+SCHEMA = "schema"
+MODELS_SUPPORTED = "supported"
+FUNC = "func"
 
-TEMP_KEYS = ["TSET", "TEMP"]
+SUPPORTED = "supported"
+MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM]
 
-ATTR_STATUS_MAP_MAIN = {
-    RECEIVED: "date_received",
-    DOSE_K1: "dose_k1",
-    DOSE_K2: "dose_k2",
-    DOSE_K3: "dose_k3",
-    DOSE_K4: "dose_k4",
-    DOSE_K5: "dose_k5",
-    DOSE_TEA: "dose_tea",
-}
+"""List of attributes for each entity based on model."""
+ATTR_MAP_MAIN_GS3_AV = [
+    DATE_RECEIVED,
+    MACHINE_NAME,
+    MODEL_NAME,
+    UPDATE_AVAILABLE,
+    POWER_MYSTERY,
+    HEATING_STATE,
+    KEY_ACTIVE,
+    CURRENT_PULSE_COUNT,
+    (DOSE, "k1"),
+    (DOSE, "k2"),
+    (DOSE, "k3"),
+    (DOSE, "k4"),
+    (DOSE, "k5"),
+    DOSE_HOT_WATER,
+    COFFEE_HEATING_ELEMENT_HOURS,
+    STEAM_HEATING_ELEMENT_HOURS,
+    DAYS_SINCE_BUILT,
+    WATER_ON_SECONDS,
+    FRONT_PANEL_DISPLAY,
+]
 
-ATTR_STATUS_MAP_PREBREW = {
-    RECEIVED: "date_received",
-    TON_PREBREWING_K1: "prebrewing_ton_k1",
-    TON_PREBREWING_K2: "prebrewing_ton_k2",
-    TON_PREBREWING_K3: "prebrewing_ton_k3",
-    TON_PREBREWING_K4: "prebrewing_ton_k4",
-    TOFF_PREBREWING_K1: "prebrewing_toff_k1",
-    TOFF_PREBREWING_K2: "prebrewing_toff_k2",
-    TOFF_PREBREWING_K3: "prebrewing_toff_k3",
-    TOFF_PREBREWING_K4: "prebrewing_toff_k4",
-}
+ATTR_MAP_MAIN_GS3_MP = [
+    DATE_RECEIVED,
+    MACHINE_NAME,
+    MODEL_NAME,
+    UPDATE_AVAILABLE,
+    POWER_MYSTERY,
+    HEATING_STATE,
+    COFFEE_HEATING_ELEMENT_HOURS,
+    STEAM_HEATING_ELEMENT_HOURS,
+    DAYS_SINCE_BUILT,
+    WATER_ON_SECONDS,
+    FRONT_PANEL_DISPLAY,
+]
 
-ATTR_STATUS_MAP_COFFEE_TEMP = {
-    RECEIVED: "date_received",
-    TSET_COFFEE: "coffee_temp_setting",
-}
+ATTR_MAP_MAIN_LM = [
+    DATE_RECEIVED,
+    MACHINE_NAME,
+    MODEL_NAME,
+    UPDATE_AVAILABLE,
+    POWER_MYSTERY,
+    HEATING_STATE,
+    DAYS_SINCE_BUILT,
+    WATER_ON_SECONDS,
+]
 
-ATTR_STATUS_MAP_STEAM_TEMP = {
-    RECEIVED: "date_received",
-    TSET_STEAM: "steam_temp_setting",
-}
+ATTR_MAP_PREBREW_GS3_AV = [
+    DATE_RECEIVED,
+    ENABLE_PREBREWING,
+    (PREBREWING, TON, "k1"),
+    (PREBREWING, TON, "k2"),
+    (PREBREWING, TON, "k3"),
+    (PREBREWING, TON, "k4"),
+    (PREBREWING, TOFF, "k1"),
+    (PREBREWING, TOFF, "k2"),
+    (PREBREWING, TOFF, "k3"),
+    (PREBREWING, TOFF, "k4"),
+]
 
-ATTR_STATUS_MAP_AUTO_ON_OFF = {
-    RECEIVED: "date_received",
-    SUN_AUTO: "sun",
-    SUN_ON: "sun_on",
-    SUN_OFF: "sun_off",
-    MON_AUTO: "mon",
-    MON_ON: "mon_on",
-    MON_OFF: "mon_off",
-    TUE_AUTO: "tue",
-    TUE_ON: "tue_on",
-    TUE_OFF: "tue_off",
-    WED_AUTO: "wed",
-    WED_ON: "wed_on",
-    WED_OFF: "wed_off",
-    THU_AUTO: "thu",
-    THU_ON: "thu_on",
-    THU_OFF: "thu_off",
-    FRI_AUTO: "fri",
-    FRI_ON: "fri_on",
-    FRI_OFF: "fri_off",
-    SAT_AUTO: "sat",
-    SAT_ON: "sat_on",
-    SAT_OFF: "sat_off",
-}
+ATTR_MAP_PREBREW_LM = [
+    DATE_RECEIVED,
+    ENABLE_PREBREWING,
+    (PREBREWING, TON, "k1"),
+    (PREBREWING, TOFF, "k1"),
+]
 
-DAYS = [SUN_AUTO, MON_AUTO, TUE_AUTO, WED_AUTO, THU_AUTO, FRI_AUTO, SAT_AUTO]
+ATTR_MAP_COFFEE = [
+    DATE_RECEIVED,
+    TSET_COFFEE,
+    COFFEE_HEATING_ELEMENT_HOURS,
+]
+
+ATTR_MAP_STEAM = [
+    DATE_RECEIVED,
+    TSET_STEAM,
+    STEAM_HEATING_ELEMENT_HOURS,
+]
+
+ATTR_MAP_AUTO_ON_OFF = [
+    DATE_RECEIVED,
+    (SUN, AUTO),
+    (SUN, ON, TIME),
+    (SUN, OFF, TIME),
+    (MON, AUTO),
+    (MON, ON, TIME),
+    (MON, OFF, TIME),
+    (TUE, AUTO),
+    (TUE, ON, TIME),
+    (TUE, OFF, TIME),
+    (WED, AUTO),
+    (WED, ON, TIME),
+    (WED, OFF, TIME),
+    (THU, AUTO),
+    (THU, ON, TIME),
+    (THU, OFF, TIME),
+    (FRI, AUTO),
+    (FRI, ON, TIME),
+    (FRI, OFF, TIME),
+    (SAT, AUTO),
+    (SAT, ON, TIME),
+    (SAT, OFF, TIME),
+]
+
+ATTR_MAP_DRINK_STATS_GS3_AV = [
+    DATE_RECEIVED,
+    (DRINKS, "k1"),
+    (DRINKS, "k2"),
+    (DRINKS, "k3"),
+    (DRINKS, "k4"),
+    CONTINUOUS,
+    TOTAL_FLUSHING,
+    DRINKS_HOT_WATER,
+    HOT_WATER,
+    MACHINE_RUNNING_SECONDS,
+    PUMP_ON_SECONDS,
+    DRINK_MYSTERY,
+    TOTAL_COFFEE,
+    TOTAL_COFFEE_ACTIVATIONS,
+    HOT_WATER_2,
+]
+
+ATTR_MAP_DRINK_STATS_GS3_MP_LM = [
+    DATE_RECEIVED,
+    (DRINKS, "k1"),
+    CONTINUOUS,
+    TOTAL_FLUSHING,
+    DRINKS_HOT_WATER,
+    HOT_WATER,
+    MACHINE_RUNNING_SECONDS,
+    PUMP_ON_SECONDS,
+    DRINK_MYSTERY,
+    TOTAL_COFFEE,
+    TOTAL_COFFEE_ACTIVATIONS,
+    HOT_WATER_2,
+]
 
 ENTITY_TAG = "tag"
 ENTITY_NAME = "name"
@@ -82,15 +173,16 @@ ENTITY_MAP = "map"
 ENTITY_TYPE = "type"
 ENTITY_ICON = "icon"
 ENTITY_FUNC = "func"
+ENTITY_CLASS = "class"
+ENTITY_UNITS = "units"
 
-FUNC_BASE = "self.coordinator._device."
+PLATFORM = "platform"
+PLATFORM_SENSOR = "sensor"
+PLATFORM_SWITCH = "switch"
 
-# Services
-SERVICE_SET_COFFEE_TEMP = "set_coffee_temp"
-SERVICE_SET_STEAM_TEMP = "set_steam_temp"
-SERVICE_ENABLE_AUTO_ON_OFF = "enable_auto_on_off"
-SERVICE_DISABLE_AUTO_ON_OFF = "disable_auto_on_off"
-SERVICE_SET_AUTO_ON_OFF_HOURS = "set_auto_on_off_hours"
+"""Service call names."""
+SERVICE_SET_AUTO_ON_OFF_ENABLE = "set_auto_on_off_enable"
+SERVICE_SET_AUTO_ON_OFF_TIMES = "set_auto_on_off_times"
 SERVICE_SET_DOSE = "set_dose"
-SERVICE_SET_DOSE_TEA = "set_dose_tea"
+SERVICE_SET_DOSE_HOT_WATER = "set_dose_hot_water"
 SERVICE_SET_PREBREW_TIMES = "set_prebrew_times"

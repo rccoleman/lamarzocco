@@ -2,13 +2,20 @@
 
 import logging
 
-from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
+from homeassistant.const import ATTR_ATTRIBUTION, PRECISION_TENTHS, TEMP_CELSIUS
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.temperature import display_temp as show_temp
 from lmdirect.msgs import TEMP_KEYS, TSET_KEYS
 
-from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMPERATURE
+from .const import (
+    DOMAIN,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    MANUFACTURER,
+    TEMPERATURE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,9 +66,9 @@ class EntityBase(RestoreEntity):
         return {
             "identifiers": {(DOMAIN, self._lm.serial_number)},
             "name": self._lm.machine_name,
-            "manufacturer": "La Marzocco",
+            "manufacturer": MANUFACTURER,
             "model": self._lm.true_model_name,
-            "default_name": "La Marzocco " + self._lm.true_model_name,
+            "default_name": f"{MANUFACTURER} {self._lm.true_model_name}",
             "entry_type": "None",
             "sw_version": self._lm.firmware_version,
         }
@@ -100,4 +107,7 @@ class EntityBase(RestoreEntity):
             for k in self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
         ]
 
-        return {convert_key(k): convert_value(k, data[k]) for k in map if k in data}
+        return {
+            **{convert_key(k): convert_value(k, data[k]) for k in map if k in data},
+            ATTR_ATTRIBUTION: MANUFACTURER,
+        }

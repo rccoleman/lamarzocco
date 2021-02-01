@@ -4,7 +4,6 @@ from lmdirect.const import MODEL_NAME
 from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
-MANUFACTURER = "La Marzocco"
 
 """Set polling interval at 20s."""
 POLLING_INTERVAL = 30

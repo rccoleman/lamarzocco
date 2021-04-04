@@ -126,16 +126,16 @@ DATA = {
 class TestModels:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
-    async def test_gs3_av(self, mock_send_msg, hass):
+    async def test_gs3_av(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_GS3_AV)
 
-    async def test_gs3_mp(self, mock_send_msg, hass):
+    async def test_gs3_mp(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_GS3_MP)
 
-    async def test_gs3_lm(self, mock_send_msg, hass):
+    async def test_gs3_lm(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_LM)
 
-    async def test_unknown_model(self, mock_send_msg, hass):
+    async def test_unknown_model(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_UNKNOWN)
 
     async def setup_model(self, mock_send_msg, hass, model):

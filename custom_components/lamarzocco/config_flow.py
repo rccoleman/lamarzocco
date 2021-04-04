@@ -3,7 +3,6 @@ import logging
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
-from authlib.integrations.base_client.errors import OAuthError
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
@@ -48,7 +47,7 @@ async def validate_input(hass: core.HomeAssistant, data):
         if not machine_info:
             raise CannotConnect
 
-    except OAuthError:
+    except LaMarzocco.AuthFail:
         raise InvalidAuth
     except Exception:
         _LOGGER.exception("Unexpected exception")

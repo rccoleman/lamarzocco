@@ -1,5 +1,6 @@
 """Tests for the La Marzocco config flow."""
 from unittest import mock
+from unittest.mock import patch
 
 import lmdirect
 from homeassistant import core, data_entry_flow
@@ -11,7 +12,6 @@ from homeassistant.const import (
     CONF_PORT,
     CONF_USERNAME,
 )
-from pytest_homeassistant_custom_component.async_mock import patch
 
 from custom_components.lamarzocco import config_flow
 from custom_components.lamarzocco.config_flow import InvalidAuth, validate_input

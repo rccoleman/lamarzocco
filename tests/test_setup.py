@@ -1,11 +1,11 @@
 """Test La Marzocco machine setup."""
 import logging
 from copy import deepcopy
+from unittest.mock import patch
 
 import lmdirect
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.lamarzocco.const import (

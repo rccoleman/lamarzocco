@@ -1,13 +1,13 @@
 """Test La Marzocco model-specific entity creation."""
 import logging
 from copy import deepcopy
+from unittest.mock import patch
 
 import lmdirect
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity_registry import async_entries_for_config_entry
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.lamarzocco.const import (

@@ -1,7 +1,7 @@
 """Test La Marzocco service calls"""
 import logging
 from copy import deepcopy
-from unittest.mock import PropertyMock
+from unittest.mock import PropertyMock, patch
 
 import lmdirect
 import pytest
@@ -18,7 +18,6 @@ from homeassistant.const import (
 from homeassistant.exceptions import ServiceNotFound
 from homeassistant.setup import async_setup_component
 from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
-from pytest_homeassistant_custom_component.async_mock import patch
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from voluptuous.error import MultipleInvalid
 

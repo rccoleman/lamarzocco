@@ -1,16 +1,11 @@
 {
   "domain": "lamarzocco",
   "name": "La Marzocco",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": [
-    "lmdirect==0.7.1",
-    "authlib==0.15.2",
-    "pycryptodome==3.9.9",
-    "httpx==0.16.1"
-  ],
+  "requirements": ["lmdirect==0.7.1"],
   "ssdp": [],
   "zeroconf": ["_marzocco._tcp.local."],
   "homekit": {},

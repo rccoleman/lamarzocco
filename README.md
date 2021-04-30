@@ -57,7 +57,7 @@ Clicking "Configure" brings you to this:
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Discovered.png)
 
-Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit. The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.
+Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit. The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.  You can try the `client_id` and `client_secret` above first to see if they work before sniffing your network traffic, if you want.
 
 ### Manual
 

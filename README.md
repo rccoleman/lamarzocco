@@ -6,13 +6,24 @@
 
 ## Overview
 
-This is a prototype integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app. This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
+This is an integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app. This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
 
-Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), I built an integration that makes configuration/machine status available to Home Assistant and allows the user to turn the machine to "on" or "standby".
+Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), this integration presents a comprehsnive machine status through 6 different entities and allows the user to change the machine configuration from Home Assistant.
 
 Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token and encryption key for the local API. I wrote a Python script to use with `mitmproxy` to get this information and you can find instructions [here](https://github.com/rccoleman/lmdirect/blob/master/Credentials.md).
 
+After digging around in the Android La Marzocco Home app, I found the same client_id and client_secret embedded in the app that several users (including me) discovered "the hard way".  You're welcome to try these first before going through the annoying effort of using mitmproxy:
+
+```
+CLIENT_ID: 4_2d2impykbv0g44oc88kogw000s8wgwwgws80ccowkcg0wk8o8w
+CLIENT_SECRET: 1m52x65srmysk4owk0ww4ok84sw484ww0gsoo0kc0gs4gcwkko
+```
+
+Please report to the thread above if these values work or don't work for you, and if you discover some other values.  I'm trying to figure out what kind of variety is out there and whether it matters.
+
 This integration currently only supports a single espresso machine. It's possible to support multiple machines, but I only have one and I suspect that'll be the case for most folks. If anyone has a fleet of espresso machines and is willing to provide data and feedback, I'm happy to entertain adding support for more than one machine.
+
+A companion Lovelace card that uses this integration to retrieve data and control the machine can be found [here](https://github.com/rccoleman/lovelace-lamarzocco-config-card).
 
 ## Installation
 
@@ -46,7 +57,7 @@ Clicking "Configure" brings you to this:
 
 ![](https://github.com/rccoleman/lamarzocco/blob/master/images/Config_Flow_Discovered.png)
 
-Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit. The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.
+Fill in the `client_id`, `client_secret`, `username`, and `password` as requested and hit "submit. The integration will attempt to connect to the cloud server and your local machine to ensure that everything is correct and let you correct it if not.  You can try the `client_id` and `client_secret` above first to see if they work before sniffing your network traffic, if you want.
 
 ### Manual
 

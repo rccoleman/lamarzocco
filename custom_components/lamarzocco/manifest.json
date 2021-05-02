@@ -10,5 +10,6 @@
   "zeroconf": ["_marzocco._tcp.local."],
   "homekit": {},
   "dependencies": [],
-  "codeowners": ["@rccoleman"]
+  "codeowners": ["@rccoleman"],
+  "iot_class": "local_polling"
 }

@@ -29,6 +29,13 @@ from .const import (
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
 
+"""Min/Max coffee and team temps."""
+COFFEE_MIN_TEMP = 87
+COFFEE_MAX_TEMP = 100
+
+STEAM_MIN_TEMP = 110
+STEAM_MAX_TEMP = 132
+
 _LOGGER = logging.getLogger(__name__)
 
 ENTITIES = {
@@ -123,9 +130,14 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         return TEMP_CELSIUS
 
     @property
-    def capability_attributes(self):
-        """Return capability attributes."""
-        return None
+    def min_temp(self):
+        """Return the unit of measurement."""
+        return COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
+
+    @property
+    def max_temp(self):
+        """Return the unit of measurement."""
+        return COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""

@@ -96,14 +96,9 @@ Thw switches control their respective functions globally, i.e., enable/disable a
 
 ## Services
 
-#### Service `water_heater.set_temp`
+The `water_heater` and `switch` entities support the standard services for those domains, described [here](https://www.home-assistant.io/integrations/water_heater/) and [here](https://www.home-assistant.io/integrations/switch/), respectively.
 
-Set the temperature of the coffee or steam boilers based on the entity_id.
-
-| Service data attribute | Optional | Description                                                                                                                                                 |
-| ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `entity_id`            | no       | Name of the entity whose temp you want to modify, `water_heater.<machine_name>_coffee` or `water_heater.<machine_name>_steam`. Temperatures are pre-offset. |
-| `temperature`          | no       | The temperature to set, in local units, e.g., 205.2                                                                                                         |
+The following domain-specific services are also available:
 
 #### Service `lamarzocco.set_auto_on_off_enable`
 

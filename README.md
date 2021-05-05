@@ -127,7 +127,7 @@ Sets the dose for a specific key.
 
 | Service data attribute | Optional | Description                                             |
 | ---------------------- | -------- | ------------------------------------------------------- |
-| `key`                  | no       | The key to program (1-5)`                               |
+| `key`                  | no       | The key to program (1-5)                                |
 | `pulses`               | no       | The dose in pulses (roughly ~0.5ml per pulse), e.g. 120 |
 
 #### Service `lamarzocco.set_dose_hot_water`
@@ -136,7 +136,7 @@ Sets the dose for hot water.
 
 | Service data attribute | Optional | Description                                        |
 | ---------------------- | -------- | -------------------------------------------------- |
-| `seconds`              | no       | The number of seconds to stream hot water`, e.g. 8 |
+| `seconds`              | no       | The number of seconds to stream hot water, e.g. 8  |
 
 #### Service `lamarzocco.set_prebrew_times`
 

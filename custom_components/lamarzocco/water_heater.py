@@ -7,6 +7,7 @@ from homeassistant.components.water_heater import (
     WaterHeaterEntity,
 )
 from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
+from homeassistant.helpers.temperature import display_temp as show_temp
 
 from .const import (
     ATTR_MAP_COFFEE,
@@ -84,7 +85,6 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     """Set static properties."""
     _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
     _attr_precision = PRECISION_TENTHS
-    _attr_temperature_unit = TEMP_CELSIUS
 
     def __init__(self, lm, water_heater_type, hass, config_entry):
         """Initialize water heater."""
@@ -96,7 +96,6 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
 
         """Set dynamic properties."""
         self._attr_target_temperature = self._entities[self._object_id][ENTITY_TAG]
-        self._attr_native_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
         self._attr_min_temp = COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
         self._attr_max_temp = COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
 
@@ -105,7 +104,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     @property
     def state(self):
         """Current temperature of the water heater."""
-        return self.current_temperature
+        return show_temp(self.hass, self.current_temperature, self.temperature_unit, self.precision)
 
     @property
     def current_temperature(self):
@@ -113,6 +112,11 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         return self._lm.current_status.get(
             self._entities[self._object_id][ENTITY_TAG], 0
         )
+
+    @property
+    def temperature_unit(self):
+        """Return the unit of measurement used by the platform."""
+        return self._entities[self._object_id][ENTITY_UNITS]
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""

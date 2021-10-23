@@ -23,6 +23,8 @@ from .const import (
 from .entity_base import EntityBase
 from .services import async_setup_entity_services
 
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
+
 _LOGGER = logging.getLogger(__name__)
 
 ENTITIES = {
@@ -62,7 +64,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     await async_setup_entity_services(lm)
 
 
-class LaMarzoccoSensor(EntityBase):
+class LaMarzoccoSensor(EntityBase, SensorEntity):
     """Sensor representing espresso machine temperature data."""
 
     def __init__(self, lm, sensor_type, hass, config_entry):
@@ -72,6 +74,10 @@ class LaMarzoccoSensor(EntityBase):
         self._entities = ENTITIES
         self._hass = hass
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
+
+        self._attr_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
+        self._attr_device_class = self._entities[self._object_id][ENTITY_CLASS]
+        self._attr_state_class = STATE_CLASS_MEASUREMENT
 
         self._lm.register_callback(self.update_callback)
 
@@ -84,17 +90,7 @@ class LaMarzoccoSensor(EntityBase):
         )
 
     @property
-    def state(self):
+    def native_value(self):
         """State of the sensor."""
         entities = self._entities[self._object_id][ENTITY_TAG]
         return sum([self._lm.current_status.get(self._get_key(x), 0) for x in entities])
-
-    @property
-    def unit_of_measurement(self):
-        """Unit of measurement."""
-        return self._entities[self._object_id][ENTITY_UNITS]
-
-    @property
-    def device_class(self):
-        """Device class for sensor"""
-        return self._entities[self._object_id][ENTITY_CLASS]

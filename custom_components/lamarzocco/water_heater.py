@@ -81,26 +81,26 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     """Water heater representing espresso machine temperature data."""
 
+    """Set static properties."""
+    _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+    _attr_precision = PRECISION_TENTHS
+    _attr_temperature_unit = TEMP_CELSIUS
+
     def __init__(self, lm, water_heater_type, hass, config_entry):
         """Initialize water heater."""
         self._object_id = water_heater_type
         self._lm = lm
         self._entities = ENTITIES
-        self._support_flags = SUPPORT_TARGET_TEMPERATURE
         self._hass = hass
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
 
+        """Set dynamic properties."""
+        self._attr_target_temperature = self._entities[self._object_id][ENTITY_TAG]
+        self._attr_native_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
+        self._attr_min_temp = COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
+        self._attr_max_temp = COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
+
         self._lm.register_callback(self.update_callback)
-
-    @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        return self._support_flags
-
-    @property
-    def target_temperature(self):
-        """Return the temperature we try to reach."""
-        return self._entities[self._object_id][ENTITY_TAG]
 
     @property
     def state(self):
@@ -113,31 +113,6 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         return self._lm.current_status.get(
             self._entities[self._object_id][ENTITY_TAG], 0
         )
-
-    @property
-    def unit_of_measurement(self):
-        """Unit of measurement."""
-        return self._entities[self._object_id][ENTITY_UNITS]
-
-    @property
-    def precision(self):
-        """Return the precision of the system."""
-        return PRECISION_TENTHS
-
-    @property
-    def temperature_unit(self):
-        """Return the unit of measurement."""
-        return TEMP_CELSIUS
-
-    @property
-    def min_temp(self):
-        """Return the unit of measurement."""
-        return COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
-
-    @property
-    def max_temp(self):
-        """Return the unit of measurement."""
-        return COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""

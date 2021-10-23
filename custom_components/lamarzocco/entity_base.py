@@ -16,18 +16,8 @@ _LOGGER = logging.getLogger(__name__)
 class EntityBase(RestoreEntity):
     """Common elements for all switches."""
 
-    _entities = []
-    _entity_type = None
-
-    @property
-    def entity_registry_enabled_default(self) -> bool:
-        """Return if the entity should be enabled when first added to the entity registry."""
-        return True
-
-    @property
-    def assumed_state(self) -> bool:
-        """Return true if unable to access real state of entity."""
-        return False
+    _attr_assumed_state = False
+    _attr_entity_registry_enabled_default = True
 
     @property
     def name(self):

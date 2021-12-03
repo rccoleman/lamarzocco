@@ -52,7 +52,6 @@ class EntityBase(RestoreEntity):
             "manufacturer": "La Marzocco",
             "model": self._lm.true_model_name,
             "default_name": "La Marzocco " + self._lm.true_model_name,
-            "entry_type": "None",
             "sw_version": self._lm.firmware_version,
         }
 

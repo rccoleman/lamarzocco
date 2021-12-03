@@ -6,6 +6,7 @@ import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
+from homeassistant.components import zeroconf
 
 from .api import LaMarzocco
 from .const import (
@@ -92,18 +93,18 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_zeroconf(
-        self, discovery_info: Optional[Dict[str, Any]] = None
+        self, discovery_info: zeroconf.ZeroconfServiceInfo
     ):
         """Handle the initial step."""
 
         """Handle a flow initialized by zeroconf discovery."""
         _LOGGER.debug(f"Discovered {discovery_info}")
 
-        raw = discovery_info["properties"]["_raw"]
+        raw = discovery_info.properties["_raw"]
 
         serial_number: str = raw["serial_number"].decode("utf-8")
-        host: str = discovery_info[CONF_HOST]
-        port: int = discovery_info[CONF_PORT]
+        host: str = discovery_info.host
+        port: int = discovery_info.port
 
         self._discovered = {
             CONF_HOST: host,

@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": ["lmdirect==0.7.1"],
+  "requirements": ["lmdirect==0.8.0"],
   "ssdp": [],
   "zeroconf": ["_marzocco._tcp.local."],
   "homekit": {},

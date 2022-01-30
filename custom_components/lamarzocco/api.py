@@ -7,6 +7,7 @@ from datetime import datetime
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 from lmdirect import LMDirect
+from lmdirect.connection import AuthFail as LMAuthFail, ConnectionFail as LMConnectionFail
 from lmdirect.msgs import DATE_RECEIVED, FIRMWARE_VER, POWER, UPDATE_AVAILABLE
 
 from .const import DOMAIN, MODEL_GS3_AV, MODELS, POLLING_INTERVAL
@@ -107,6 +108,16 @@ class LaMarzocco(LMDirect):
             device_entry.id, sw_version=firmware_version
         )
 
+    async def connect(self):
+        """Connect to the machine."""
+
+        try:
+            return await super().connect()
+        except LMAuthFail:
+            raise AuthFail
+        except LMConnectionFail:
+            raise ConnectionFail
+
     async def fetch_data(self):
         """Loop that periodically polls the machine for new data."""
         while self._run:
@@ -118,3 +129,11 @@ class LaMarzocco(LMDirect):
                 _LOGGER.error(f"Caught exception: {err}")
             await asyncio.sleep(POLLING_INTERVAL)
         _LOGGER.error(f"Exiting polling task: {self._run}")
+
+
+class AuthFail(Exception):
+    """The server rejected the authentication."""
+
+
+class ConnectionFail(Exception):
+    """Could not connect to the server."""

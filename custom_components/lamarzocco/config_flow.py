@@ -1,13 +1,13 @@
 """Config flow for La Marzocco integration."""
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
 
-from .api import LaMarzocco
+from .api import LaMarzocco, AuthFail, ConnectionFail
 from .const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -47,10 +47,11 @@ async def validate_input(hass: core.HomeAssistant, data):
         if not machine_info:
             raise CannotConnect
 
-    except LaMarzocco.AuthFail:
+    except AuthFail:
+        _LOGGER.error("Server rejected login credentials")
         raise InvalidAuth
-    except Exception:
-        _LOGGER.exception("Unexpected exception")
+    except ConnectionFail:
+        _LOGGER.error("Failed to connect to server")
         raise CannotConnect
 
     # Return info that you want to store in the config entry.
@@ -60,7 +61,6 @@ async def validate_input(hass: core.HomeAssistant, data):
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for La Marzocco."""
 
-    # TODO pick one of the available connection classes in homeassistant/config_entries.py
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     async def _try_create_entry(self, data):
@@ -86,14 +86,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self._try_create_entry(data)
             except InvalidAuth:
                 errors["base"] = "invalid_auth"
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
-    async def async_step_zeroconf(
-        self, discovery_info: Optional[Dict[str, Any]] = None
-    ):
+    async def async_step_zeroconf(self, discovery_info):
         """Handle the initial step."""
 
         """Handle a flow initialized by zeroconf discovery."""
@@ -142,6 +142,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return await self._try_create_entry(data)
             except InvalidAuth:
                 errors["base"] = "invalid_auth"
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
 
         return self.async_show_form(
             step_id="confirm",

@@ -11,7 +11,7 @@ from .services import async_setup_services
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["switch", "sensor", "water_heater"]
+PLATFORMS = ["switch", "binary_sensor", "sensor", "water_heater"]
 
 
 async def async_setup(hass: HomeAssistant, config: dict):

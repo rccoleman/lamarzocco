@@ -113,6 +113,7 @@ DATA = {
             "switch.bbbbb_prebrew",
             "water_heater.bbbbb_coffee",
             "sensor.bbbbb_total_drinks",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",

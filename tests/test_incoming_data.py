@@ -73,7 +73,7 @@ TEMP_REPORT_DATA = "temp_report_data"
 PREBREW_TIME_ON = "prebrew_time_on"
 PREBREW_TIME_OFF = "prebrew_time_off"
 
-"""Structure reprsenting all tests to run."""
+"""Structure representing all tests to run."""
 DATA = {
     STATUS_DATA: {
         "msg": "R400000200178020000000000000000000000000100000000000000010100001003B804D629",
@@ -89,6 +89,7 @@ DATA = {
             "module_ser_num": "",
             "heating_state": ["heating_on"],
             "power_mystery": 1,
+            "water_reservoir_contact": 1,
         },
     },
     CONFIG_DATA: {

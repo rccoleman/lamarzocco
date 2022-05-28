@@ -8,7 +8,7 @@
 
 This is an integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app. This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
 
-Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), this integration presents a comprehsnive machine status through 6 different entities and allows the user to change the machine configuration from Home Assistant.
+Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), this integration presents a comprehensive machine status through 6 different entities and allows the user to change the machine configuration from Home Assistant.
 
 Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token and encryption key for the local API. I wrote a Python script to use with `mitmproxy` to get this information and you can find instructions [here](https://github.com/rccoleman/lmdirect/blob/master/Credentials.md).
 
@@ -96,14 +96,9 @@ Thw switches control their respective functions globally, i.e., enable/disable a
 
 ## Services
 
-#### Service `water_heater.set_temp`
+The `water_heater` and `switch` entities support the standard services for those domains, described [here](https://www.home-assistant.io/integrations/water_heater/) and [here](https://www.home-assistant.io/integrations/switch/), respectively.
 
-Set the temperature of the coffee or steam boilers based on the entity_id.
-
-| Service data attribute | Optional | Description                                                                                                                                                 |
-| ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `entity_id`            | no       | Name of the entity whose temp you want to modify, `water_heater.<machine_name>_coffee` or `water_heater.<machine_name>_steam`. Temperatures are pre-offset. |
-| `temperature`          | no       | The temperature to set, in local units, e.g., 205.2                                                                                                         |
+The following domain-specific services are also available:
 
 #### Service `lamarzocco.set_auto_on_off_enable`
 
@@ -132,7 +127,7 @@ Sets the dose for a specific key.
 
 | Service data attribute | Optional | Description                                             |
 | ---------------------- | -------- | ------------------------------------------------------- |
-| `key`                  | no       | The key to program (1-5)`                               |
+| `key`                  | no       | The key to program (1-5)                                |
 | `pulses`               | no       | The dose in pulses (roughly ~0.5ml per pulse), e.g. 120 |
 
 #### Service `lamarzocco.set_dose_hot_water`
@@ -141,7 +136,7 @@ Sets the dose for hot water.
 
 | Service data attribute | Optional | Description                                        |
 | ---------------------- | -------- | -------------------------------------------------- |
-| `seconds`              | no       | The number of seconds to stream hot water`, e.g. 8 |
+| `seconds`              | no       | The number of seconds to stream hot water, e.g. 8  |
 
 #### Service `lamarzocco.set_prebrew_times`
 

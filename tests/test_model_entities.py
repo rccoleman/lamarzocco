@@ -83,6 +83,7 @@ DATA = {
             "switch.bbbbb_main",
             "switch.bbbbb_auto_on_off",
             "switch.bbbbb_prebrew",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",
@@ -99,6 +100,7 @@ DATA = {
             "water_heater.bbbbb_coffee",
             "water_heater.bbbbb_steam",
             "sensor.bbbbb_total_drinks",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",

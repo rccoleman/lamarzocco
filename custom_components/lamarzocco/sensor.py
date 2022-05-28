@@ -75,7 +75,7 @@ class LaMarzoccoSensor(EntityBase, SensorEntity):
         self._hass = hass
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
 
-        self._attr_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
+        self._attr_native_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
         self._attr_device_class = self._entities[self._object_id][ENTITY_CLASS]
         self._attr_state_class = STATE_CLASS_MEASUREMENT
 

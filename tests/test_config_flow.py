@@ -66,6 +66,7 @@ async def test_flow_user_init(hass, enable_custom_integrations):
         "handler": "lamarzocco",
         "step_id": "user",
         "type": "form",
+        "last_step": None
     }
     assert expected == result
     assert data == machine_info
@@ -103,6 +104,7 @@ async def test_flow_zeroconf_init(hass, enable_custom_integrations):
         "handler": "lamarzocco",
         "step_id": "confirm",
         "type": "form",
+        "last_step": None
     }
     assert expected == result
     assert data == machine_info

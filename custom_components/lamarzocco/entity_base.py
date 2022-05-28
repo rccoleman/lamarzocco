@@ -2,13 +2,10 @@
 
 import logging
 
-from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 from homeassistant.core import callback
 from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.helpers.temperature import display_temp as show_temp
-from lmdirect.msgs import TEMP_KEYS, TSET_KEYS
 
-from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME, TEMPERATURE
+from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,19 +66,7 @@ class EntityBase(RestoreEntity):
             """Convert boolean values to strings to improve display in Lovelace."""
             if isinstance(v, bool):
                 v = str(v)
-
-            """Convert temps to Fahrenheit if needed."""
-            if k in TEMP_KEYS:
-                v = show_temp(
-                    self._hass,
-                    v,
-                    TEMP_CELSIUS,
-                    PRECISION_TENTHS,
-                )
             return v
-
-        def convert_key(k):
-            return TEMPERATURE if k in TSET_KEYS else k
 
         data = self._lm._current_status
         map = [
@@ -89,4 +74,4 @@ class EntityBase(RestoreEntity):
             for k in self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
         ]
 
-        return {convert_key(k): convert_value(k, data[k]) for k in map if k in data}
+        return {k: convert_value(k, data[k]) for k in map if k in data}

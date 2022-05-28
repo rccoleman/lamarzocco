@@ -6,6 +6,7 @@ from unittest.mock import patch
 import lmdirect
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_registry import async_entries_for_config_entry
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -142,7 +143,7 @@ class TestModels:
         """Test model configurations"""
         await setup_lm_machine(hass, model)
 
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity_registry = er.async_get(hass)
 
         entities = [
             x.entity_id
@@ -166,7 +167,7 @@ class TestModels:
         assert len(services) == len(DATA[adjusted_model][SERVICES])
         assert not any(x not in DATA[adjusted_model][SERVICES] for x in services)
 
-        device_registry = await dr.async_get_registry(hass)
+        device_registry = dr.async_get(hass)
         device_entry = device_registry.async_get_device(
             {(DOMAIN, SERIAL_NUMBER)}, set()
         )

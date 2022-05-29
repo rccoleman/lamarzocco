@@ -1,7 +1,7 @@
 # La Marzocco Home Assistant Integration
 
-![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg)
-![Validation And Formatting](https://github.com/rccoleman/lamarzocco/workflows/Validation%20And%20Formatting/badge.svg?branch=dev)
+[![HACS](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml)
+[![Hassfest](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
 
 ## Overview

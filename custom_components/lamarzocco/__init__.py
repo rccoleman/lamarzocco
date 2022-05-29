@@ -1,6 +1,5 @@
 """The La Marzocco integration."""
 
-import asyncio
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -44,14 +43,8 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     services = list(hass.services.async_services().get(DOMAIN).keys())
     [hass.services.async_remove(DOMAIN, service) for service in services]
 
-    unload_ok = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(config_entry, platform)
-                for platform in PLATFORMS
-            ]
-        )
-    )
+    unload_ok = await hass.config_entries.async_unload_platforms(config_entry, PLATFORMS)
+
     if unload_ok:
         await hass.data[DOMAIN][config_entry.entry_id].close()
         hass.data[DOMAIN].pop(config_entry.entry_id)

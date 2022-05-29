@@ -8,7 +8,7 @@ from homeassistant.components.binary_sensor import (
 )
 
 from .const import (
-    ATTR_MAP_WATER_RESERVOIR_LM,
+    ATTR_MAP_WATER_RESERVOIR,
     DOMAIN,
     ENTITY_CLASS,
     ENTITY_ICON,
@@ -16,6 +16,8 @@ from .const import (
     ENTITY_NAME,
     ENTITY_TAG,
     ENTITY_TYPE,
+    MODEL_GS3_AV,
+    MODEL_GS3_MP,
     MODEL_LM,
     TYPE_WATER_RESERVOIR_CONTACT,
     WATER_RESERVOIR_CONTACT,
@@ -30,10 +32,12 @@ ENTITIES = {
         ENTITY_TAG: WATER_RESERVOIR_CONTACT,
         ENTITY_NAME: "Water Reservoir",
         ENTITY_MAP: {
-            MODEL_LM: ATTR_MAP_WATER_RESERVOIR_LM,
+            MODEL_GS3_AV: ATTR_MAP_WATER_RESERVOIR,
+            MODEL_GS3_MP: ATTR_MAP_WATER_RESERVOIR,
+            MODEL_LM: ATTR_MAP_WATER_RESERVOIR,
         },
         ENTITY_TYPE: TYPE_WATER_RESERVOIR_CONTACT,
-        ENTITY_ICON: None,
+        ENTITY_ICON: "mdi:water-well",
         ENTITY_CLASS: DEVICE_CLASS_PROBLEM,
     }
 }

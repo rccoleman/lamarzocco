@@ -73,7 +73,7 @@ TEMP_REPORT_DATA = "temp_report_data"
 PREBREW_TIME_ON = "prebrew_time_on"
 PREBREW_TIME_OFF = "prebrew_time_off"
 
-"""Structure reprsenting all tests to run."""
+"""Structure representing all tests to run."""
 DATA = {
     STATUS_DATA: {
         "msg": "R400000200178020000000000000000000000000100000000000000010100001003B804D629",
@@ -89,6 +89,7 @@ DATA = {
             "module_ser_num": "",
             "heating_state": ["heating_on"],
             "power_mystery": 1,
+            "water_reservoir_contact": 1,
         },
     },
     CONFIG_DATA: {
@@ -300,37 +301,47 @@ DATA = {
 class TestMessages:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
-    async def test_status_data(self, mock_send_msg, hass):
+    async def test_status_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, [STATUS_DATA])
 
-    async def test_config_data(self, mock_send_msg, hass):
+    async def test_config_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, [CONFIG_DATA])
 
-    async def test_auto_on_off_data(self, mock_send_msg, hass):
+    async def test_auto_on_off_data(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
         await self.send_items(mock_send_msg, hass, [AUTO_ON_OFF_DATA])
 
-    async def test_datetime_data(self, mock_send_msg, hass):
+    async def test_datetime_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, [DATETIME_DATA])
 
-    async def test_drinks_data(self, mock_send_msg, hass):
+    async def test_drinks_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, [DRINKS_DATA])
 
-    async def test_flow_data(self, mock_send_msg, hass):
+    async def test_flow_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, [FLOW_DATA])
 
-    async def test_serial_number_data(self, mock_send_msg, hass):
+    async def test_serial_number_data(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
         await self.send_items(mock_send_msg, hass, [SERIAL_NUM_DATA])
 
-    async def test_temp_report_data(self, mock_send_msg, hass):
+    async def test_temp_report_data(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
         await self.send_items(mock_send_msg, hass, [TEMP_REPORT_DATA])
 
-    async def test_prebrew_time_on(self, mock_send_msg, hass):
+    async def test_prebrew_time_on(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
         await self.send_items(mock_send_msg, hass, [PREBREW_TIME_ON])
 
-    async def test_prebrew_time_off(self, mock_send_msg, hass):
+    async def test_prebrew_time_off(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
         await self.send_items(mock_send_msg, hass, [PREBREW_TIME_OFF])
 
-    async def test_send_all_data(self, mock_send_msg, hass):
+    async def test_send_all_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, list(DATA.keys()))
 
     async def send_items(self, mock_send_msg, hass, items):

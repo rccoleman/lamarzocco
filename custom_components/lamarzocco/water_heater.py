@@ -4,9 +4,12 @@ import logging
 
 from homeassistant.components.water_heater import (
     SUPPORT_TARGET_TEMPERATURE,
+    ATTR_CURRENT_TEMPERATURE,
+    ATTR_TEMPERATURE,
     WaterHeaterEntity,
 )
 from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
+from homeassistant.helpers.temperature import display_temp as show_temp
 
 from .const import (
     ATTR_MAP_COFFEE,
@@ -15,25 +18,36 @@ from .const import (
     ENTITY_ICON,
     ENTITY_MAP,
     ENTITY_NAME,
-    ENTITY_TAG,
+    ENTITY_TEMP_TAG,
+    ENTITY_TSET_TAG,
     ENTITY_TYPE,
     ENTITY_UNITS,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
     TEMP_COFFEE,
+    TSET_COFFEE,
     TEMP_STEAM,
+    TSET_STEAM,
     TYPE_COFFEE_TEMP,
     TYPE_STEAM_TEMP,
 )
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
 
+"""Min/Max coffee and team temps."""
+COFFEE_MIN_TEMP = 87
+COFFEE_MAX_TEMP = 100
+
+STEAM_MIN_TEMP = 110
+STEAM_MAX_TEMP = 132
+
 _LOGGER = logging.getLogger(__name__)
 
 ENTITIES = {
     "coffee": {
-        ENTITY_TAG: TEMP_COFFEE,
+        ENTITY_TEMP_TAG: TEMP_COFFEE,
+        ENTITY_TSET_TAG: TSET_COFFEE,
         ENTITY_NAME: "Coffee",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_COFFEE,
@@ -45,7 +59,8 @@ ENTITIES = {
         ENTITY_UNITS: TEMP_CELSIUS,
     },
     "steam": {
-        ENTITY_TAG: TEMP_STEAM,
+        ENTITY_TEMP_TAG: TEMP_STEAM,
+        ENTITY_TSET_TAG: TSET_STEAM,
         ENTITY_NAME: "Steam",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_STEAM,
@@ -74,58 +89,65 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     """Water heater representing espresso machine temperature data."""
 
+    """Set static properties."""
+    _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+    _attr_precision = PRECISION_TENTHS
+
     def __init__(self, lm, water_heater_type, hass, config_entry):
         """Initialize water heater."""
         self._object_id = water_heater_type
         self._lm = lm
         self._entities = ENTITIES
-        self._support_flags = SUPPORT_TARGET_TEMPERATURE
         self._hass = hass
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
+
+        """Set dynamic properties."""
+        self._attr_min_temp = COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
+        self._attr_max_temp = COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
 
         self._lm.register_callback(self.update_callback)
 
     @property
-    def supported_features(self):
-        """Return the list of supported features."""
-        return self._support_flags
-
-    @property
-    def target_temperature(self):
-        """Return the temperature we try to reach."""
-        return self._entities[self._object_id][ENTITY_TAG]
-
-    @property
     def state(self):
-        """Current temperature of the water heater."""
+        """State of the water heater."""
         return self.current_temperature
 
     @property
     def current_temperature(self):
         """Return the current temperature."""
-        return self._lm.current_status.get(
-            self._entities[self._object_id][ENTITY_TAG], 0
+        return show_temp(
+            self.hass,
+            self._lm.current_status.get(
+                self._entities[self._object_id][ENTITY_TEMP_TAG], 0
+            ),
+            self.temperature_unit,
+            self.precision,
         )
 
     @property
-    def unit_of_measurement(self):
-        """Unit of measurement."""
-        return self._entities[self._object_id][ENTITY_UNITS]
-
-    @property
-    def precision(self):
-        """Return the precision of the system."""
-        return PRECISION_TENTHS
+    def target_temperature(self):
+        """Return the target temperature."""
+        return show_temp(
+            self.hass,
+            self._lm.current_status.get(
+                self._entities[self._object_id][ENTITY_TSET_TAG], 0
+            ),
+            self.temperature_unit,
+            self.precision,
+        )
 
     @property
     def temperature_unit(self):
-        """Return the unit of measurement."""
-        return TEMP_CELSIUS
+        """Return the unit of measurement used by the platform."""
+        return self._entities[self._object_id][ENTITY_UNITS]
 
     @property
-    def capability_attributes(self):
-        """Return capability attributes."""
-        return None
+    def state_attributes(self):
+        temps = {
+            ATTR_CURRENT_TEMPERATURE: self.current_temperature,
+            ATTR_TEMPERATURE: self.target_temperature
+        }
+        return {**EntityBase.state_attributes.fget(self), **temps}
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""

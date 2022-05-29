@@ -56,10 +56,7 @@ async def setup_lm_machine(hass):
 
 
 @patch.object(lmdirect.LMDirect, "_send_msg", autospec=True)
-async def test_setup_lm_machine(
-    mock_send_msg,
-    hass,
-):
+async def test_setup_lm_machine(mock_send_msg, hass, enable_custom_integrations):
     """Test set up and tear down."""
     machine = await setup_lm_machine(hass)
     assert machine == hass.data[DOMAIN][ENTRY_ID]

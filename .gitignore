@@ -1,2 +1,7 @@
 __pycache__
 .DS_Store
+pythonenv*
+venv
+.venv
+.coverage
+.idea

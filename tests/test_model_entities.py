@@ -6,6 +6,7 @@ from unittest.mock import patch
 import lmdirect
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_registry import async_entries_for_config_entry
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -82,6 +83,7 @@ DATA = {
             "switch.bbbbb_main",
             "switch.bbbbb_auto_on_off",
             "switch.bbbbb_prebrew",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",
@@ -98,6 +100,7 @@ DATA = {
             "water_heater.bbbbb_coffee",
             "water_heater.bbbbb_steam",
             "sensor.bbbbb_total_drinks",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",
@@ -112,6 +115,7 @@ DATA = {
             "switch.bbbbb_prebrew",
             "water_heater.bbbbb_coffee",
             "sensor.bbbbb_total_drinks",
+            "binary_sensor.bbbbb_water_reservoir",
         ],
         SERVICES: [
             "set_auto_on_off_enable",
@@ -126,23 +130,23 @@ DATA = {
 class TestModels:
     """Class containing available tests.  Patches will be applied to all member functions."""
 
-    async def test_gs3_av(self, mock_send_msg, hass):
+    async def test_gs3_av(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_GS3_AV)
 
-    async def test_gs3_mp(self, mock_send_msg, hass):
+    async def test_gs3_mp(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_GS3_MP)
 
-    async def test_gs3_lm(self, mock_send_msg, hass):
+    async def test_gs3_lm(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_LM)
 
-    async def test_unknown_model(self, mock_send_msg, hass):
+    async def test_unknown_model(self, mock_send_msg, hass, enable_custom_integrations):
         await self.setup_model(mock_send_msg, hass, MODEL_UNKNOWN)
 
     async def setup_model(self, mock_send_msg, hass, model):
         """Test model configurations"""
         await setup_lm_machine(hass, model)
 
-        entity_registry = await hass.helpers.entity_registry.async_get_registry()
+        entity_registry = er.async_get(hass)
 
         entities = [
             x.entity_id
@@ -166,7 +170,7 @@ class TestModels:
         assert len(services) == len(DATA[adjusted_model][SERVICES])
         assert not any(x not in DATA[adjusted_model][SERVICES] for x in services)
 
-        device_registry = await dr.async_get_registry(hass)
+        device_registry = dr.async_get(hass)
         device_entry = device_registry.async_get_device(
             {(DOMAIN, SERIAL_NUMBER)}, set()
         )

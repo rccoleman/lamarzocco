@@ -77,16 +77,19 @@ You can also add the integration manually.
 
 Regardless of how you configured the integration, you should see this in Configuration->Integrations:
 
-![](https://github.com/rccoleman/lamarzocco/blob/master/images/Configured_Integration.png)
+<img width="261" alt="image" src="https://user-images.githubusercontent.com/860888/172060743-6438193e-7778-4c0e-8672-95fd9df2a856.png">
 
 ## Usage
 
-In Dev->States, you should see 6 new entities:
+In Dev->States, you should see 7 new entities:
 
-- 3 sensors
+- 1 or 2 water heater entities, depending on whether you have a LM or GS/3
   - `water_heater.<machine_name>_coffee`
   - `water_heater.<machine_name>_steam`
+- 1 sensor
   - `sensor.<machine_name>_total_drinks`
+- 1 binary sensor
+  - `binary_sensor.<machine_name>_water_reservoir`
 - 3 switches
   - `switch.<machine_name>_main`
   - `switch.<machine_name>_auto_on_off`

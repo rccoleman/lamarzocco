@@ -51,7 +51,7 @@ If you don't have HACS installed or would prefer to install manually.
 
 Home Assistant should automatically discover your machine on your local network via Zeroconf. You'll get a notification in Lovelace that it has discovered a device, and you should see a "Discovered" box in Configuration->Integrations like this:
 
-![](https://github.com/rccoleman/lamarzocco/blob/master/images/Discovered_Integration.png)
+<img width="266" alt="image" src="https://user-images.githubusercontent.com/860888/172060934-06cb596f-b959-4477-8040-42b026144d42.png">
 
 Clicking "Configure" brings you to this:
 

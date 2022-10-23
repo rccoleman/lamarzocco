@@ -21,6 +21,7 @@ from .const import (
     SERVICE_SET_DOSE,
     SERVICE_SET_DOSE_HOT_WATER,
     SERVICE_SET_PREBREW_TIMES,
+    SERVICE_SET_PREINFUSION_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -101,6 +102,21 @@ async def async_setup_services(hass, config_entry):
         )
         return True
 
+    async def set_preinfusion_time(service):
+        """Service call to set preinfusion time."""
+        key = service.data.get("key", None)
+        seconds = service.data.get("seconds", None)
+
+        _LOGGER.debug(
+            f"Setting prebrew on time for {key=} to {seconds=}"
+        )
+        await call_service(
+            lm.set_preinfusion_times,
+            key=key,
+            seconds=seconds,
+        )
+        return True
+
     INTEGRATION_SERVICES = {
         SERVICE_SET_DOSE: {
             SCHEMA: {
@@ -159,6 +175,15 @@ async def async_setup_services(hass, config_entry):
             },
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
             FUNC: set_prebrew_times,
+        },
+        SERVICE_SET_PREINFUSION_TIME: {
+            SCHEMA: {
+                vol.Required("seconds"): vol.All(
+                    vol.Coerce(float), vol.Range(min=0, max=5)
+                ),
+            },
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
+            FUNC: set_preinfusion_time,
         },
     }
 

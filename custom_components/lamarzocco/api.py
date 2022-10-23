@@ -56,7 +56,7 @@ class LaMarzocco(LMDirect):
         model_name = super().model_name
         if model_name not in MODELS:
             _LOGGER.error(
-                f"Unsupported model, falling back to all entities and services: {super().model_name}"
+                f"Unsupported model, falling back to all entities and services: {model_name}"
             )
         return model_name if model_name in MODELS else MODEL_GS3_AV
 

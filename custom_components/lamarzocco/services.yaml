@@ -66,3 +66,15 @@ set_prebrew_times:
     seconds_off:
       description: The time in seconds for the pump to stop during prebrewing (0-5.9s)
       example: 1.1
+
+set_preinfusion_time:
+  # Description of the service
+  description: Set the preinfusion time for a specific key
+  # Different fields that your service accepts
+  fields:
+    key:
+      description: "The key to program (1-4)"
+      example: 1
+    seconds:
+      description: The time in seconds for preinfusion (0-5.9s)
+      example: 1.1

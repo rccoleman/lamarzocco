@@ -3,14 +3,13 @@
 import logging
 
 from homeassistant.core import callback
-from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class EntityBase(RestoreEntity):
+class EntityBase:
     """Common elements for all switches."""
 
     _attr_assumed_state = False

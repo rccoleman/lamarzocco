@@ -5,6 +5,7 @@ import logging
 import voluptuous as vol
 from homeassistant.helpers import entity_platform
 from lmdirect import InvalidInput
+from lmdirect.msgs import Msg
 
 from .const import (
     DAYS,
@@ -16,12 +17,6 @@ from .const import (
     MODELS_SUPPORTED,
     PLATFORM,
     SCHEMA,
-    SERVICE_SET_AUTO_ON_OFF_ENABLE,
-    SERVICE_SET_AUTO_ON_OFF_TIMES,
-    SERVICE_SET_DOSE,
-    SERVICE_SET_DOSE_HOT_WATER,
-    SERVICE_SET_PREBREW_TIMES,
-    SERVICE_SET_PREINFUSION_TIME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -44,7 +39,7 @@ async def async_setup_services(hass, config_entry):
         enable = service.data.get("enable", None)
 
         _LOGGER.debug(f"Setting auto on/off for {day_of_week} to {enable}")
-        await call_service(lm.set_auto_on_off, day_of_week=day_of_week, enable=enable)
+        await call_service(lm.set_auto_on_off_enable, day_of_week=day_of_week, enable=enable)
         return True
 
     async def set_auto_on_off_times(service):
@@ -118,7 +113,7 @@ async def async_setup_services(hass, config_entry):
         return True
 
     INTEGRATION_SERVICES = {
-        SERVICE_SET_DOSE: {
+        Msg.SET_DOSE: {
             SCHEMA: {
                 vol.Required("key"): vol.All(vol.Coerce(int), vol.Range(min=1, max=5)),
                 vol.Required("pulses"): vol.All(
@@ -128,7 +123,7 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV],
             FUNC: set_dose,
         },
-        SERVICE_SET_DOSE_HOT_WATER: {
+        Msg.SET_DOSE_HOT_WATER: {
             SCHEMA: {
                 vol.Required("seconds"): vol.All(
                     vol.Coerce(int), vol.Range(min=0, max=30)
@@ -137,7 +132,7 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP],
             FUNC: set_dose_hot_water,
         },
-        SERVICE_SET_AUTO_ON_OFF_ENABLE: {
+        Msg.SET_AUTO_ON_OFF_ENABLE: {
             SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
                 vol.Required("enable"): vol.Boolean(),
@@ -145,7 +140,7 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
             FUNC: set_auto_on_off_enable,
         },
-        SERVICE_SET_AUTO_ON_OFF_TIMES: {
+        Msg.SET_AUTO_ON_OFF_TIMES: {
             SCHEMA: {
                 vol.Required("day_of_week"): vol.In(DAYS),
                 vol.Required("hour_on"): vol.All(
@@ -164,7 +159,7 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
             FUNC: set_auto_on_off_times,
         },
-        SERVICE_SET_PREBREW_TIMES: {
+        Msg.SET_PREBREW_TIMES: {
             SCHEMA: {
                 vol.Required("seconds_on"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=5)
@@ -176,7 +171,7 @@ async def async_setup_services(hass, config_entry):
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
             FUNC: set_prebrew_times,
         },
-        SERVICE_SET_PREINFUSION_TIME: {
+        Msg.SET_PREINFUSION_TIME: {
             SCHEMA: {
                 vol.Required("seconds"): vol.All(
                     vol.Coerce(float), vol.Range(min=0, max=5)
@@ -199,7 +194,7 @@ async def async_setup_services(hass, config_entry):
     """Set the max prebrew button based on model"""
     if lm.model_name in [MODEL_GS3_AV, MODEL_LM]:
         max_button_number = 4 if lm.model_name == MODEL_GS3_AV else 1
-        INTEGRATION_SERVICES[SERVICE_SET_PREBREW_TIMES][SCHEMA].update(
+        INTEGRATION_SERVICES[Msg.SET_PREBREW_TIMES][SCHEMA].update(
             {
                 vol.Required("key"): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=max_button_number)

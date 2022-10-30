@@ -106,7 +106,7 @@ async def async_setup_services(hass, config_entry):
             f"Setting prebrew on time for {key=} to {seconds=}"
         )
         await call_service(
-            lm.set_preinfusion_times,
+            lm.set_preinfusion_time,
             key=key,
             seconds=seconds,
         )
@@ -195,6 +195,13 @@ async def async_setup_services(hass, config_entry):
     if lm.model_name in [MODEL_GS3_AV, MODEL_LM]:
         max_button_number = 4 if lm.model_name == MODEL_GS3_AV else 1
         INTEGRATION_SERVICES[Msg.SET_PREBREW_TIMES][SCHEMA].update(
+            {
+                vol.Required("key"): vol.All(
+                    vol.Coerce(int), vol.Range(min=1, max=max_button_number)
+                )
+            },
+        )
+        INTEGRATION_SERVICES[Msg.SET_PREINFUSION_TIME][SCHEMA].update(
             {
                 vol.Required("key"): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=max_button_number)

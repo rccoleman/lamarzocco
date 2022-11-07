@@ -1,14 +1,14 @@
 # La Marzocco Home Assistant Integration
 
-[![Validate with hassfest](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml/badge.svg?branch=dev)](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml)
-[![HACS](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml/badge.svg?branch=dev)](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/custom-components/hacs)
+[![HACS](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hacs.yaml)
+[![Hassfest](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 
 ## Overview
 
 This is an integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app. This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.
 
-Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), this integration presents a comprehensive machine status through 6 different entities and allows the user to change the machine configuration from Home Assistant.
+Based on the investigation from Plonx on the Home Assistant forum [here](https://community.home-assistant.io/t/la-marzocco-gs-3-linea-mini-support/203581), this integration presents a comprehensive machine status through several entities and allows the user to change the machine configuration from Home Assistant.
 
 Unfortunately, two very long and hard-to-access pieces of information (client_id and client_secret) are required to retrieve the initial token and encryption key for the local API. I wrote a Python script to use with `mitmproxy` to get this information and you can find instructions [here](https://github.com/rccoleman/lmdirect/blob/master/Credentials.md).
 
@@ -51,7 +51,7 @@ If you don't have HACS installed or would prefer to install manually.
 
 Home Assistant should automatically discover your machine on your local network via Zeroconf. You'll get a notification in Lovelace that it has discovered a device, and you should see a "Discovered" box in Configuration->Integrations like this:
 
-![](https://github.com/rccoleman/lamarzocco/blob/master/images/Discovered_Integration.png)
+<img width="266" alt="image" src="https://user-images.githubusercontent.com/860888/172060934-06cb596f-b959-4477-8040-42b026144d42.png">
 
 Clicking "Configure" brings you to this:
 
@@ -77,16 +77,19 @@ You can also add the integration manually.
 
 Regardless of how you configured the integration, you should see this in Configuration->Integrations:
 
-![](https://github.com/rccoleman/lamarzocco/blob/master/images/Configured_Integration.png)
+<img width="261" alt="image" src="https://user-images.githubusercontent.com/860888/172060743-6438193e-7778-4c0e-8672-95fd9df2a856.png">
 
 ## Usage
 
-In Dev->States, you should see 6 new entities:
+In Dev->States, you should see 7 new entities:
 
-- 3 sensors
+- 1 or 2 water heater entities, depending on whether you have a LM or GS/3
   - `water_heater.<machine_name>_coffee`
   - `water_heater.<machine_name>_steam`
+- 1 sensor
   - `sensor.<machine_name>_total_drinks`
+- 1 binary sensor
+  - `binary_sensor.<machine_name>_water_reservoir`
 - 3 switches
   - `switch.<machine_name>_main`
   - `switch.<machine_name>_auto_on_off`

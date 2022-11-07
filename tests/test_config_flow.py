@@ -64,6 +64,7 @@ async def test_flow_user_init(hass, enable_custom_integrations):
         "errors": {},
         "flow_id": mock.ANY,
         "handler": "lamarzocco",
+        "last_step": None,
         "step_id": "user",
         "type": "form",
         "last_step": None
@@ -102,6 +103,7 @@ async def test_flow_zeroconf_init(hass, enable_custom_integrations):
         "errors": {},
         "flow_id": mock.ANY,
         "handler": "lamarzocco",
+        "last_step": None,
         "step_id": "confirm",
         "type": "form",
         "last_step": None

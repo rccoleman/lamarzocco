@@ -69,14 +69,14 @@ DATETIME_DATA = "datetime_data"
 DRINKS_DATA = "drinks_data"
 FLOW_DATA = "flow_data"
 SERIAL_NUM_DATA = "serial_num_data"
-TEMP_REPORT_DATA = "temp_report_data"
 PREBREW_TIME_ON = "prebrew_time_on"
 PREBREW_TIME_OFF = "prebrew_time_off"
+FACTORY_CONFIG = "factory_config"
 
 """Structure representing all tests to run."""
 DATA = {
-    STATUS_DATA: {
-        "msg": "R400000200178020000000000000000000000000100000000000000010100001003B804D629",
+    FACTORY_CONFIG: {
+        "msg": "R4070000E64006400CA000600000101BD0099000056",
         "resp": {
             "flushing_offset": 0,
             "drinks_k1_offset": 0,
@@ -85,11 +85,32 @@ DATA = {
             "drinks_k4_offset": 0,
             "continuous_offset": 0,
             "update_available": "none",
-            "firmware_ver": "1.20",
+            "pid_offset": 20.2,
+            "brew_group_offset": 0.5,
+            "water_filter_liters": 6,
+            "t_unit": 153,
+        },
+    },
+    STATUS_DATA: {
+        "msg": "R40000023018C020000000000000000000000000100000000000000010100005003AA0372000205B6",
+        "resp": {
+            "flushing_offset": 0,
+            "drinks_k1_offset": 0,
+            "drinks_k2_offset": 0,
+            "drinks_k3_offset": 0,
+            "drinks_k4_offset": 0,
+            "continuous_offset": 0,
+            "update_available": "none",
+            "firmware_ver": "1.40",
             "module_ser_num": "",
-            "heating_state": ["heating_on"],
+            "heating_state": ["heating_on", 'steam_heater_on'],
             "power_mystery": 1,
             "water_reservoir_contact": 1,
+            "mystery_1": 0,
+            "mystery_2": 2,
+            "steam_boiler_enable": False,
+            "coffee_temp": 93.3,
+            "steam_temp": 88.2,
         },
     },
     CONFIG_DATA: {
@@ -105,6 +126,7 @@ DATA = {
             "coffee_set_temp": 96.2,
             "steam_set_temp": 123.9,
             "enable_prebrewing": 0,
+            "prebrew_flag": 0,
             "power": 1,
             "prebrewing_ton_k1": 1.1,
             "prebrewing_ton_k2": 2.2,
@@ -256,20 +278,6 @@ DATA = {
             "machine_ser_num": "",
         },
     },
-    TEMP_REPORT_DATA: {
-        "msg": "R401C000403BC04D8B6",
-        "resp": {
-            "flushing_offset": 0,
-            "drinks_k1_offset": 0,
-            "drinks_k2_offset": 0,
-            "drinks_k3_offset": 0,
-            "drinks_k4_offset": 0,
-            "continuous_offset": 0,
-            "update_available": "none",
-            "coffee_temp": 95.6,
-            "steam_temp": 124.0,
-        },
-    },
     PREBREW_TIME_ON: {
         "msg": "W000F0001OK88",
         "resp": {
@@ -326,11 +334,6 @@ class TestMessages:
     ):
         await self.send_items(mock_send_msg, hass, [SERIAL_NUM_DATA])
 
-    async def test_temp_report_data(
-        self, mock_send_msg, hass, enable_custom_integrations
-    ):
-        await self.send_items(mock_send_msg, hass, [TEMP_REPORT_DATA])
-
     async def test_prebrew_time_on(
         self, mock_send_msg, hass, enable_custom_integrations
     ):
@@ -340,6 +343,11 @@ class TestMessages:
         self, mock_send_msg, hass, enable_custom_integrations
     ):
         await self.send_items(mock_send_msg, hass, [PREBREW_TIME_OFF])
+
+    async def test_factory_config(
+        self, mock_send_msg, hass, enable_custom_integrations
+    ):
+        await self.send_items(mock_send_msg, hass, [FACTORY_CONFIG])
 
     async def test_send_all_data(self, mock_send_msg, hass, enable_custom_integrations):
         await self.send_items(mock_send_msg, hass, list(DATA.keys()))
@@ -371,6 +379,7 @@ class TestMessages:
                 self._current_status.update({UPDATE_AVAILABLE: "none"})
                 assert await self.process_data(msg)
 
+            await send_msg(self, *args, item=FACTORY_CONFIG, **kwargs)
             [await send_msg(self, *args, item=x, **kwargs) for x in items]
             result.update(self._current_status)
             print(f"Result: {result}")

@@ -17,7 +17,7 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import ServiceNotFound
 from homeassistant.setup import async_setup_component
-from lmdirect.msgs import MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
+from lmdirect.msgs import Msg, MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from voluptuous.error import MultipleInvalid
 
@@ -30,11 +30,6 @@ from custom_components.lamarzocco.const import (
     CONF_SERIAL_NUMBER,
     DOMAIN,
     MODELS,
-    SERVICE_SET_AUTO_ON_OFF_ENABLE,
-    SERVICE_SET_AUTO_ON_OFF_TIMES,
-    SERVICE_SET_DOSE,
-    SERVICE_SET_DOSE_HOT_WATER,
-    SERVICE_SET_PREBREW_TIMES,
 )
 from custom_components.lamarzocco.sensor import LaMarzoccoSensor
 
@@ -51,68 +46,68 @@ SERVICE = 0
 DATA = 1
 
 """Services to test."""
-SET_COFFEE_TEMP = 0
-SET_STEAM_TEMP = 1
-ENABLE_AUTO_ON_OFF = 2
-DISABLE_AUTO_ON_OFF = 3
-SET_AUTO_ON_OFF_TIMES = 4
-SET_DOSE = 5
-SET_PREBREW_TIMES = 6
-SET_DOSE_HOT_WATER = 7
-TURN_ON_MAIN = 8
-TURN_OFF_MAIN = 9
-ENABLE_PREBREW = 10
-DISABLE_PREBREW = 11
-ENABLE_GLOBAL_AUTO_ON_OFF = 12
-DISABLE_GLOBAL_AUTO_ON_OFF = 13
+TEST_SET_COFFEE_TEMP = 0
+TEST_SET_STEAM_TEMP = 1
+TEST_ENABLE_AUTO_ON_OFF = 2
+TEST_DISABLE_AUTO_ON_OFF = 3
+TEST_SET_AUTO_ON_OFF_TIMES = 4
+TEST_SET_DOSE = 5
+TEST_SET_PREBREW_TIMES = 6
+TEST_SET_DOSE_HOT_WATER = 7
+TEST_TURN_ON_MAIN = 8
+TEST_TURN_OFF_MAIN = 9
+TEST_ENABLE_PREBREW = 10
+TEST_DISABLE_PREBREW = 11
+TEST_ENABLE_GLOBAL_AUTO_ON_OFF = 12
+TEST_DISABLE_GLOBAL_AUTO_ON_OFF = 13
 
 """Table of tests to run and respones to expect."""
 TESTS = {
     # Set coffee temp to 203.1F
-    SET_COFFEE_TEMP: {
+    TEST_SET_COFFEE_TEMP: {
         CALL_SERVICE: SERVICE_SET_TEMPERATURE,
         CALL_DOMAIN: WATER_HEATER_DOMAIN,
         CALL_DATA: {"entity_id": "water_heater.bbbbb_coffee", "temperature": "203.1"},
-        CALL_RESULTS: [(8, ["07EF"])],
+        CALL_RESULTS: [(Msg.SET_COFFEE_TEMP, ["07EF"])],
         USE_CALLBACK: False,
     },
     # Set steam temp to 255.1F
-    SET_STEAM_TEMP: {
+    TEST_SET_STEAM_TEMP: {
         CALL_SERVICE: SERVICE_SET_TEMPERATURE,
         CALL_DOMAIN: WATER_HEATER_DOMAIN,
         CALL_DATA: {"entity_id": "water_heater.bbbbb_steam", "temperature": "255.1"},
-        CALL_RESULTS: [(9, ["09F7"])],
+        CALL_RESULTS: [(Msg.SET_STEAM_TEMP, ["09F7"])],
         USE_CALLBACK: False,
     },
     # Enable auto on/off for Tuesday
-    ENABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_ENABLE,
+    TEST_ENABLE_AUTO_ON_OFF: {
+        CALL_SERVICE: Msg.SET_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "day_of_week": "tue",
             "enable": "on",
         },
         CALL_RESULTS: [
-            (5, ["FF"]),
+            (Msg.SET_AUTO_ON_OFF_ENABLE, ["FF"]),
         ],
         USE_CALLBACK: True,
     },
     # Disable auto on/off for Tuesday
-    DISABLE_AUTO_ON_OFF: {
-        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_ENABLE,
+    TEST_DISABLE_AUTO_ON_OFF: {
+        CALL_SERVICE: Msg.SET_AUTO_ON_OFF_ENABLE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "day_of_week": "tue",
             "enable": "off",
         },
         CALL_RESULTS: [
-            (5, ["FB"]),
+            (Msg.SET_AUTO_ON_OFF_ENABLE, ["FB"]),
         ],
         USE_CALLBACK: True,
     },
     # Set auto on/off to 5:05AM to 12:10PM on Tuesday
-    SET_AUTO_ON_OFF_TIMES: {
-        CALL_SERVICE: SERVICE_SET_AUTO_ON_OFF_TIMES,
+    TEST_SET_AUTO_ON_OFF_TIMES: {
+        CALL_SERVICE: Msg.SET_AUTO_ON_OFF_TIMES,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "day_of_week": "tue",
@@ -121,25 +116,25 @@ TESTS = {
             "hour_off": "12",
             "minute_off": "10",
         },
-        CALL_RESULTS: [(11, ["13", "050C"]), (11, ["22", "050A"])],
+        CALL_RESULTS: [(Msg.SET_AUTO_ON_OFF_TIMES, ["13", "050C"]), (Msg.SET_AUTO_ON_OFF_TIMES, ["22", "050A"])],
         USE_CALLBACK: False,
     },
     # Set dose for key 2 to 120 pulses
-    SET_DOSE: {
-        CALL_SERVICE: SERVICE_SET_DOSE,
+    TEST_SET_DOSE: {
+        CALL_SERVICE: Msg.SET_DOSE,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "key": "2",
             "pulses": "120",
         },
         CALL_RESULTS: [
-            (12, ["16", "0078"]),
+            (Msg.SET_DOSE, ["16", "0078"]),
         ],
         USE_CALLBACK: False,
     },
     # Set prebrew time for key 4 to 3.1 seconds on and 2.5 seconds off
-    SET_PREBREW_TIMES: {
-        CALL_SERVICE: SERVICE_SET_PREBREW_TIMES,
+    TEST_SET_PREBREW_TIMES: {
+        CALL_SERVICE: Msg.SET_PREBREW_TIMES,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "key": "4",
@@ -147,92 +142,92 @@ TESTS = {
             "seconds_off": "2.5",
         },
         CALL_RESULTS: [
-            (14, ["0F", "1F"]),
-            (14, ["13", "19"]),
+            (Msg.SET_PREBREW_TIMES, ["0F", "1F"]),
+            (Msg.SET_PREBREW_TIMES, ["13", "19"]),
         ],
         USE_CALLBACK: False,
     },
     # Set hot water dose to 16 seconds
-    SET_DOSE_HOT_WATER: {
-        CALL_SERVICE: SERVICE_SET_DOSE_HOT_WATER,
+    TEST_SET_DOSE_HOT_WATER: {
+        CALL_SERVICE: Msg.SET_DOSE_HOT_WATER,
         CALL_DOMAIN: DOMAIN,
         CALL_DATA: {
             "seconds": "16",
         },
         CALL_RESULTS: [
-            (13, ["10"]),
+            (Msg.SET_DOSE_HOT_WATER, ["10"]),
         ],
         USE_CALLBACK: False,
     },
     # Turn on the main switch
-    TURN_ON_MAIN: {
+    TEST_TURN_ON_MAIN: {
         CALL_SERVICE: SERVICE_TURN_ON,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_main",
         },
         CALL_RESULTS: [
-            (3, ["01"]),
+            (Msg.SET_POWER, ["01"]),
         ],
         USE_CALLBACK: False,
     },
     # Turn off the main switch
-    TURN_OFF_MAIN: {
+    TEST_TURN_OFF_MAIN: {
         CALL_SERVICE: SERVICE_TURN_OFF,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_main",
         },
         CALL_RESULTS: [
-            (3, ["00"]),
+            (Msg.SET_POWER, ["00"]),
         ],
         USE_CALLBACK: False,
     },
     # Turn prebew on
-    ENABLE_PREBREW: {
+    TEST_ENABLE_PREBREW: {
         CALL_SERVICE: SERVICE_TURN_ON,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_prebrew",
         },
         CALL_RESULTS: [
-            (10, ["01"]),
+            (Msg.SET_PREBREWING_ENABLE, ["01"]),
         ],
         USE_CALLBACK: False,
     },
     # Turn prebew off
-    DISABLE_PREBREW: {
+    TEST_DISABLE_PREBREW: {
         CALL_SERVICE: SERVICE_TURN_OFF,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_prebrew",
         },
         CALL_RESULTS: [
-            (10, ["00"]),
+            (Msg.SET_PREBREWING_ENABLE, ["00"]),
         ],
         USE_CALLBACK: False,
     },
     # Enable global auto on/off
-    ENABLE_GLOBAL_AUTO_ON_OFF: {
+    TEST_ENABLE_GLOBAL_AUTO_ON_OFF: {
         CALL_SERVICE: SERVICE_TURN_ON,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_auto_on_off",
         },
         CALL_RESULTS: [
-            (5, ["FF"]),
+            (Msg.SET_AUTO_ON_OFF_ENABLE, ["FF"]),
         ],
         USE_CALLBACK: True,
     },
     # Disable global auto on/off
-    DISABLE_GLOBAL_AUTO_ON_OFF: {
+    TEST_DISABLE_GLOBAL_AUTO_ON_OFF: {
         CALL_SERVICE: SERVICE_TURN_OFF,
         CALL_DOMAIN: SWITCH_DOMAIN,
         CALL_DATA: {
             "entity_id": "switch.bbbbb_auto_on_off",
         },
         CALL_RESULTS: [
-            (5, ["FE"]),
+            (Msg.SET_AUTO_ON_OFF_ENABLE, ["FE"]),
         ],
         USE_CALLBACK: True,
     },
@@ -311,7 +306,7 @@ class TestServices:
         ):
             for model in MODELS:
                 mock_model_name.return_value = model
-                await self.make_service_call(mock_send_msg, hass, SET_COFFEE_TEMP)
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_COFFEE_TEMP)
 
     async def test_set_steam_temp(
         self,
@@ -326,7 +321,7 @@ class TestServices:
         ):
             for model in [MODEL_GS3_AV, MODEL_GS3_MP]:
                 mock_model_name.return_value = model
-                await self.make_service_call(mock_send_msg, hass, SET_STEAM_TEMP)
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_STEAM_TEMP)
 
     async def test_enable_auto_on_off(
         self,
@@ -338,7 +333,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, ENABLE_AUTO_ON_OFF)
+            await self.make_service_call(mock_send_msg, hass, TEST_ENABLE_AUTO_ON_OFF)
 
     async def test_disable_auto_on_off(
         self,
@@ -350,7 +345,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, DISABLE_AUTO_ON_OFF)
+            await self.make_service_call(mock_send_msg, hass, TEST_DISABLE_AUTO_ON_OFF)
 
     async def test_set_auto_on_off_times(
         self,
@@ -362,7 +357,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, SET_AUTO_ON_OFF_TIMES)
+            await self.make_service_call(mock_send_msg, hass, TEST_SET_AUTO_ON_OFF_TIMES)
 
     async def test_set_dose(
         self,
@@ -376,9 +371,9 @@ class TestServices:
             mock_model_name.return_value = model
             if model in [MODEL_GS3_MP, MODEL_LM]:
                 with pytest.raises(ServiceNotFound):
-                    await self.make_service_call(mock_send_msg, hass, SET_DOSE)
+                    await self.make_service_call(mock_send_msg, hass, TEST_SET_DOSE)
             else:
-                await self.make_service_call(mock_send_msg, hass, SET_DOSE)
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_DOSE)
 
     async def test_set_prebrew_times(
         self,
@@ -398,9 +393,9 @@ class TestServices:
             _LOGGER.debug(f"Testing {model}")
             if model in [MODEL_GS3_MP, MODEL_LM]:
                 with pytest.raises(expected_exceptions[model]):
-                    await self.make_service_call(mock_send_msg, hass, SET_PREBREW_TIMES)
+                    await self.make_service_call(mock_send_msg, hass, TEST_SET_PREBREW_TIMES)
             else:
-                await self.make_service_call(mock_send_msg, hass, SET_PREBREW_TIMES)
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_PREBREW_TIMES)
 
     async def test_set_dose_hot_water(
         self,
@@ -415,10 +410,10 @@ class TestServices:
             if model == MODEL_LM:
                 with pytest.raises(ServiceNotFound):
                     await self.make_service_call(
-                        mock_send_msg, hass, SET_DOSE_HOT_WATER
+                        mock_send_msg, hass, TEST_SET_DOSE_HOT_WATER
                     )
             else:
-                await self.make_service_call(mock_send_msg, hass, SET_DOSE_HOT_WATER)
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_DOSE_HOT_WATER)
 
     async def test_turn_on_main(
         self,
@@ -430,7 +425,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, TURN_ON_MAIN)
+            await self.make_service_call(mock_send_msg, hass, TEST_TURN_ON_MAIN)
 
     async def test_turn_off_main(
         self,
@@ -442,7 +437,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, TURN_OFF_MAIN)
+            await self.make_service_call(mock_send_msg, hass, TEST_TURN_OFF_MAIN)
 
     async def test_enable_prebrew(
         self,
@@ -454,7 +449,7 @@ class TestServices:
     ):
         for model in [MODEL_GS3_AV, MODEL_LM]:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, ENABLE_PREBREW)
+            await self.make_service_call(mock_send_msg, hass, TEST_ENABLE_PREBREW)
 
     async def test_disable_prebrew(
         self,
@@ -466,7 +461,7 @@ class TestServices:
     ):
         for model in [MODEL_GS3_AV, MODEL_LM]:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, DISABLE_PREBREW)
+            await self.make_service_call(mock_send_msg, hass, TEST_DISABLE_PREBREW)
 
     async def test_enable_global_auto_on_off(
         self,
@@ -478,7 +473,7 @@ class TestServices:
     ):
         for model in MODELS:
             mock_model_name.return_value = model
-            await self.make_service_call(mock_send_msg, hass, ENABLE_GLOBAL_AUTO_ON_OFF)
+            await self.make_service_call(mock_send_msg, hass, TEST_ENABLE_GLOBAL_AUTO_ON_OFF)
 
     async def test_disable_global_auto_on_off(
         self,
@@ -491,7 +486,7 @@ class TestServices:
         for model in MODELS:
             mock_model_name.return_value = model
             await self.make_service_call(
-                mock_send_msg, hass, DISABLE_GLOBAL_AUTO_ON_OFF
+                mock_send_msg, hass, TEST_DISABLE_GLOBAL_AUTO_ON_OFF
             )
 
     async def make_service_call(self, mock_send_msg, hass, test):
@@ -502,6 +497,9 @@ class TestServices:
             assert len(arg_list) == len(expected)
             expect_iter = iter(expected)
             for call in arg_list:
+                _LOGGER.debug(
+                    f"CALL=<{call}>"
+                )
                 received_args, received_kwargs = call
                 (received_args,) = received_args[1:]
                 received_kwargs = list(received_kwargs.values())
@@ -551,6 +549,7 @@ class TestServices:
             await hass.async_block_till_done()
 
             _LOGGER.debug(f"RESULT={result}")
+            _LOGGER.debug(f"ARG_LIST={mock_send_msg.call_args_list}")
 
             validate_results(mock_send_msg.call_args_list, test_entry[CALL_RESULTS])
 

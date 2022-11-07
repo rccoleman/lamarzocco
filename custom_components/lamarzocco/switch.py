@@ -3,17 +3,21 @@
 import logging
 
 from homeassistant.components.switch import SwitchEntity
-from lmdirect.msgs import AUTO, GLOBAL, POWER
+from lmdirect.msgs import AUTO, GLOBAL, POWER, STEAM_BOILER_ENABLE
 
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
     ATTR_MAP_MAIN_GS3_AV,
     ATTR_MAP_MAIN_GS3_MP,
     ATTR_MAP_MAIN_LM,
+    ATTR_MAP_STEAM_BOILER_ENABLE,
     ATTR_MAP_PREBREW_GS3_AV,
     ATTR_MAP_PREBREW_LM,
+    ATTR_MAP_PREINFUSION_GS3_AV,
+    ATTR_MAP_PREINFUSION_LM,
     DOMAIN,
     ENABLE_PREBREWING,
+    ENABLE_PREINFUSION,
     ENTITY_FUNC,
     ENTITY_ICON,
     ENTITY_MAP,
@@ -25,7 +29,9 @@ from .const import (
     MODEL_LM,
     TYPE_AUTO_ON_OFF,
     TYPE_MAIN,
-    TYPE_STEAM_TEMP,
+    TYPE_PREBREW,
+    TYPE_PREINFUSION,
+    TYPE_STEAM_BOILER_ENABLE,
 )
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
@@ -64,9 +70,32 @@ ENTITIES = {
             MODEL_GS3_AV: ATTR_MAP_PREBREW_GS3_AV,
             MODEL_LM: ATTR_MAP_PREBREW_LM,
         },
-        ENTITY_TYPE: TYPE_STEAM_TEMP,
+        ENTITY_TYPE: TYPE_PREBREW,
         ENTITY_ICON: "mdi:location-enter",
         ENTITY_FUNC: "set_prebrewing_enable",
+    },
+    "preinfusion": {
+        ENTITY_TAG: ENABLE_PREINFUSION,
+        ENTITY_NAME: "Preinfusion",
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_PREINFUSION_GS3_AV,
+            MODEL_LM: ATTR_MAP_PREINFUSION_LM,
+        },
+        ENTITY_TYPE: TYPE_PREINFUSION,
+        ENTITY_ICON: "mdi:location-enter",
+        ENTITY_FUNC: "set_preinfusion_enable",
+    },
+    "steam_boiler_enable": {
+        ENTITY_TAG: STEAM_BOILER_ENABLE,
+        ENTITY_NAME: "Steam Boiler Enable",
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_STEAM_BOILER_ENABLE,
+            MODEL_GS3_MP: ATTR_MAP_STEAM_BOILER_ENABLE,
+            MODEL_LM: ATTR_MAP_STEAM_BOILER_ENABLE,
+        },
+        ENTITY_TYPE: TYPE_STEAM_BOILER_ENABLE,
+        ENTITY_ICON: "mdi:water-boiler",
+        ENTITY_FUNC: "set_steam_boiler_enable",
     },
 }
 

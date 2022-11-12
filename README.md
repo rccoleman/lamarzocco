@@ -81,27 +81,26 @@ Regardless of how you configured the integration, you should see this in Configu
 
 ## Usage
 
-In Dev->States, you should see 7 new entities:
+In Dev->States, you should see several new entities, with your machine model dictating which ones:
 
-- 1 or 2 water heater entities, depending on whether you have a LM or GS/3
   - `water_heater.<machine_name>_coffee`
   - `water_heater.<machine_name>_steam`
-- 1 sensor
   - `sensor.<machine_name>_total_drinks`
-- 1 binary sensor
   - `binary_sensor.<machine_name>_water_reservoir`
-- 3 switches
   - `switch.<machine_name>_main`
   - `switch.<machine_name>_auto_on_off`
   - `switch.<machine_name>_prebrew`
-
+  - `switch.<machine_name>_preinfusion`
+  - `button.<machine_name>_start_backflush`
+  - `switch.<machine_name>_steam_boiler_enable`
+  
 Thw switches control their respective functions globally, i.e., enable/disable auto on/off for the whole machine, enable/disable prebrewing for all front-panel keys.
 
 ## Services
 
 The `water_heater` and `switch` entities support the standard services for those domains, described [here](https://www.home-assistant.io/integrations/water_heater/) and [here](https://www.home-assistant.io/integrations/switch/), respectively.
 
-The following domain-specific services are also available:
+The following domain-specific services are also available (model-dependent):
 
 #### Service `lamarzocco.set_auto_on_off_enable`
 
@@ -150,6 +149,15 @@ Set the prebrewing "on" and "off" times for a specific key.
 | `key`                  | no       | The key to program (1-4)                                            |
 | `seconds_on`           | no       | The time in seconds for the pump to run during prebrewing (0-5.9s)  |
 | `seconds_off`          | no       | The time in seconds for the pump to stop during prebrewing (0-5.9s) |
+
+#### Service `lamarzocco.set_preinfusion_time`
+
+Set the preinfusion time for a specific key.
+
+| Service data attribute | Optional | Description                                                         |
+| ---------------------- | -------- | ------------------------------------------------------------------- |
+| `key`                  | no       | The key to program (1-4)                                            |
+| `seconds`              | no       | The time in seconds for preinfusion (0-5.9s)                        |
 
 > **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running. The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
 

@@ -2,13 +2,12 @@
 
 import asyncio
 import logging
-from datetime import datetime
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 from lmdirect import LMDirect
 from lmdirect.connection import AuthFail as LMAuthFail, ConnectionFail as LMConnectionFail
-from lmdirect.msgs import DATE_RECEIVED, FIRMWARE_VER, POWER, UPDATE_AVAILABLE
+from lmdirect.msgs import FIRMWARE_VER, POWER, UPDATE_AVAILABLE
 
 from .const import DOMAIN, MODEL_GS3_AV, MODELS, POLLING_INTERVAL
 
@@ -88,7 +87,6 @@ class LaMarzocco(LMDirect):
     def update_callback(self, **kwargs):
         """Callback for when new data is available."""
         self._current_status.update(kwargs.get("current_status"))
-        self._current_status[DATE_RECEIVED] = datetime.now().replace(microsecond=0)
         self._current_status[UPDATE_AVAILABLE] = self._update_available
 
         if not self._device_version and FIRMWARE_VER in self._current_status:

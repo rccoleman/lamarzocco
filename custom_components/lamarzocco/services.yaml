@@ -76,5 +76,5 @@ set_preinfusion_time:
       description: "The key to program (1-4)"
       example: 1
     seconds:
-      description: The time in seconds for preinfusion (0-5.9s)
+      description: The time in seconds for preinfusion (0-24.9s)
       example: 1.1

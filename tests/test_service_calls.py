@@ -60,6 +60,7 @@ TEST_ENABLE_PREBREW = 10
 TEST_DISABLE_PREBREW = 11
 TEST_ENABLE_GLOBAL_AUTO_ON_OFF = 12
 TEST_DISABLE_GLOBAL_AUTO_ON_OFF = 13
+TEST_SET_PREINFUSION_TIME = 14
 
 """Table of tests to run and respones to expect."""
 TESTS = {
@@ -230,6 +231,19 @@ TESTS = {
             (Msg.SET_AUTO_ON_OFF_ENABLE, ["FE"]),
         ],
         USE_CALLBACK: True,
+    },
+    # Set prebrew time for key 4 to 3.1 seconds on and 2.5 seconds off
+    TEST_SET_PREINFUSION_TIME: {
+        CALL_SERVICE: Msg.SET_PREINFUSION_TIME,
+        CALL_DOMAIN: DOMAIN,
+        CALL_DATA: {
+            "key": "4",
+            "seconds": "22.2",
+        },
+        CALL_RESULTS: [
+            (Msg.SET_PREINFUSION_TIME, ["E5", "DE"]),
+        ],
+        USE_CALLBACK: False,
     },
 }
 
@@ -488,6 +502,28 @@ class TestServices:
             await self.make_service_call(
                 mock_send_msg, hass, TEST_DISABLE_GLOBAL_AUTO_ON_OFF
             )
+
+    async def test_set_preinfusion_time(
+        self,
+        mock_call,
+        mock_model_name,
+        mock_send_msg,
+        hass,
+        enable_custom_integrations,
+    ):
+        expected_exceptions = {
+            MODEL_GS3_MP: ServiceNotFound,
+            MODEL_LM: (lmdirect.InvalidInput, MultipleInvalid),
+        }
+        for model in MODELS:
+            mock_model_name.return_value = model
+
+            _LOGGER.debug(f"Testing {model}")
+            if model in [MODEL_GS3_MP, MODEL_LM]:
+                with pytest.raises(expected_exceptions[model]):
+                    await self.make_service_call(mock_send_msg, hass, TEST_SET_PREINFUSION_TIME)
+            else:
+                await self.make_service_call(mock_send_msg, hass, TEST_SET_PREINFUSION_TIME)
 
     async def make_service_call(self, mock_send_msg, hass, test):
         """Test one service call"""

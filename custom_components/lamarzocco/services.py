@@ -162,10 +162,10 @@ async def async_setup_services(hass, config_entry):
         Msg.SET_PREBREW_TIMES: {
             SCHEMA: {
                 vol.Required("seconds_on"): vol.All(
-                    vol.Coerce(float), vol.Range(min=0, max=5)
+                    vol.Coerce(float), vol.Range(min=0, max=5.9)
                 ),
                 vol.Required("seconds_off"): vol.All(
-                    vol.Coerce(float), vol.Range(min=0, max=5)
+                    vol.Coerce(float), vol.Range(min=0, max=5.9)
                 ),
             },
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
@@ -174,7 +174,7 @@ async def async_setup_services(hass, config_entry):
         Msg.SET_PREINFUSION_TIME: {
             SCHEMA: {
                 vol.Required("seconds"): vol.All(
-                    vol.Coerce(float), vol.Range(min=0, max=5)
+                    vol.Coerce(float), vol.Range(min=0, max=24.9)
                 ),
             },
             MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],

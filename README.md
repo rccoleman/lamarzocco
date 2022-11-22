@@ -157,7 +157,7 @@ Set the preinfusion time for a specific key.
 | Service data attribute | Optional | Description                                                         |
 | ---------------------- | -------- | ------------------------------------------------------------------- |
 | `key`                  | no       | The key to program (1-4)                                            |
-| `seconds`              | no       | The time in seconds for preinfusion (0-5.9s)                        |
+| `seconds`              | no       | The time in seconds for preinfusion (0-24.9s)                        |
 
 > **_NOTE:_** The machine won't allow more than one device to connect at once, so you may need to wait to allow the mobile app to connect while the integration is running. The integration only maintains the connection while it's sending or receiving information and polls every 30s, so you should still be able to use the mobile app.
 

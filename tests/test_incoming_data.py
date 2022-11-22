@@ -76,7 +76,7 @@ FACTORY_CONFIG = "factory_config"
 """Structure representing all tests to run."""
 DATA = {
     FACTORY_CONFIG: {
-        "msg": "R4070000E64006400CA000600000101BD0099000056",
+        "msg": "R4060002021140F00B003D704500050000F000F0064006400CA000600000101BD0099000056",
         "resp": {
             "flushing_offset": 0,
             "drinks_k1_offset": 0,
@@ -86,9 +86,10 @@ DATA = {
             "continuous_offset": 0,
             "update_available": "none",
             "pid_offset": 20.2,
-            "brew_group_offset": 0.5,
+            "brew_group_offset": 17.8,
             "water_filter_liters": 6,
-            "t_unit": 153,
+            "t_unit": 0,
+            "factory_offset": 153,
         },
     },
     STATUS_DATA: {
@@ -108,9 +109,7 @@ DATA = {
             "water_reservoir_contact": 1,
             "mystery_1": 0,
             "mystery_2": 2,
-            "steam_boiler_enable": False,
-            "coffee_temp": 93.3,
-            "steam_temp": 88.2,
+            "steam_boiler_enable": True,
         },
     },
     CONFIG_DATA: {

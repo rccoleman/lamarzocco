@@ -58,7 +58,7 @@ class EntityBase:
         return k
 
     @property
-    def state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
 
         def convert_value(k, v):

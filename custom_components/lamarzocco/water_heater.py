@@ -147,7 +147,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
             ATTR_CURRENT_TEMPERATURE: self.current_temperature,
             ATTR_TEMPERATURE: self.target_temperature
         }
-        return {**EntityBase.state_attributes.fget(self), **temps}
+        return {**EntityBase.extra_state_attributes.fget(self), **temps}
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""

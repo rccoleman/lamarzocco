@@ -3,7 +3,7 @@
 import logging
 
 from homeassistant.components.binary_sensor import (
-    DEVICE_CLASS_PROBLEM,
+    BinarySensorDeviceClass,
     BinarySensorEntity,
 )
 
@@ -38,7 +38,7 @@ ENTITIES = {
         },
         ENTITY_TYPE: TYPE_WATER_RESERVOIR_CONTACT,
         ENTITY_ICON: "mdi:water-well",
-        ENTITY_CLASS: DEVICE_CLASS_PROBLEM,
+        ENTITY_CLASS: BinarySensorDeviceClass.PROBLEM,
     }
 }
 

@@ -5,7 +5,7 @@ import logging
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
-from lmdirect import LMDirect
+from .interface import LMInterface
 from lmdirect.connection import AuthFail as LMAuthFail, ConnectionFail as LMConnectionFail
 from lmdirect.msgs import FIRMWARE_VER, POWER, UPDATE_AVAILABLE
 
@@ -14,7 +14,7 @@ from .const import DOMAIN, MODEL_GS3_AV, MODELS, POLLING_INTERVAL
 _LOGGER = logging.getLogger(__name__)
 
 
-class LaMarzocco(LMDirect):
+class LaMarzocco(LMInterface):
     """Keep data for La Marzocco entities."""
 
     def __init__(self, hass, config_entry=None, data=None):

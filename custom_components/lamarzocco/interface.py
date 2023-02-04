@@ -1,6 +1,6 @@
 
-import lmdirect
-import lmcloud
+from LMDirect import LMDirect
+from LMCloud import LMCloud
 
 '''
 Class to interface between lmdirect and lmcloud

@@ -28,8 +28,15 @@ async def connect():
 
 async def request_status():
     if self.model_name == MODEL_LMU:
-        pass
+        lm_cloud.get_status()
     else:
         lm_direct.request_status()
+
+async def set_auto_on_off_times(self, day_of_week, hour_on, minute_on, hour_off, minute_off):
+    if self.model_name == MODEL_LMU:
+        lm_cloud.set_auto_on_off(day_of_week, hour_on, minute_on, hour_off, minute_off)
+    else:
+        lm_direct.set_auto_on_off_times(day_of_week, hour_on, minute_on, hour_off, minute_off)
+
 
 

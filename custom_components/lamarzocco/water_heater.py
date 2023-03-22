@@ -6,6 +6,7 @@ from homeassistant.components.water_heater import (
     SUPPORT_TARGET_TEMPERATURE,
     ATTR_CURRENT_TEMPERATURE,
     ATTR_TEMPERATURE,
+    STATE_ELECTRIC,
     WaterHeaterEntity,
 )
 from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
@@ -110,7 +111,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     @property
     def state(self):
         """State of the water heater."""
-        return self.current_temperature
+        return STATE_ELECTRIC 
 
     @property
     def current_temperature(self):

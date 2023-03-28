@@ -4,7 +4,6 @@ from lmcloud import LMCloud
 
 from .const import *
 
-
 '''
 Class to interface between lmdirect and lmcloud
 '''
@@ -23,7 +22,7 @@ class LMInterface:
     @classmethod
     async def create(cls, config):
         self = cls()
-        self.lm_cloud = LMCloud.create(config)
+        self.lm_cloud = await LMCloud.create(config)
         self.model_name = self.lm_cloud.model_name
 
         if self.model_name in LM_CLOUD_MODELS:

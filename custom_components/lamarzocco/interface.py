@@ -30,11 +30,13 @@ class LMInterface:
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
 
-        _LOGGER.error(f"Model name: {self._model_name}")
+        _LOGGER.debug(f"Model name: {self._model_name}")
 
         if self._model_name in LM_CLOUD_MODELS:
+            _LOGGER.debug("Initializing lmcloud...")
             self._lm_cloud = await LMCloud.create_with_local_api(config, config["ip"], port=DEFAULT_PORT_CLOUD)
         else:
+            _LOGGER.debug("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
 
     async def init_data(self, hass):

@@ -4,6 +4,7 @@ import logging
 
 from homeassistant.components.switch import SwitchEntity
 from lmdirect.msgs import AUTO, GLOBAL, POWER, STEAM_BOILER_ENABLE
+from lmdirect.const import ENABLED
 
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
@@ -143,4 +144,4 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
         """Return true if device is on."""
         return self._lm.current_status.get(
             self._get_key(self._entities[self._object_id][ENTITY_TAG]), False
-        )
+        ) in [True, ENABLED]

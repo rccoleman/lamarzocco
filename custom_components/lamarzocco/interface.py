@@ -1,6 +1,6 @@
 
-from LMDirect import LMDirect
-from LMCloud import LMCloud
+from lmdirect import LMDirect
+from lmcloud import LMCloud
 
 from const import *
 

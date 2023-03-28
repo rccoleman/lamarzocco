@@ -2,7 +2,7 @@
 from lmdirect import LMDirect
 from lmcloud import LMCloud
 
-from const import *
+from .const import *
 
 
 '''

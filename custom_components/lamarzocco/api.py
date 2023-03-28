@@ -5,16 +5,16 @@ import logging
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
-from lmdirect import LMDirect
 from lmdirect.connection import AuthFail as LMAuthFail, ConnectionFail as LMConnectionFail
 from lmdirect.msgs import FIRMWARE_VER, POWER, UPDATE_AVAILABLE
 
 from .const import DOMAIN, MODEL_GS3_AV, MODELS, POLLING_INTERVAL
+from .interface import LMInterface
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class LaMarzocco(LMDirect):
+class LaMarzocco(LMInterface):
     """Keep data for La Marzocco entities."""
 
     def __init__(self, hass, config_entry=None, data=None):
@@ -32,22 +32,7 @@ class LaMarzocco(LMDirect):
         super().__init__(config_entry.data if config_entry else data)
 
     async def init_data(self, hass):
-        """Initialize the underlying lmdirect package."""
-
-        """Register the callback to receive updates."""
-        self.register_callback(self.update_callback)
-
-        self._run = True
-
-        """Start polling for status."""
-        self._polling_task = hass.loop.create_task(
-            self.fetch_data(), name="Polling Loop"
-        )
-
-        """Reap the results and any any exceptions."""
-        self._poll_reaper_task = hass.loop.create_task(
-            self.poll_reaper(), name="Poll Reaper"
-        )
+        super.init_data(hass)
 
     @property
     def model_name(self):

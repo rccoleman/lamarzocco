@@ -1,8 +1,12 @@
 
+import logging
+
 from lmdirect import LMDirect
 from lmcloud import LMCloud
 
 from .const import *
+
+_LOGGER = logging.getLogger(__name__)
 
 '''
 Class to interface between lmdirect and lmcloud
@@ -23,6 +27,7 @@ class LMInterface:
     @classmethod
     async def create(cls, config):
         self = cls()
+        _LOGGER.error(f"Config {config}")
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
 

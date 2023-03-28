@@ -57,9 +57,15 @@ class LMInterface:
     '''
     async def connect(self):
         if self.model_name in LM_CLOUD_MODELS:
+            return self.lm_cloud.machine_info
+        else:
+            return await self.lm_direct.connect()
+
+    async def close(self):
+        if self.model_name in LM_CLOUD_MODELS:
             pass
         else:
-            await self.lm_direct.connect()
+            await self.lm_direct.close()
 
     async def request_status(self):
         if self.model_name in LM_CLOUD_MODELS:

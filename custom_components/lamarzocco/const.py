@@ -18,6 +18,7 @@ CONF_MACHINE_NAME = "machine_name"
 CONF_MODEL_NAME = "model_name"
 
 DEFAULT_PORT = 1774
+DEFAULT_PORT_CLOUD = 8081
 
 DEFAULT_NAME = "Espresso Machine"
 
@@ -27,7 +28,7 @@ FUNC = "func"
 
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM, MODEL_LMU]
-LM_CLOUD_MODELS = [MODEL_LMU]
+LM_CLOUD_MODELS = [MODEL_LMU, "Micra"]
 
 """List of attributes for each entity based on model."""
 ATTR_MAP_MAIN_GS3_AV = [

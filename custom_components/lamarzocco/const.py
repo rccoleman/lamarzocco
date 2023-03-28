@@ -1,6 +1,7 @@
 """Constants for the La Marzocco integration."""
 
 from lmdirect.const import MODEL_NAME
+from lmcloud.const import MODEL_LMU
 from lmdirect.msgs import *
 
 DOMAIN = "lamarzocco"
@@ -24,7 +25,6 @@ SCHEMA = "schema"
 MODELS_SUPPORTED = "supported"
 FUNC = "func"
 
-MODEL_LMU = "Linea Micra"
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM, MODEL_LMU]
 LM_CLOUD_MODELS = [MODEL_LMU]

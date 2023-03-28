@@ -22,8 +22,7 @@ async def async_setup(hass: HomeAssistant, config: dict):
 
 async def async_setup_entry(hass, config_entry):
     """Set up La Marzocco as config entry."""
-    lm = LaMarzocco(hass, config_entry=config_entry)
-    await lm.init_data(hass)
+    lm = await LaMarzocco.create(hass, config_entry=config_entry)
 
     hass.data[DOMAIN][config_entry.entry_id] = lm
 

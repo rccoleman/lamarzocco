@@ -17,22 +17,23 @@ _LOGGER = logging.getLogger(__name__)
 class LaMarzocco(LMInterface):
     """Keep data for La Marzocco entities."""
 
-    def __init__(self, hass, config_entry=None, data=None):
+    def __init__(self):
         """Initialise the LaMarzocco entity data."""
-        self._hass = hass
         self._current_status = {}
         self._polling_task = None
-        self._config_entry = config_entry
         self._device_version = None
         self._poll_reaper_task = None
 
         """Start with the machine in standby if we haven't received accurate data yet"""
         self._current_status[POWER] = 0
 
-        super().__init__(config_entry.data if config_entry else data)
-
-    async def init_data(self, hass):
-        super.init_data(hass)
+    @classmethod
+    async def create(cls, hass, config_entry=None, data=None):
+        self = cls()
+        self._config_entry = config_entry
+        self._hass = hass
+        await super().create(config_entry.data if config_entry else data)
+        await super().init_data(hass)
 
     @property
     def model_name(self):

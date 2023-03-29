@@ -27,7 +27,11 @@ class LMInterface:
 
     @classmethod
     async def create(cls, config):
-        self = LMInterface()
+        self = cls()
+        await self.init_lm_client(config)
+        return self
+
+    async def init_lm_client(self, config):
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
 
@@ -39,7 +43,6 @@ class LMInterface:
         else:
             _LOGGER.debug("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
-        return self
 
     async def init_data(self, hass):
         if self.model_name in LM_CLOUD_MODELS:

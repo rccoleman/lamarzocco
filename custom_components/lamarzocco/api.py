@@ -19,6 +19,8 @@ class LaMarzocco(LMInterface):
 
     def __init__(self, hass, config_entry):
         """Initialise the LaMarzocco entity data."""
+        super().__init__()
+
         self._current_status = {}
         self._polling_task = None
         self._device_version = None
@@ -34,7 +36,7 @@ class LaMarzocco(LMInterface):
     async def create(cls, hass, config_entry=None, data=None):
         self = cls(hass=hass, config_entry=config_entry)
 
-        await super().create(config=config_entry.data if config_entry else data)
+        await super().init_lm_client(config=config_entry.data if config_entry else data)
         # await super().init_data(hass)
         return self
 

@@ -121,6 +121,13 @@ class LMInterface:
         else:
             await self._lm_direct.request_status()
 
+    async def set_power(self, power_on):
+        if self.model_name in LM_CLOUD_MODELS:
+            mode = "ON" if power_on else "STANDBY"
+            await self._lm_cloud.set_power(mode)
+        else:
+            await self._lm_direct.set_power(power_on)
+
     async def set_auto_on_off_enable(self, day_of_week, enable):
         if self.model_name in LM_CLOUD_MODELS:
             schedule = self._lm_cloud.get_schedule()

@@ -194,3 +194,24 @@ class LMInterface:
             pass
         else:
             await self._lm_direct.set_preinfusion_time(key, seconds)
+
+    async def set_start_backflush(self):
+        if self.model_name in LM_CLOUD_MODELS:
+            await self._lm_cloud.start_backflush()
+        else:
+            await self._lm_direct.set_start_backflush()
+
+    async def set_coffee_temp(self, temp):
+        if self.model_name in LM_CLOUD_MODELS:
+            possible_temps = [126, 128, 131]
+            temp = min(possible_temps, key=lambda x: abs(x - temp))
+            await self._lm_cloud.set_coffee_temp(temp)
+        else:
+            await self._lm_direct.set_coffee_temp(temp)
+
+    async def set_steam_temp(self, temp):
+        if self.model_name in LM_CLOUD_MODELS:
+
+            await self._lm_cloud.set_steam_temp(temp)
+        else:
+            await self._lm_direct.set_steam_temp(temp)

@@ -32,6 +32,7 @@ from .const import (
     TSET_STEAM,
     TYPE_COFFEE_TEMP,
     TYPE_STEAM_TEMP,
+    LM_CLOUD_MODELS
 )
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
@@ -39,9 +40,12 @@ from .services import async_setup_entity_services, call_service
 """Min/Max coffee and team temps."""
 COFFEE_MIN_TEMP = 87
 COFFEE_MAX_TEMP = 100
+COFFEE_MIN_TEMP_LMU = 85
+COFFEE_MAX_TEMP_LMU = 104
 
 STEAM_MIN_TEMP = 110
 STEAM_MAX_TEMP = 132
+LMU_STEAM_STEPS = [126, 128, 131]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,8 +107,12 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
 
         """Set dynamic properties."""
-        self._attr_min_temp = COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
-        self._attr_max_temp = COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
+        if lm.model_name in LM_CLOUD_MODELS:
+            self._attr_min_temp = COFFEE_MIN_TEMP_LMU if self._object_id == "coffee" else min(LMU_STEAM_STEPS)
+            self._attr_max_temp = COFFEE_MAX_TEMP_LMU if self._object_id == "coffee" else max(LMU_STEAM_STEPS)
+        else:
+            self._attr_min_temp = COFFEE_MIN_TEMP if self._object_id == "coffee" else STEAM_MIN_TEMP
+            self._attr_max_temp = COFFEE_MAX_TEMP if self._object_id == "coffee" else STEAM_MAX_TEMP
 
         self._lm.register_callback(self.update_callback)
 

@@ -27,7 +27,7 @@ class LMInterface:
 
     @classmethod
     async def create(cls, config):
-        self = cls()
+        self = LMInterface()
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
 

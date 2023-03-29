@@ -5,6 +5,7 @@ from lmdirect import LMDirect
 from lmcloud import LMCloud
 
 from .const import *
+from lmdirect.const import HOST
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class LMInterface:
 
         if self._model_name in LM_CLOUD_MODELS:
             _LOGGER.debug("Initializing lmcloud...")
-            self._lm_cloud = await LMCloud.create_with_local_api(config, config["ip"], port=DEFAULT_PORT_CLOUD)
+            self._lm_cloud = await LMCloud.create_with_local_api(config, config[HOST], port=DEFAULT_PORT_CLOUD)
         else:
             _LOGGER.debug("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)

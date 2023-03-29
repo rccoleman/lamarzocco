@@ -103,6 +103,12 @@ class LMInterface:
         else:
             await self._lm_direct.set_dose(key, pulses)
 
+    async def set_dose_hot_water(self, seconds):
+        if self.model_name in LM_CLOUD_MODELS:
+            pass
+        else:
+            await self._lm_direct.set_dose_hot_water(seconds) 
+
     async def set_prebrew_times(self, key, seconds_on, seconds_off):
         if self.model_name in LM_CLOUD_MODELS:
             await self._lm_cloud.configure_prebrew(prebrewOnTime=seconds_on, prebrewOffTime=seconds_off)

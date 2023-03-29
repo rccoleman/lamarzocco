@@ -122,7 +122,7 @@ class LMInterface:
         if self.model_name in LM_CLOUD_MODELS:
             pass
         else:
-            await self._lm_direct.set_dose_hot_water(seconds) 
+            await self._lm_direct.set_dose_hot_water(seconds)
 
     async def set_prebrew_times(self, key, seconds_on, seconds_off):
         if self.model_name in LM_CLOUD_MODELS:

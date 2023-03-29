@@ -9,12 +9,11 @@ from lmdirect.const import HOST, SERIAL_NUMBER
 
 _LOGGER = logging.getLogger(__name__)
 
-'''
-Class to interface between lmdirect and lmcloud
-'''
-
 
 class LMInterface:
+    '''
+    Class to interface between lmdirect and lmcloud
+    '''
 
     @property
     def model_name(self):
@@ -48,7 +47,10 @@ class LMInterface:
             return self.machine_info
         else:
             return self._lm_direct.current_status
-
+        
+    '''
+    Initialization
+    '''
     def __init__(self):
         self._lm_direct = None
         self._lm_cloud = None
@@ -127,6 +129,32 @@ class LMInterface:
             await self._lm_cloud.set_power(mode)
         else:
             await self._lm_direct.set_power(power_on)
+
+    async def set_steam_boiler_enable(self, enable):
+        if self.model_name in LM_CLOUD_MODELS:
+            await self._lm_cloud.set_steam(enable)
+        else:
+            await self._lm_direct.set_power(enable)
+
+    async def set_preinfusion_enable(self, enable):
+        if self.model_name in LM_CLOUD_MODELS:
+            state = "TypeB" if enable else "Disabled"
+            await self._lm_cloud.set_preinfusion(state)
+        else:
+            await self._lm_direct.set_preinfusion_enable(enable)
+
+    async def set_prebrewing_enable(self, enable):
+        if self.model_name in LM_CLOUD_MODELS:
+            state = "Enabled" if enable else "Disabled"
+            await self._lm_cloud.set_prebrew(state)
+        else:
+            await self._lm_direct.set_prebrewing_enable(enable)
+
+    async def set_auto_on_off_global(self, enable):
+        if self.model_name in LM_CLOUD_MODELS:
+            await self._lm_cloud.configure_schedule(enable, self._lm_cloud.get_schedule())
+        else:
+            await self._lm_direct.set_auto_on_off_global(enable)
 
     async def set_auto_on_off_enable(self, day_of_week, enable):
         if self.model_name in LM_CLOUD_MODELS:

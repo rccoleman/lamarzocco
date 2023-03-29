@@ -54,6 +54,7 @@ class LMInterface:
         self._lm_cloud = None
         self._model_name = None
         self._machine_info = None
+        self._callback_list = []
 
     @classmethod
     async def create(cls, hass, config):
@@ -76,25 +77,20 @@ class LMInterface:
             self._lm_direct = LMDirect.__init__(config)
 
     async def init_data(self, hass):
-        if self.model_name in LM_CLOUD_MODELS:
-            pass
-        else:
-            """Initialize the underlying lmdirect package."""
+        """Register the callback to receive updates."""
+        self.register_callback(self.update_callback)
 
-            """Register the callback to receive updates."""
-            self.register_callback(self.update_callback)
+        self._run = True
 
-            self._run = True
+        """Start polling for status."""
+        self._polling_task = hass.loop.create_task(
+            self.fetch_data(), name="Polling Loop"
+        )
 
-            """Start polling for status."""
-            self._polling_task = hass.loop.create_task(
-                self.fetch_data(), name="Polling Loop"
-            )
-
-            """Reap the results and any any exceptions."""
-            self._poll_reaper_task = hass.loop.create_task(
-                self.poll_reaper(), name="Poll Reaper"
-            )
+        """Reap the results and any any exceptions."""
+        self._poll_reaper_task = hass.loop.create_task(
+            self.poll_reaper(), name="Poll Reaper"
+        )
 
     '''
     interface methods

@@ -33,12 +33,12 @@ class LMInterface:
     @property
     def serial_number(self):
         """Return serial number."""
-        return self._machine_info[SERIAL_NUMBER]
+        return self.machine_info[SERIAL_NUMBER]
     
     @property
     def firmware_version(self):
         if self.model_name in LM_CLOUD_MODELS:
-            return "Unknown"
+            return self._lm_cloud.firmware_version
         else:
             return self._lm_direct.firmware_version
         
@@ -56,12 +56,12 @@ class LMInterface:
         self._machine_info = None
 
     @classmethod
-    async def create(cls, config):
+    async def create(cls, hass, config):
         self = cls()
-        await self.init_lm_client(config)
+        await self.init_lm_client(hass, config)
         return self
 
-    async def init_lm_client(self, config):
+    async def init_lm_client(self, hass, config):
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
 
@@ -70,6 +70,7 @@ class LMInterface:
         if self._model_name in LM_CLOUD_MODELS:
             _LOGGER.info("Initializing lmcloud...")
             self._lm_cloud = await LMCloud.create_with_local_api(config, config[HOST], port=DEFAULT_PORT_CLOUD)
+            hass.async_add_executor_job(self._lm_cloud.get_status)
         else:
             _LOGGER.info("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
@@ -83,7 +84,7 @@ class LMInterface:
             """Register the callback to receive updates."""
             self.register_callback(self.update_callback)
 
-            self._lm_direct._run = True
+            self._run = True
 
             """Start polling for status."""
             self._polling_task = hass.loop.create_task(
@@ -113,10 +114,9 @@ class LMInterface:
             await self._lm_direct.close()
 
     def register_callback(self, callback):
-        if self.model_name in LM_CLOUD_MODELS:
-            pass
-        else:
-            self._lm_direct.register_callback(callback)
+        """Register callback for updates."""
+        if callable(callback):
+            self._callback_list.append(callback)
 
     async def request_status(self):
         if self.model_name in LM_CLOUD_MODELS:

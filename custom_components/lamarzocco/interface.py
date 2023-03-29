@@ -5,7 +5,7 @@ from lmdirect import LMDirect
 from lmcloud import LMCloud
 
 from .const import *
-from lmdirect.const import HOST
+from lmdirect.const import HOST, SERIAL_NUMBER
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +18,7 @@ class LMInterface:
 
     @property
     def model_name(self):
+        """Return model name."""
         return self._model_name
   
     @property
@@ -26,7 +27,20 @@ class LMInterface:
   
     @property
     def machine_name(self):
+        """Return the name of the machine."""
         return self.machine_info[MACHINE_NAME]
+
+    @property
+    def serial_number(self):
+        """Return serial number."""
+        return self._machine_info[SERIAL_NUMBER]
+    
+    @property
+    def firmware_version(self):
+        if self.model_name in LM_CLOUD_MODELS:
+            return "Unknown"
+        else:
+            return self._lm_direct.firmware_version
 
     def __init__(self):
         self._lm_direct = None

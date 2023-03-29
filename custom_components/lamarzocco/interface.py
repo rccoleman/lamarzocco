@@ -83,7 +83,7 @@ class LMInterface:
             """Register the callback to receive updates."""
             self.register_callback(self.update_callback)
 
-            self._run = True
+            self._lm_direct._run = True
 
             """Start polling for status."""
             self._polling_task = hass.loop.create_task(

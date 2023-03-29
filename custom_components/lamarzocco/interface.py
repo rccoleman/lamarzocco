@@ -41,6 +41,13 @@ class LMInterface:
             return "Unknown"
         else:
             return self._lm_direct.firmware_version
+        
+    @property
+    def current_status(self):
+        if self.model_name in LM_CLOUD_MODELS:
+            return self.machine_info
+        else:
+            return self._lm_direct.current_status
 
     def __init__(self):
         self._lm_direct = None

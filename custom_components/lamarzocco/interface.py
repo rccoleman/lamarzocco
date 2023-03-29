@@ -91,6 +91,12 @@ class LMInterface:
         else:
             await self._lm_direct.close()
 
+    def register_callback(self, callback):
+        if self.model_name in LM_CLOUD_MODELS:
+            pass
+        else:
+            self._lm_direct.register_callback(callback)
+
     async def request_status(self):
         if self.model_name in LM_CLOUD_MODELS:
             await self._lm_cloud.get_status()

@@ -37,7 +37,7 @@ class LaMarzocco(LMInterface):
         self = cls(hass=hass, config_entry=config_entry)
 
         await self.init_lm_client(config=config_entry.data if config_entry else data)
-        # await self.init_data(hass)
+        await self.init_data(hass)
         return self
 
     @property

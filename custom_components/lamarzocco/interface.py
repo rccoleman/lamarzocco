@@ -19,11 +19,20 @@ class LMInterface:
     @property
     def model_name(self):
         return self._model_name
+  
+    @property
+    def machine_info(self):
+        return self._machine_info
+  
+    @property
+    def machine_name(self):
+        return self.machine_info[MACHINE_NAME]
 
     def __init__(self):
         self._lm_direct = None
         self._lm_cloud = None
         self._model_name = None
+        self._machine_info = None
 
     @classmethod
     async def create(cls, config):
@@ -70,9 +79,11 @@ class LMInterface:
     '''
     async def connect(self):
         if self.model_name in LM_CLOUD_MODELS:
-            return self._lm_cloud.machine_info
+            self._machine_info = self._lm_cloud.machine_info
         else:
-            return await self._lm_direct.connect()
+            self._machine_info = await self._lm_direct.connect()
+
+        return self.machine_info
 
     async def close(self):
         if self.model_name in LM_CLOUD_MODELS:

@@ -65,6 +65,7 @@ class LMInterface:
     async def init_lm_client(self, hass, config):
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
+        self._machine_info = self._lm_cloud.machine_info
 
         _LOGGER.info(f"Model name: {self._model_name}")
 
@@ -84,7 +85,7 @@ class LMInterface:
 
         """Start polling for status."""
         self._polling_task = hass.loop.create_task(
-            self.fetch_data(), name="Polling Loop"
+            self.fetch_data(hass), name="Polling Loop"
         )
 
         """Reap the results and any any exceptions."""
@@ -97,7 +98,7 @@ class LMInterface:
     '''
     async def connect(self):
         if self.model_name in LM_CLOUD_MODELS:
-            self._machine_info = self._lm_cloud.machine_info
+            pass
         else:
             self._machine_info = await self._lm_direct.connect()
 
@@ -114,9 +115,9 @@ class LMInterface:
         if callable(callback):
             self._callback_list.append(callback)
 
-    async def request_status(self):
+    async def request_status(self, hass):
         if self.model_name in LM_CLOUD_MODELS:
-            await self._lm_cloud.get_status()
+            await hass.async_add_executor_job(self._lm_cloud.get_status)
         else:
             await self._lm_direct.request_status()
 

@@ -14,6 +14,7 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
+    MODEL_LMU,
     MODELS_SUPPORTED,
     PLATFORM,
     SCHEMA,
@@ -137,7 +138,7 @@ async def async_setup_services(hass, config_entry):
                 vol.Required("day_of_week"): vol.In(DAYS),
                 vol.Required("enable"): vol.Boolean(),
             },
-            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM, MODEL_LMU],
             FUNC: set_auto_on_off_enable,
         },
         Msg.SET_AUTO_ON_OFF_TIMES: {
@@ -156,7 +157,7 @@ async def async_setup_services(hass, config_entry):
                     vol.Coerce(int), vol.Range(min=0, max=59)
                 ),
             },
-            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM],
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM, MODEL_LMU],
             FUNC: set_auto_on_off_times,
         },
         Msg.SET_PREBREW_TIMES: {
@@ -168,7 +169,7 @@ async def async_setup_services(hass, config_entry):
                     vol.Coerce(float), vol.Range(min=0, max=5.9)
                 ),
             },
-            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM, MODEL_LMU],
             FUNC: set_prebrew_times,
         },
         Msg.SET_PREINFUSION_TIME: {
@@ -177,7 +178,7 @@ async def async_setup_services(hass, config_entry):
                     vol.Coerce(float), vol.Range(min=0, max=24.9)
                 ),
             },
-            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM],
+            MODELS_SUPPORTED: [MODEL_GS3_AV, MODEL_LM, MODEL_LMU],
             FUNC: set_preinfusion_time,
         },
     }
@@ -192,7 +193,7 @@ async def async_setup_services(hass, config_entry):
     lm = hass.data[DOMAIN][config_entry.entry_id]
 
     """Set the max prebrew button based on model"""
-    if lm.model_name in [MODEL_GS3_AV, MODEL_LM]:
+    if lm.model_name in [MODEL_GS3_AV, MODEL_LM, MODEL_LMU]:
         max_button_number = 4 if lm.model_name == MODEL_GS3_AV else 1
         INTEGRATION_SERVICES[Msg.SET_PREBREW_TIMES][SCHEMA].update(
             {

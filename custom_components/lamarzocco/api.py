@@ -32,10 +32,11 @@ class LaMarzocco(LMInterface):
 
     @classmethod
     async def create(cls, hass, config_entry=None, data=None):
-        cls(hass=hass, config_entry=config_entry)
+        self = cls(hass=hass, config_entry=config_entry)
 
-        await super().create(config_entry.data if config_entry else data)
+        await super().create(config=config_entry.data if config_entry else data)
         await super().init_data(hass)
+        return self
 
     @property
     def model_name(self):

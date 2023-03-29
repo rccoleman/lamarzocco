@@ -39,6 +39,7 @@ class LMInterface:
         else:
             _LOGGER.debug("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
+        return self
 
     async def init_data(self, hass):
         if self.model_name in LM_CLOUD_MODELS:

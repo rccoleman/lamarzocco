@@ -40,7 +40,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     """Validate the user input allows us to connect."""
 
     try:
-        lm = await LaMarzocco.create(hass, data=data)
+        lm = await LaMarzocco.create(hass=hass, data=data)
         machine_info = await lm.connect()
         await lm.close()
 

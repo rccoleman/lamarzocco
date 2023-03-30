@@ -118,7 +118,7 @@ class LMInterface:
 
     async def request_status(self):
         if self.model_name in LM_CLOUD_MODELS:
-            await self._lm_cloud.get_status()
+            await self._lm_cloud.update_local_machine_status()
         else:
             await self._lm_direct.request_status()
 

@@ -1,7 +1,7 @@
 {
   "domain": "lamarzocco",
   "name": "La Marzocco",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",

@@ -111,7 +111,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             serial_number = ""
             if "type" in raw:
+                _LOGGER.warn("Type there")
                 if raw["type"] == str.upper(MODEL_LMU):
+                    _LOGGER.warn("Model micra")
                     serial_number = raw["sn"].decode("utf-8")
             if not serial_number:
                 serial_number = raw["serial_number"].decode("utf-8")
@@ -124,7 +126,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_PORT: port,
             CONF_SERIAL_NUMBER: serial_number,
         }
-
+        _LOGGER.warn(f"Host={host}, Port={port}, SN={serial_number}")
         _LOGGER.debug(f"Host={host}, Port={port}, SN={serial_number}")
 
         await self.async_set_unique_id(serial_number)

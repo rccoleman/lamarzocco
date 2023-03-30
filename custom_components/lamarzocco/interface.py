@@ -125,8 +125,7 @@ class LMInterface:
 
     async def set_power(self, power_on):
         if self.model_name in LM_CLOUD_MODELS:
-            mode = "ON" if power_on else "STANDBY"
-            await self._lm_cloud.set_power(mode)
+            await self._lm_cloud.set_power(power_on)
         else:
             await self._lm_direct.set_power(power_on)
 
@@ -138,15 +137,13 @@ class LMInterface:
 
     async def set_preinfusion_enable(self, enable):
         if self.model_name in LM_CLOUD_MODELS:
-            state = "TypeB" if enable else "Disabled"
-            await self._lm_cloud.set_preinfusion(state)
+            await self._lm_cloud.set_preinfusion(enable)
         else:
             await self._lm_direct.set_preinfusion_enable(enable)
 
     async def set_prebrewing_enable(self, enable):
         if self.model_name in LM_CLOUD_MODELS:
-            state = "Enabled" if enable else "Disabled"
-            await self._lm_cloud.set_prebrew(state)
+            await self._lm_cloud.set_prebrew(enable)
         else:
             await self._lm_direct.set_prebrewing_enable(enable)
 
@@ -158,10 +155,7 @@ class LMInterface:
 
     async def set_auto_on_off_enable(self, day_of_week, enable):
         if self.model_name in LM_CLOUD_MODELS:
-            schedule = self._lm_cloud.get_schedule()
-            idx = [index for (index, d) in enumerate(schedule) if d["day"] == day_of_week.upper()][0]
-            schedule[idx]["enable"] = True
-            await self._lm_cloud.configure_schedule(True, schedule)
+            await self._lm_cloud.set_auto_on_off_enable(day_of_week, enable)
         else:
             await self._lm_direct.set_auto_on_off_enable(day_of_week, enable)
 
@@ -191,6 +185,7 @@ class LMInterface:
 
     async def set_preinfusion_time(self, key, seconds):
         if self.model_name in LM_CLOUD_MODELS:
+            # TODO
             pass
         else:
             await self._lm_direct.set_preinfusion_time(key, seconds)

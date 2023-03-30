@@ -14,6 +14,7 @@ from .const import (
     TYPE_START_BACKFLUSH,
     MODEL_GS3_AV,
     MODEL_LM,
+    MODEL_LMU,
 )
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
@@ -26,6 +27,7 @@ ENTITIES = {
         ENTITY_MAP: {
             MODEL_GS3_AV: None,
             MODEL_LM: None,
+            MODEL_LMU: None,
         },
         ENTITY_TYPE: TYPE_START_BACKFLUSH,
         ENTITY_ICON: "mdi:coffee-maker",

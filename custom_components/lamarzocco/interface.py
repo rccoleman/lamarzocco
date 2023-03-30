@@ -44,7 +44,7 @@ class LMInterface:
     @property
     def current_status(self):
         if self.model_name in LM_CLOUD_MODELS:
-            return self.machine_info
+            return self._lm_cloud.current_status
         else:
             return self._lm_direct.current_status
         

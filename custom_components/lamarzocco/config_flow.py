@@ -112,7 +112,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             serial_number = ""
             if "type" in raw:
                 _LOGGER.warn("Model" + str(raw["type"].decode('utf-8')))
-                if raw["type"] == str.upper(MODEL_LMU):
+                if raw["type"].decode('utf-8') == str.upper(MODEL_LMU):
                     _LOGGER.warn("Model micra")
                     serial_number = raw["sn"].decode("utf-8")
             if not serial_number:

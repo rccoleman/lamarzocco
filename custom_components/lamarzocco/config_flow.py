@@ -98,6 +98,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         """Handle a flow initialized by zeroconf discovery."""
         _LOGGER.debug(f"Discovered {discovery_info}")
+        _LOGGER.warn(f"Discovered {discovery_info}")
 
         if isinstance(discovery_info, dict):
             raw = discovery_info["properties"]["_raw"]
@@ -107,6 +108,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             port: int = discovery_info[CONF_PORT]
         else:
             raw = discovery_info.properties["_raw"]
+
+            _LOGGER.warn(f"Raw discovery info: {raw}")
 
             serial_number: str = raw["serial_number"].decode("utf-8")
             host: str = discovery_info.host

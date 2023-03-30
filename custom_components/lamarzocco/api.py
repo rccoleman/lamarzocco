@@ -107,13 +107,13 @@ class LaMarzocco(LMInterface):
         except LMConnectionFail:
             raise ConnectionFail
 
-    async def fetch_data(self, hass):
+    async def fetch_data(self):
         """Loop that periodically polls the machine for new data."""
         while self._run:
             _LOGGER.debug("Fetching data")
             try:
                 """Request latest status."""
-                await self.request_status(hass)
+                await self.request_status()
             except Exception as err:
                 _LOGGER.error(f"Caught exception: {err}")
             await asyncio.sleep(POLLING_INTERVAL)

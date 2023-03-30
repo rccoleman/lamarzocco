@@ -26,6 +26,7 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
+    MODEL_LMU,
     TEMP_COFFEE,
     TSET_COFFEE,
     TEMP_STEAM,
@@ -58,6 +59,7 @@ ENTITIES = {
             MODEL_GS3_AV: ATTR_MAP_COFFEE,
             MODEL_GS3_MP: ATTR_MAP_COFFEE,
             MODEL_LM: ATTR_MAP_COFFEE,
+            MODEL_LMU: ATTR_MAP_COFFEE
         },
         ENTITY_TYPE: TYPE_COFFEE_TEMP,
         ENTITY_ICON: "mdi:water-boiler",
@@ -70,6 +72,7 @@ ENTITIES = {
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_STEAM,
             MODEL_GS3_MP: ATTR_MAP_STEAM,
+            MODEL_LMU: ATTR_MAP_STEAM
         },
         ENTITY_TYPE: TYPE_STEAM_TEMP,
         ENTITY_ICON: "mdi:water-boiler",
@@ -119,7 +122,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     @property
     def state(self):
         """State of the water heater."""
-        return STATE_ELECTRIC 
+        return STATE_ELECTRIC
 
     @property
     def current_temperature(self):

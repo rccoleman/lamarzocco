@@ -18,6 +18,7 @@ from .const import (
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
+    MODEL_LMU,
     TYPE_DRINK_STATS,
 )
 from .entity_base import EntityBase
@@ -42,6 +43,7 @@ ENTITIES = {
             MODEL_GS3_AV: ATTR_MAP_DRINK_STATS_GS3_AV,
             MODEL_GS3_MP: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
             MODEL_LM: ATTR_MAP_DRINK_STATS_GS3_MP_LM,
+            MODEL_LMU: ATTR_MAP_DRINK_STATS_GS3_MP_LM
         },
         ENTITY_TYPE: TYPE_DRINK_STATS,
         ENTITY_ICON: "mdi:coffee",

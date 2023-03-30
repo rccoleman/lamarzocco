@@ -148,7 +148,7 @@ class LMInterface:
 
     async def set_auto_on_off_global(self, enable):
         if self.model_name in LM_CLOUD_MODELS:
-            await self._lm_cloud.configure_schedule(enable, self._lm_cloud.get_schedule())
+            await self._lm_cloud.configure_schedule(enable, await self._lm_cloud.get_schedule())
         else:
             await self._lm_direct.set_auto_on_off_global(enable)
 

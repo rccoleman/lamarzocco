@@ -74,7 +74,6 @@ class LMInterface:
         if self._model_name in LM_CLOUD_MODELS:
             _LOGGER.info("Initializing lmcloud...")
             self._lm_cloud = await LMCloud.create_with_local_api(config, config[HOST], port=DEFAULT_PORT_CLOUD)
-            await self._lm_cloud.get_status()
         else:
             _LOGGER.info("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)

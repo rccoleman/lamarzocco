@@ -151,6 +151,8 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
-        return self._lm.current_status.get(
+        res = self._lm.current_status.get(
             self._get_key(self._entities[self._object_id][ENTITY_TAG]), False
         ) in [True, ENABLED]
+        _LOGGER.warn(f"Status: {res}")
+        return res

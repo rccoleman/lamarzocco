@@ -124,7 +124,9 @@ class LMInterface:
 
     async def set_power(self, power_on):
         if self.model_name in LM_CLOUD_MODELS:
+            _LOGGER.warn("Power: " + str(self._lm_cloud.current_status["power"]))
             await self._lm_cloud.set_power(power_on)
+            _LOGGER.warn("Power: " + str(self._lm_cloud.current_status["power"]))
         else:
             await self._lm_direct.set_power(power_on)
 

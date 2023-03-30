@@ -111,6 +111,7 @@ class LaMarzocco(LMInterface):
         """Loop that periodically polls the machine for new data."""
         while self._run:
             _LOGGER.debug("Fetching data")
+            _LOGGER.warn("Fetching data")
             try:
                 """Request latest status."""
                 await self.request_status()

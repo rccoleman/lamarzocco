@@ -14,6 +14,7 @@ from .const import (
     CONF_SERIAL_NUMBER,
     DEFAULT_PORT,
     DOMAIN,
+    MODEL_LMU
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -98,7 +99,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         """Handle a flow initialized by zeroconf discovery."""
         _LOGGER.debug(f"Discovered {discovery_info}")
-        _LOGGER.warn(f"Discovered {discovery_info}")
 
         if isinstance(discovery_info, dict):
             raw = discovery_info["properties"]["_raw"]
@@ -109,9 +109,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         else:
             raw = discovery_info.properties["_raw"]
 
-            _LOGGER.warn(f"Raw discovery info: {raw}")
+            serial_number = ""
+            if "type" in raw:
+                if raw["type"] == str.upper(MODEL_LMU):
+                    serial_number = raw["sn"].decode("utf-8")
+            if not serial_number:
+                serial_number = raw["serial_number"].decode("utf-8")
 
-            serial_number: str = raw["serial_number"].decode("utf-8")
             host: str = discovery_info.host
             port: int = discovery_info.port
 

@@ -184,8 +184,7 @@ class LMInterface:
 
     async def set_preinfusion_time(self, key, seconds):
         if self.model_name in LM_CLOUD_MODELS:
-            # TODO
-            pass
+            await self._lm_cloud.configure_prebrew(prebrewOnTime=seconds_on, prebrewOffTime=seconds_off)
         else:
             await self._lm_direct.set_preinfusion_time(key, seconds)
 

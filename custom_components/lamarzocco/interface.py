@@ -178,13 +178,13 @@ class LMInterface:
 
     async def set_prebrew_times(self, key, seconds_on, seconds_off):
         if self.model_name in LM_CLOUD_MODELS:
-            await self._lm_cloud.configure_prebrew(prebrewOnTime=seconds_on, prebrewOffTime=seconds_off)
+            await self._lm_cloud.configure_prebrew(prebrewOnTime=seconds_on * 1000, prebrewOffTime=seconds_off * 1000)
         else:
             await self._lm_direct.set_prebrew_times(key, seconds_on, seconds_off)
 
     async def set_preinfusion_time(self, key, seconds):
         if self.model_name in LM_CLOUD_MODELS:
-            await self._lm_cloud.configure_prebrew(prebrewOnTime=seconds_on, prebrewOffTime=seconds_off)
+            await self._lm_cloud.configure_prebrew(prebrewOnTime=0, prebrewOffTime=seconds * 1000)
         else:
             await self._lm_direct.set_preinfusion_time(key, seconds)
 

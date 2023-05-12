@@ -6,6 +6,8 @@ from lmcloud import LMCloud
 
 from .const import *
 from lmdirect.const import HOST, SERIAL_NUMBER
+from homeassistant.components import bluetooth
+from bleak import BleakClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,6 +59,7 @@ class LMInterface:
         self._model_name = None
         self._machine_info = None
         self._callback_list = []
+        self.hass = None
 
     @classmethod
     async def create(cls, config):
@@ -64,7 +67,8 @@ class LMInterface:
         await self.init_lm_client(config)
         return self
 
-    async def init_lm_client(self, config):
+    async def init_lm_client(self, hass, config):
+        self.hass = hass
         self._lm_cloud = await LMCloud.create(config)
         self._model_name = self._lm_cloud.model_name
         self._machine_info = self._lm_cloud.machine_info
@@ -73,7 +77,22 @@ class LMInterface:
 
         if self._model_name in LM_CLOUD_MODELS:
             _LOGGER.info("Initializing lmcloud...")
-            self._lm_cloud = await LMCloud.create_with_local_api(config, config[HOST], port=DEFAULT_PORT_CLOUD)
+
+            init_bt = False
+            bt_scanner = None
+            # check if there are any bluetooth adapters to use
+            count = bluetooth.async_scanner_count(hass, connectable=True)
+            if count > 0:
+                _LOGGER.info("Found bluetooth adapters, initating with bluetooth.")
+                init_bt = True
+                bt_scanner = bluetooth.async_get_scanner(hass)
+
+            self._lm_cloud = await LMCloud.create_with_local_api(
+                config,
+                config[HOST],
+                port=DEFAULT_PORT_CLOUD,
+                use_bluetooth=init_bt,
+                bluetooth_scanner=bt_scanner)
         else:
             _LOGGER.info("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
@@ -124,12 +143,14 @@ class LMInterface:
 
     async def set_power(self, power_on):
         if self.model_name in LM_CLOUD_MODELS:
+            await self.get_hass_bt_client()
             await self._lm_cloud.set_power(power_on)
         else:
             await self._lm_direct.set_power(power_on)
 
     async def set_steam_boiler_enable(self, enable):
         if self.model_name in LM_CLOUD_MODELS:
+            await self.get_hass_bt_client()
             await self._lm_cloud.set_steam(enable)
         else:
             await self._lm_direct.set_power(enable)
@@ -196,6 +217,7 @@ class LMInterface:
 
     async def set_coffee_temp(self, temp):
         if self.model_name in LM_CLOUD_MODELS:
+            await self.get_hass_bt_client()
             await self._lm_cloud.set_coffee_temp(temp)
         else:
             await self._lm_direct.set_coffee_temp(temp)
@@ -204,6 +226,16 @@ class LMInterface:
         if self.model_name in LM_CLOUD_MODELS:
             possible_temps = [126, 128, 131]
             temp = min(possible_temps, key=lambda x: abs(x - temp))
+            await self.get_hass_bt_client()
             await self._lm_cloud.set_steam_temp(temp)
         else:
             await self._lm_direct.set_steam_temp(temp)
+
+    async def get_hass_bt_client(self):
+        # according to HA best practices, we should not reuse the same client
+        # get a new BLE device from hass and init a new Bleak Client with it
+        if self._lm_cloud._lm_bluetooth:
+            ble_device = bluetooth.async_ble_device_from_address(self.hass,
+                                                                 self._lm_cloud._lm_bluetooth._adress,
+                                                                 connectable=True)
+            self._lm_cloud._lm_bluetooth._client = BleakClient(ble_device)

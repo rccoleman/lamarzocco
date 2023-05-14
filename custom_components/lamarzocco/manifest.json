@@ -5,11 +5,13 @@
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": ["lmdirect==0.9.4", "lmcloud==0.1.3"],
+  "requirements": ["lmdirect==0.9.4", "lmcloud>=0.3.4"],
   "ssdp": [],
   "zeroconf": ["_marzocco._tcp.local."],
   "homekit": {},
-  "dependencies": [],
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
   "codeowners": ["@rccoleman"],
   "iot_class": "local_polling",
   "loggers": ["lmdirect"]

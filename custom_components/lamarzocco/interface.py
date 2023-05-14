@@ -7,7 +7,6 @@ from lmcloud import LMCloud
 from .const import *
 from lmdirect.const import HOST, SERIAL_NUMBER
 from homeassistant.components import bluetooth
-from bleak import BleakClient
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -236,6 +235,6 @@ class LMInterface:
         # get a new BLE device from hass and init a new Bleak Client with it
         if self._lm_cloud._lm_bluetooth:
             ble_device = bluetooth.async_ble_device_from_address(self.hass,
-                                                                 self._lm_cloud._lm_bluetooth._adress,
+                                                                 self._lm_cloud._lm_bluetooth._address,
                                                                  connectable=True)
-            self._lm_cloud._lm_bluetooth._client = BleakClient(ble_device)
+            await self._lm_cloud._lm_bluetooth.new_bleak_client_from_ble_device(ble_device)

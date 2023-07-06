@@ -80,11 +80,11 @@ class LMInterface:
             init_bt = False
             bt_scanner = None
             # check if there are any bluetooth adapters to use
-            count = bluetooth.async_scanner_count(hass, connectable=True)
-            if count > 0:
-                _LOGGER.info("Found bluetooth adapters, initating with bluetooth.")
-                init_bt = True
-                bt_scanner = bluetooth.async_get_scanner(hass)
+            # count = bluetooth.async_scanner_count(hass, connectable=True)
+            # if count > 0:
+            #     _LOGGER.info("Found bluetooth adapters, initating with bluetooth.")
+            #     init_bt = True
+            #     bt_scanner = bluetooth.async_get_scanner(hass)
 
             self._lm_cloud = await LMCloud.create_with_local_api(
                 config,

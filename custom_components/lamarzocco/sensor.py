@@ -32,7 +32,7 @@ ENTITIES = {
     "drink_stats": {
         ENTITY_TAG: [
             (DRINKS, "k1"),
-            TOTAL_FLUSHING,
+            TOTAL_FLUSHING
         ],
         ENTITY_NAME: "Total Drinks",
         ENTITY_MAP: {

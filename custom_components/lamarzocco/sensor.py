@@ -32,10 +32,6 @@ ENTITIES = {
     "drink_stats": {
         ENTITY_TAG: [
             (DRINKS, "k1"),
-            (DRINKS, "k2"),
-            (DRINKS, "k3"),
-            (DRINKS, "k4"),
-            CONTINUOUS,
             TOTAL_FLUSHING,
         ],
         ENTITY_NAME: "Total Drinks",

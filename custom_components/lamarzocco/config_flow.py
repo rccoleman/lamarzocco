@@ -107,14 +107,14 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             host: str = discovery_info[CONF_HOST]
             port: int = discovery_info[CONF_PORT]
         else:
-            raw = discovery_info.properties["_raw"]
+            properties = discovery_info.properties
 
             serial_number = ""
-            if "type" in raw:
-                if raw["type"].decode('utf-8') == str.upper(MODEL_LMU):
-                    serial_number = raw["sn"].decode("utf-8")
+            if "type" in properties:
+                if properties["type"] == str.upper(MODEL_LMU):
+                    serial_number = properties["sn"]
             if not serial_number:
-                serial_number = raw["serial_number"].decode("utf-8")
+                serial_number = properties["serial_number"]
 
             host: str = discovery_info.host
             port: int = discovery_info.port

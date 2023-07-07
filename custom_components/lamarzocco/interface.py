@@ -72,19 +72,19 @@ class LMInterface:
         self._model_name = self._lm_cloud.model_name
         self._machine_info = self._lm_cloud.machine_info
 
-        _LOGGER.info(f"Model name: {self._model_name}")
+        _LOGGER.debug(f"Model name: {self._model_name}")
 
         if self._model_name in LM_CLOUD_MODELS:
-            _LOGGER.info("Initializing lmcloud...")
+            _LOGGER.debug("Initializing lmcloud...")
 
             init_bt = False
             bt_scanner = None
             # check if there are any bluetooth adapters to use
-            # count = bluetooth.async_scanner_count(hass, connectable=True)
-            # if count > 0:
-            #     _LOGGER.info("Found bluetooth adapters, initating with bluetooth.")
-            #     init_bt = True
-            #     bt_scanner = bluetooth.async_get_scanner(hass)
+            count = bluetooth.async_scanner_count(hass, connectable=True)
+            if count > 0:
+                _LOGGER.debug("Found bluetooth adapters, initializing with bluetooth.")
+                init_bt = True
+                bt_scanner = bluetooth.async_get_scanner(hass)
 
             self._lm_cloud = await LMCloud.create_with_local_api(
                 config,
@@ -93,7 +93,7 @@ class LMInterface:
                 use_bluetooth=init_bt,
                 bluetooth_scanner=bt_scanner)
         else:
-            _LOGGER.info("Initializing lmdirect...")
+            _LOGGER.debug("Initializing lmdirect...")
             self._lm_direct = LMDirect.__init__(config)
 
     async def init_data(self, hass):

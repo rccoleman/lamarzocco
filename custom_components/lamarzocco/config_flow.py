@@ -93,67 +93,67 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
-    async def async_step_zeroconf(self, discovery_info):
-        """Handle a flow initialized by zeroconf discovery."""
-        _LOGGER.debug(f"Discovered {discovery_info}")
+    # async def async_step_zeroconf(self, discovery_info):
+    #     """Handle a flow initialized by zeroconf discovery."""
+    #     _LOGGER.debug(f"Discovered {discovery_info}")
 
-        if isinstance(discovery_info, dict):
-            raw = discovery_info["properties"]["_raw"]
+    #     if isinstance(discovery_info, dict):
+    #         raw = discovery_info["properties"]["_raw"]
 
-            serial_number: str = raw["serial_number"].decode("utf-8")
-            host: str = discovery_info[CONF_HOST]
-            port: int = discovery_info[CONF_PORT]
-        else:
-            properties = discovery_info.properties
+    #         serial_number: str = raw["serial_number"].decode("utf-8")
+    #         host: str = discovery_info[CONF_HOST]
+    #         port: int = discovery_info[CONF_PORT]
+    #     else:
+    #         properties = discovery_info.properties
 
-            serial_number = ""
-            if "type" in properties:
-                if properties["type"] == str.upper(MODEL_LMU):
-                    serial_number = properties["sn"]
-            if not serial_number:
-                serial_number = properties["serial_number"]
+    #         serial_number = ""
+    #         if "type" in properties:
+    #             if properties["type"] == str.upper(MODEL_LMU):
+    #                 serial_number = properties["sn"]
+    #         if not serial_number:
+    #             serial_number = properties["serial_number"]
 
-            host: str = discovery_info.host
-            port: int = discovery_info.port
+    #         host: str = discovery_info.host
+    #         port: int = discovery_info.port
 
-        self._discovered = {
-            CONF_HOST: host,
-            CONF_PORT: port,
-            CONF_SERIAL_NUMBER: serial_number,
-        }
+    #     self._discovered = {
+    #         CONF_HOST: host,
+    #         CONF_PORT: port,
+    #         CONF_SERIAL_NUMBER: serial_number,
+    #     }
         
-        _LOGGER.debug(f"Host={host}, Port={port}, SN={serial_number}")
+    #     _LOGGER.debug(f"Host={host}, Port={port}, SN={serial_number}")
 
-        await self.async_set_unique_id(serial_number)
-        self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
+    #     await self.async_set_unique_id(serial_number)
+    #     self._abort_if_unique_id_configured({CONF_SERIAL_NUMBER: serial_number})
 
-        self.context.update({"title_placeholders": self._discovered})
+    #     self.context.update({"title_placeholders": self._discovered})
 
-        return await self.async_step_confirm()
+    #     return await self.async_step_confirm()
 
-    async def async_step_confirm(
-        self, user_input: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
-        """Handle confirmation flow for discovered La Marzocco machine"""
+    # async def async_step_confirm(
+    #     self, user_input: Dict[str, Any] = None
+    # ) -> Dict[str, Any]:
+    #     """Handle confirmation flow for discovered La Marzocco machine"""
 
-        errors = {}
+    #     errors = {}
 
-        if user_input is not None:
-            try:
-                data = user_input.copy()
-                data.update(self._discovered)
+    #     if user_input is not None:
+    #         try:
+    #             data = user_input.copy()
+    #             data.update(self._discovered)
 
-                return await self._try_create_entry(data)
-            except InvalidAuth:
-                errors["base"] = "invalid_auth"
-            except CannotConnect:
-                errors["base"] = "cannot_connect"
+    #             return await self._try_create_entry(data)
+    #         except InvalidAuth:
+    #             errors["base"] = "invalid_auth"
+    #         except CannotConnect:
+    #             errors["base"] = "cannot_connect"
 
-        return self.async_show_form(
-            step_id="confirm",
-            data_schema=STEP_DISCOVERY_DATA_SCHEMA,
-            errors=errors,
-        )
+    #     return self.async_show_form(
+    #         step_id="confirm",
+    #         data_schema=STEP_DISCOVERY_DATA_SCHEMA,
+    #         errors=errors,
+    #     )
 
     async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""

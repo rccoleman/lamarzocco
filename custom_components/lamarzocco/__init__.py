@@ -28,16 +28,15 @@ async def async_setup_entry(hass, config_entry):
 
     hass.data[DOMAIN][config_entry.entry_id] = coordinator = LmApiCoordinator(hass, lm)
 
+    await coordinator.async_config_entry_first_refresh()
+
     for platform in PLATFORMS:
         hass.async_create_task(
             hass.config_entries.async_forward_entry_setup(config_entry, platform)
         )
 
-    await coordinator.async_config_entry_first_refresh()
-
     """Set up global services."""
     await async_setup_services(hass, config_entry)
-
     return True
 
 

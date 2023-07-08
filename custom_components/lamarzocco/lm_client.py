@@ -12,12 +12,12 @@ _LOGGER = logging.getLogger(__name__)
 class LaMarzoccoClient(LMCloud):
     """Keep data for La Marzocco entities."""
 
-    def __init__(self, hass, config):
+    def __init__(self, hass, hass_config):
         """Initialise the LaMarzocco entity data."""
         super().__init__()
 
         self._device_version = None
-        self.config = config
+        self._hass_config = hass_config
         self.hass = hass
 
     @property
@@ -50,8 +50,6 @@ class LaMarzoccoClient(LMCloud):
 
     async def hass_init(self) -> None:
 
-        _LOGGER.debug(f"Model name: {self._model_name}")
-
         init_bt = False
         bt_scanner = None
         # check if there are any bluetooth adapters to use
@@ -61,18 +59,18 @@ class LaMarzoccoClient(LMCloud):
             init_bt = True
             bt_scanner = bluetooth.async_get_scanner(self.hass)
 
-        self.init_with_local_api(
-            self.config,
-            self.config[HOST],
+        await self.init_with_local_api(
+            self._hass_config,
+            self._hass_config[HOST],
             port=DEFAULT_PORT_CLOUD,
             use_bluetooth=init_bt,
             bluetooth_scanner=bt_scanner)
 
+        _LOGGER.debug(f"Model name: {self.model_name}")
+
     '''
     interface methods
     '''
-    async def connect(self) -> dict:
-        return self.machine_info
 
     async def set_power(self, power_on) -> None:
         await self.get_hass_bt_client()

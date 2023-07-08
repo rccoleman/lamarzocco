@@ -6,8 +6,9 @@ import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.helpers import config_validation as cv
+from lmcloud.exceptions import AuthFail, RequestNotSuccessful
+from .lm_client import LaMarzoccoClient
 
-from .api import LaMarzocco, AuthFail, ConnectionFail
 from .const import (
     CONF_CLIENT_ID,
     CONF_CLIENT_SECRET,
@@ -41,22 +42,20 @@ async def validate_input(hass: core.HomeAssistant, data):
     """Validate the user input allows us to connect."""
 
     try:
-        lm = await LaMarzocco.create(hass=hass, data=data)
-        machine_info = await lm.connect()
-        await lm.close()
+        lm = await LaMarzoccoClient.create(hass=hass, data=data)
 
-        if not machine_info:
+        if not lm.machine_info:
             raise CannotConnect
 
     except AuthFail:
         _LOGGER.error("Server rejected login credentials")
         raise InvalidAuth
-    except ConnectionFail:
+    except RequestNotSuccessful:
         _LOGGER.error("Failed to connect to server")
         raise CannotConnect
 
     # Return info that you want to store in the config entry.
-    return {"title": lm.machine_name, **machine_info}
+    return {"title": lm.machine_name, **lm.machine_info}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

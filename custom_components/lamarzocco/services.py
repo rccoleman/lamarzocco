@@ -190,7 +190,7 @@ async def async_setup_services(hass, config_entry):
         # Integration-level services have already been added. Return.
         return
 
-    lm = hass.data[DOMAIN][config_entry.entry_id]
+    lm = hass.data[DOMAIN][config_entry.entry_id].data
 
     """Set the max prebrew button based on model"""
     if lm.model_name in [MODEL_GS3_AV, MODEL_LM, MODEL_LMU]:

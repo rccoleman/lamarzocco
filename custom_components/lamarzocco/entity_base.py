@@ -22,6 +22,7 @@ class EntityBase(CoordinatorEntity):
         self._hass = hass
         self._entities = entities
         self._entity_type = self._entities[self._object_id][entity_type]
+        self._lm = self.coordinator.data
 
     @property
     def name(self):
@@ -73,7 +74,7 @@ class EntityBase(CoordinatorEntity):
                 v = str(v)
             return v
 
-        data = self._lm._current_status
+        data = self._lm.current_status
         attr = self._entities[self._object_id][ENTITY_MAP][self._lm.model_name]
         if attr is None:
             return {}

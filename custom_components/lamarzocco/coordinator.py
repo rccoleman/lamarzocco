@@ -6,7 +6,7 @@ from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
-from lmcloud import AuthFail, RequestNotSuccessFul
+from lmcloud.exceptions import AuthFail, RequestNotSuccessful
 
 SCAN_INTERVAL = timedelta(seconds=30)
 
@@ -39,17 +39,19 @@ class LmApiCoordinator(DataUpdateCoordinator):
         try:
             _LOGGER.debug("Update coordinator: Updating data")
             if not self._initialized:
-                self._lm.hass_init()
+                await self._lm.hass_init()
                 self._initialized = True
                 if self._use_websocket:
-                    self.hass.async_create_task(self._lm._lm_local_api.websocket_connect(self._async_update_status))
+                    self.hass.async_create_task(
+                        self._lm._lm_local_api.websocket_connect(self._async_update_status)
+                    )
             await self._lm.update_local_machine_status()
         except AuthFail as ex:
             msg = "Authentication failed. \
                             Maybe one of your credential details was invalid or you changed your password."
             _LOGGER.error(msg)
             raise ConfigEntryAuthFailed(msg) from ex
-        except (RequestNotSuccessFul, Exception) as ex:
+        except (RequestNotSuccessful, Exception) as ex:
             _LOGGER.error(ex)
             raise UpdateFailed("Querying API failed. Error: %s", ex)
 

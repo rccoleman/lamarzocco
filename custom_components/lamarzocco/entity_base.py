@@ -45,6 +45,7 @@ class EntityBase(CoordinatorEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         self._lm = self.coordinator.data
+        self.async_write_ha_state()
 
     @property
     def device_info(self):

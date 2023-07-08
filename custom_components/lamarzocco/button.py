@@ -61,3 +61,4 @@ class LaMarzoccoButton(EntityBase, ButtonEntity):
         await call_service(
             getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC])
         )
+        await self.coordinator.async_request_refresh()

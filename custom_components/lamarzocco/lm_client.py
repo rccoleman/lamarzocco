@@ -74,7 +74,7 @@ class LaMarzoccoClient(LMCloud):
 
     async def set_power(self, power_on) -> None:
         await self.get_hass_bt_client()
-        await self.set_power(power_on)
+        await super().set_power(power_on)
 
     async def set_steam_boiler_enable(self, enable) -> None:
         await self.get_hass_bt_client()
@@ -90,7 +90,7 @@ class LaMarzoccoClient(LMCloud):
         await self.configure_schedule(enable, await self.get_schedule())
 
     async def set_auto_on_off_enable(self, day_of_week, enable) -> None:
-        await self.set_auto_on_off_enable(day_of_week, enable)
+        await super().set_auto_on_off_enable(day_of_week, enable)
 
     async def set_auto_on_off_times(self, day_of_week, hour_on, minute_on, hour_off, minute_off) -> None:
         await self.set_auto_on_off(day_of_week, hour_on, minute_on, hour_off, minute_off)
@@ -112,13 +112,13 @@ class LaMarzoccoClient(LMCloud):
 
     async def set_coffee_temp(self, temp) -> None:
         await self.get_hass_bt_client()
-        await self.set_coffee_temp(temp)
+        await super().set_coffee_temp(temp)
 
     async def set_steam_temp(self, temp) -> None:
         possible_temps = [126, 128, 131]
         temp = min(possible_temps, key=lambda x: abs(x - temp))
         await self.get_hass_bt_client()
-        await self.set_steam_temp(temp)
+        await super().set_steam_temp(temp)
 
     async def get_hass_bt_client(self) -> None:
         # according to HA best practices, we should not reuse the same client

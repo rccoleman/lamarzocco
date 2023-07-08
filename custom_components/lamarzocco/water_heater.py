@@ -157,4 +157,5 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
 
         _LOGGER.debug(f"Setting {self._object_id} to {temperature}")
         await call_service(func, temp=round(temperature, 1))
+        await self.coordinator.async_request_refresh()
         return True

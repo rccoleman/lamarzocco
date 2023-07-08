@@ -139,12 +139,14 @@ class LaMarzoccoSwitch(EntityBase, SwitchEntity):
         await call_service(
             getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC]), True
         )
+        await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn device off."""
         await call_service(
             getattr(self._lm, self._entities[self._object_id][ENTITY_FUNC]), False
         )
+        await self.coordinator.async_request_refresh()
 
     @property
     def is_on(self) -> bool:

@@ -1,5 +1,6 @@
 """Base class for the La Marzocco entities."""
 
+import asyncio
 import logging
 
 from homeassistant.core import callback
@@ -9,6 +10,7 @@ from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
+UPDATE_DELAY = 2
 
 class EntityBase(CoordinatorEntity):
     """Common elements for all entities."""
@@ -41,12 +43,6 @@ class EntityBase(CoordinatorEntity):
         """Return the icon to use in the frontend."""
         return self._entities[self._object_id][ENTITY_ICON]
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from the coordinator."""
-        self._lm = self.coordinator.data
-        self.async_write_ha_state()
-
     @property
     def device_info(self):
         """Device info."""
@@ -58,12 +54,6 @@ class EntityBase(CoordinatorEntity):
             "default_name": "La Marzocco " + self._lm.true_model_name,
             "sw_version": self._lm.firmware_version,
         }
-
-    def _get_key(self, k):
-        """Construct tag name if needed."""
-        if isinstance(k, tuple):
-            k = "_".join(k)
-        return k
 
     @property
     def extra_state_attributes(self):
@@ -85,3 +75,22 @@ class EntityBase(CoordinatorEntity):
         ]
 
         return {k: convert_value(k, data[k]) for k in map if k in data}
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._lm = self.coordinator.data
+        self.async_write_ha_state()
+
+    async def _update_lm_state(self):
+        """ Write the intermediate value returned from the action to HA state before actually refreshing"""
+        self.async_write_ha_state()
+        # wait for a bit before getting a new state, to let the machine settle in to any state changes
+        await asyncio.sleep(UPDATE_DELAY)
+        self.coordinator.async_request_refresh()
+
+    def _get_key(self, k):
+        """Construct tag name if needed."""
+        if isinstance(k, tuple):
+            k = "_".join(k)
+        return k

@@ -47,8 +47,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
                     self.hass.async_create_task(
                         self._lm._lm_local_api.websocket_connect(self._async_update_status)
                     )
-            # wait for a bit before getting a new state, to let the machine settle in to any state changes
-            await asyncio.sleep(UPDATE_DELAY)
+
             await self._lm.update_local_machine_status()
         except AuthFail as ex:
             msg = "Authentication failed. \

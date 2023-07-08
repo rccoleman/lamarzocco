@@ -156,6 +156,26 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
+    async def async_step_reauth(self, user_input=None):
+        """Perform reauth upon an API authentication error."""
+        self.reauth_entry = self.hass.config_entries.async_get_entry(
+            self.context["entry_id"]
+        )
+        return await self.async_step_reauth_confirm()
+
+    async def async_step_reauth_confirm(self, user_input=None):
+        """Dialog that informs the user that reauth is required."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id="reauth_confirm",
+                data_schema=STEP_DISCOVERY_DATA_SCHEMA,
+            )
+        self.hass.config_entries.async_update_entry(
+            self.reauth_entry, data=user_input
+        )
+        await self.hass.config_entries.async_reload(self.reauth_entry.entry_id)
+        return self.async_abort(reason="reauth_successful")
+
 
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""

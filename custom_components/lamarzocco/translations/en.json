@@ -2,7 +2,7 @@
     "config": {
         "flow_title": "La Marzocco Espresso {host}",
         "abort": {
-            "single_instance_allowed": "Device is already configured.  On a single instance is allowed."
+            "single_instance_allowed": "Device is already configured. Only a single instance is allowed."
         },
         "error": {
             "cannot_connect": "Failed to connect",
@@ -20,6 +20,16 @@
                 }
             },
             "confirm": {
+                "data": {
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret",
+                    "password": "Password",
+                    "username": "Username"
+                }
+            },
+            "reauth_confirm": {
+                "title": "Credentials invalid",
+                "description": "One or more of your provided credentials are invalid.",
                 "data": {
                     "client_id": "Client ID",
                     "client_secret": "Client Secret",

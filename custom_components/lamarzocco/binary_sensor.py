@@ -47,29 +47,23 @@ ENTITIES = {
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up binary sensor entities."""
-    lm = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
     async_add_entities(
-        LaMarzoccoBinarySensor(lm, sensor_type, hass, config_entry)
+        LaMarzoccoBinarySensor(coordinator, sensor_type, hass, config_entry)
         for sensor_type in ENTITIES
-        if lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
+        if coordinator.lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
     )
 
-    await async_setup_entity_services(lm)
+    await async_setup_entity_services(coordinator.lm)
 
 
 class LaMarzoccoBinarySensor(EntityBase, BinarySensorEntity):
     """Binary Sensor representing espresso machine water reservoir status."""
 
-    def __init__(self, lm, sensor_type, hass, config_entry):
+    def __init__(self, coordinator, sensor_type, hass, config_entry):
         """Initialize binary sensors"""
-        self._object_id = sensor_type
-        self._lm = lm
-        self._entities = ENTITIES
-        self._hass = hass
-        self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
-
-        self._lm.register_callback(self.update_callback)
+        super().__init__(coordinator, hass, sensor_type, ENTITIES, ENTITY_TYPE)
 
     @property
     def available(self):

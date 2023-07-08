@@ -3,17 +3,25 @@
 import logging
 
 from homeassistant.core import callback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class EntityBase:
-    """Common elements for all switches."""
+class EntityBase(CoordinatorEntity):
+    """Common elements for all entities."""
 
     _attr_assumed_state = False
     _attr_entity_registry_enabled_default = True
+
+    def __init__(self, coordinator, hass, object_id, entities, entity_type):
+        super().__init__(coordinator)
+        self._object_id = object_id
+        self._hass = hass
+        self._entities = entities
+        self._entity_type = self._entities[self._object_id][entity_type]
 
     @property
     def name(self):
@@ -33,11 +41,9 @@ class EntityBase:
         return self._entities[self._object_id][ENTITY_ICON]
 
     @callback
-    def update_callback(self, **kwargs):
-        """Update the state machine when new data arrives."""
-        entity_type = kwargs.get("entity_type")
-        if entity_type in [None, self._entity_type]:
-            self.schedule_update_ha_state(force_refresh=False)
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._lm = self.coordinator.data
 
     @property
     def device_info(self):

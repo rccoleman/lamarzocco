@@ -3,8 +3,6 @@
 import logging
 
 from homeassistant.components.switch import SwitchEntity
-from lmdirect.msgs import AUTO, GLOBAL, POWER, STEAM_BOILER_ENABLE
-from lmdirect.const import ENABLED
 
 from .const import (
     ATTR_MAP_AUTO_ON_OFF,
@@ -19,7 +17,9 @@ from .const import (
     ATTR_MAP_PREINFUSION_GS3_AV,
     ATTR_MAP_PREINFUSION_LM,
     ATTR_MAP_PREINFUSION_LMU,
+    AUTO,
     DOMAIN,
+    ENABLED,
     ENABLE_PREBREWING,
     ENABLE_PREINFUSION,
     ENTITY_FUNC,
@@ -28,16 +28,20 @@ from .const import (
     ENTITY_NAME,
     ENTITY_TAG,
     ENTITY_TYPE,
+    GLOBAL,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
     MODEL_LMU,
+    POWER,
+    STEAM_BOILER_ENABLE,
     TYPE_AUTO_ON_OFF,
     TYPE_MAIN,
     TYPE_PREBREW,
     TYPE_PREINFUSION,
     TYPE_STEAM_BOILER_ENABLE,
 )
+
 from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
 
@@ -113,28 +117,22 @@ ENTITIES = {
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up switch entities and services."""
 
-    lm = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
     async_add_entities(
-        LaMarzoccoSwitch(lm, switch_type, hass, config_entry)
+        LaMarzoccoSwitch(coordinator, switch_type, hass, config_entry)
         for switch_type in ENTITIES
-        if lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
+        if coordinator.lm.model_name in ENTITIES[switch_type][ENTITY_MAP]
     )
 
-    await async_setup_entity_services(lm)
+    await async_setup_entity_services(coordinator.lm)
 
 
 class LaMarzoccoSwitch(EntityBase, SwitchEntity):
     """Switches representing espresso machine power, prebrew, and auto on/off."""
 
-    def __init__(self, lm, switch_type, hass, config_entry):
+    def __init__(self, coordinator, switch_type, hass, config_entry):
         """Initialise switches."""
-        self._object_id = switch_type
-        self._hass = hass
-        self._lm = lm
-        self._entities = ENTITIES
-        self._entity_type = self._entities[self._object_id][ENTITY_TYPE]
-
-        self._lm.register_callback(self.update_callback)
+        super().__init__(coordinator, hass, switch_type, ENTITIES, ENTITY_TYPE)
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn device on."""

@@ -87,7 +87,7 @@ class LaMarzoccoClient(LMCloud):
         await self.set_prebrew(enable)
 
     async def set_auto_on_off_global(self, enable) -> None:
-        await self.configure_schedule(enable, await self.get_schedule())
+        await self.configure_schedule(enable, self.schedule)
 
     async def set_auto_on_off_enable(self, day_of_week, enable) -> None:
         await super().set_auto_on_off_enable(day_of_week, enable)

@@ -6,11 +6,16 @@ import logging
 from homeassistant.core import callback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, ENTITY_ICON, ENTITY_MAP, ENTITY_NAME
+from .const import (
+    DOMAIN,
+    ENTITY_ICON,
+    ENTITY_MAP,
+    ENTITY_NAME,
+    UPDATE_DELAY
+)
 
 _LOGGER = logging.getLogger(__name__)
 
-UPDATE_DELAY = 2
 
 class EntityBase(CoordinatorEntity):
     """Common elements for all entities."""
@@ -82,7 +87,7 @@ class EntityBase(CoordinatorEntity):
         self._lm = self.coordinator.data
         self.async_write_ha_state()
 
-    async def _update_lm_state(self):
+    async def _update_ha_state(self):
         """ Write the intermediate value returned from the action to HA state before actually refreshing"""
         self.async_write_ha_state()
         # wait for a bit before getting a new state, to let the machine settle in to any state changes

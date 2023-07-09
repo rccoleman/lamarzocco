@@ -7,6 +7,9 @@ DOMAIN = "lamarzocco"
 """Set polling interval at 20s."""
 POLLING_INTERVAL = 30
 
+""" Delay to wait before refreshing state"""
+UPDATE_DELAY = 3
+
 """Configuration parameters"""
 CONF_SERIAL_NUMBER = "serial_number"
 CONF_CLIENT_ID = "client_id"
@@ -111,6 +114,13 @@ TYPE_STEAM_BOILER_ENABLE = 10
 SUPPORTED = "supported"
 MODELS = [MODEL_GS3_AV, MODEL_GS3_MP, MODEL_LM, MODEL_LMU]
 LM_CLOUD_MODELS = [MODEL_LMU, MODEL_LM]
+
+SET_PREBREW_TIMES = "set_prebrew_times"
+SET_PREINFUSION_TIME = "set_preinfusion_time"
+SET_DOSE = "set_dose"
+SET_DOSE_HOT_WATER = "set_dose_hot_water"
+SET_AUTO_ON_OFF_ENABLE = "set_auto_on_off_enable"
+SET_AUTO_ON_OFF_TIMES = "set_auto_on_off_times"
 
 """ end migrated lmdirect """
 

@@ -19,6 +19,7 @@ class LaMarzoccoClient(LMCloud):
         self._device_version = None
         self._hass_config = hass_config
         self.hass = hass
+        self._brew_active = False
 
     @property
     def model_name(self) -> str:

@@ -8,7 +8,9 @@ from homeassistant.components.binary_sensor import (
 )
 
 from .const import (
+    ATTR_MAP_BREW_ACTIVE,
     ATTR_MAP_WATER_RESERVOIR,
+    BREW_ACTIVE,
     DOMAIN,
     ENTITY_CLASS,
     ENTITY_ICON,
@@ -20,6 +22,7 @@ from .const import (
     MODEL_GS3_MP,
     MODEL_LM,
     MODEL_LMU,
+    TYPE_BREW_ACTIVE,
     TYPE_WATER_RESERVOIR_CONTACT,
     WATER_RESERVOIR_CONTACT,
 )
@@ -41,6 +44,19 @@ ENTITIES = {
         ENTITY_TYPE: TYPE_WATER_RESERVOIR_CONTACT,
         ENTITY_ICON: "mdi:water-well",
         ENTITY_CLASS: BinarySensorDeviceClass.PROBLEM,
+    },
+    "brew_active": {
+        ENTITY_TAG: BREW_ACTIVE,
+        ENTITY_NAME: "Brew Active",
+        ENTITY_MAP: {
+            MODEL_GS3_AV: ATTR_MAP_BREW_ACTIVE,
+            MODEL_GS3_MP: ATTR_MAP_BREW_ACTIVE,
+            MODEL_LM: ATTR_MAP_BREW_ACTIVE,
+            MODEL_LMU: ATTR_MAP_BREW_ACTIVE
+        },
+        ENTITY_TYPE: TYPE_BREW_ACTIVE,
+        ENTITY_ICON: "mdi:cup-water",
+        ENTITY_CLASS: BinarySensorDeviceClass.RUNNING,
     }
 }
 

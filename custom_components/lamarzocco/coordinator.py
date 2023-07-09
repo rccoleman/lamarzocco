@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from datetime import timedelta
 
@@ -8,6 +7,7 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
 from lmcloud.exceptions import AuthFail, RequestNotSuccessful
+
 
 SCAN_INTERVAL = timedelta(seconds=30)
 UPDATE_DELAY = 2
@@ -63,5 +63,5 @@ class LmApiCoordinator(DataUpdateCoordinator):
     @callback
     def _async_update_status(self, status: dict):
         """ callback which gets called whenever the websocket receives data """
-        # TODO: check if we need to set more data here
-        self.async_set_updated_data(status)
+        self._lm._brew_active = status["brew_active"]
+        self.async_set_updated_data(self._lm)

@@ -97,10 +97,10 @@ class LaMarzoccoClient(LMCloud):
         await self.set_auto_on_off(day_of_week, hour_on, minute_on, hour_off, minute_off)
 
     async def set_dose(self, key, pulses) -> None:
-        pass
+        await super().set_dose(key, pulse)
 
     async def set_dose_hot_water(self, seconds) -> None:
-        pass
+        await super().set_dose_hot_water(seconds)
 
     async def set_prebrew_times(self, key, seconds_on, seconds_off) -> None:
         await self.configure_prebrew(prebrewOnTime=seconds_on * 1000, prebrewOffTime=seconds_off * 1000)

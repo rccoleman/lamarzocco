@@ -18,6 +18,7 @@ from .const import (
     ENTITY_NAME,
     ENTITY_TAG,
     ENTITY_TYPE,
+    CONF_USE_WEBSOCKET,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
@@ -65,11 +66,18 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up binary sensor entities."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    async_add_entities(
-        LaMarzoccoBinarySensor(coordinator, sensor_type, hass, config_entry)
-        for sensor_type in ENTITIES
-        if coordinator.lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]
-    )
+    use_websocket = config_entry.options.get(CONF_USE_WEBSOCKET, False)
+
+    entities = []
+    for sensor_type in ENTITIES:
+        if coordinator.lm.model_name in ENTITIES[sensor_type][ENTITY_MAP]:
+            if sensor_type == "brew_active" and not use_websocket:
+                continue
+            entities.append(
+                LaMarzoccoBinarySensor(coordinator, sensor_type, hass, config_entry)
+            )
+
+    async_add_entities(entities)
 
     await async_setup_entity_services(coordinator.lm)
 
@@ -90,9 +98,15 @@ class LaMarzoccoBinarySensor(EntityBase, BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """Return true if the binary sensor is on."""
-        return not self._lm.current_status.get(
+        state = self._lm.current_status.get(
             self._get_key(self._entities[self._object_id][ENTITY_TAG])
         )
+
+        if self._entity_type == TYPE_WATER_RESERVOIR_CONTACT:
+            # invert state for water reservoir
+            state = not state
+
+        return state
 
     @property
     def device_class(self):

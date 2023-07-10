@@ -39,5 +39,20 @@
             }
         }
     },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Update Settings",
+                "data": {
+                    "host": "IP Address",
+                    "client_id": "Client ID",
+                    "client_secret": "Client Secret",
+                    "password": "Password",
+                    "username": "Username",
+                    "use_websocket": "Check to use WebSockets to connect to machine. This will give you access to a sensor indicating an active brew."
+                }
+            }
+        }
+    },
     "title": "La Marzocco"
 }

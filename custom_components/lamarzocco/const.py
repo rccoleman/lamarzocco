@@ -17,8 +17,8 @@ CONF_CLIENT_SECRET = "client_secret"
 CONF_KEY = "key"
 CONF_MACHINE_NAME = "machine_name"
 CONF_MODEL_NAME = "model_name"
+CONF_USE_WEBSOCKET = "use_websocket"
 
-DEFAULT_PORT = 1774
 DEFAULT_PORT_CLOUD = 8081
 
 DEFAULT_NAME = "Espresso Machine"

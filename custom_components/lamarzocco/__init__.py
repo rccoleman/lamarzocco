@@ -24,20 +24,24 @@ async def async_setup(hass: HomeAssistant, config: dict):
 async def async_setup_entry(hass, config_entry):
     """Set up La Marzocco as config entry."""
 
+    config_entry.async_on_unload(config_entry.add_update_listener(options_update_listener))
+
     lm = LaMarzoccoClient(hass, config_entry.data)
 
-    hass.data[DOMAIN][config_entry.entry_id] = coordinator = LmApiCoordinator(hass, lm)
+    hass.data[DOMAIN][config_entry.entry_id] = coordinator = LmApiCoordinator(hass, config_entry, lm)
 
     await coordinator.async_config_entry_first_refresh()
 
-    for platform in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(config_entry, platform)
-        )
+    await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     """Set up global services."""
     await async_setup_services(hass, config_entry)
     return True
+
+
+async def options_update_listener(hass: HomeAssistant, entry: ConfigEntry):
+    """Handle options update."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
@@ -49,5 +53,6 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
 
     if unload_ok:
         hass.data[DOMAIN].pop(config_entry.entry_id)
+        hass.data[DOMAIN] = {}
 
     return unload_ok

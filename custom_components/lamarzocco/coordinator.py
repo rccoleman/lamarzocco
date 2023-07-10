@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from datetime import timedelta
 
@@ -8,6 +7,11 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 
 from lmcloud.exceptions import AuthFail, RequestNotSuccessful
+
+from .const import (
+    BREW_ACTIVE,
+    CONF_USE_WEBSOCKET
+)
 
 SCAN_INTERVAL = timedelta(seconds=30)
 UPDATE_DELAY = 2
@@ -22,7 +26,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
     def lm(self):
         return self._lm
 
-    def __init__(self, hass, lm):
+    def __init__(self, hass, config_entry, lm):
         """Initialize coordinator."""
         super().__init__(
             hass,
@@ -34,8 +38,8 @@ class LmApiCoordinator(DataUpdateCoordinator):
         )
         self._lm = lm
         self._initialized = False
-        # TODO: Get value from options flow
-        self._use_websocket = False
+        self._config_entry = config_entry
+        self._use_websocket = self._config_entry.options.get(CONF_USE_WEBSOCKET, False)
 
     async def _async_update_data(self):
         try:
@@ -44,8 +48,9 @@ class LmApiCoordinator(DataUpdateCoordinator):
                 await self._lm.hass_init()
                 self._initialized = True
                 if self._use_websocket:
+                    _LOGGER.debug("Initializing WebSockets.")
                     self.hass.async_create_task(
-                        self._lm._lm_local_api.websocket_connect(self._async_update_status)
+                        self._lm._lm_local_api.websocket_connect(self._on_data_received)
                     )
 
             await self._lm.update_local_machine_status()
@@ -61,7 +66,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
         return self._lm
 
     @callback
-    def _async_update_status(self, status: dict):
+    def _on_data_received(self, status: dict):
         """ callback which gets called whenever the websocket receives data """
-        # TODO: check if we need to set more data here
-        self.async_set_updated_data(status)
+        self._lm._brew_active = status[BREW_ACTIVE]
+        self.async_set_updated_data(self._lm)

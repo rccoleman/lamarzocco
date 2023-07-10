@@ -92,7 +92,7 @@ class EntityBase(CoordinatorEntity):
         self.async_write_ha_state()
         # wait for a bit before getting a new state, to let the machine settle in to any state changes
         await asyncio.sleep(UPDATE_DELAY)
-        self.coordinator.async_request_refresh()
+        await self.coordinator.async_request_refresh()
 
     def _get_key(self, k):
         """Construct tag name if needed."""

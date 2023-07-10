@@ -40,7 +40,7 @@ async def call_service(func, *args, **kwargs):
 
 async def update_ha_state(coordinator):
     await asyncio.sleep(UPDATE_DELAY)
-    coordinator.async_request_refresh()
+    await coordinator.async_request_refresh()
 
 
 async def async_setup_services(hass, config_entry):

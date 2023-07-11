@@ -264,6 +264,7 @@ ATTR_MAP_BREW_ACTIVE = [
 ENTITY_TAG = "tag"
 ENTITY_TEMP_TAG = "temp_tag"
 ENTITY_TSET_TAG = "tset_tag"
+ENTITY_TSTATE_TAG = "tstate_tag"
 ENTITY_NAME = "name"
 ENTITY_MAP = "map"
 ENTITY_TYPE = "type"
@@ -275,3 +276,8 @@ ENTITY_UNITS = "units"
 PLATFORM = "platform"
 PLATFORM_SENSOR = "sensor"
 PLATFORM_SWITCH = "switch"
+
+MODE_HEAT = "heat"
+MODE_OFF = "off"
+
+OPERATION_MODES = [MODE_HEAT, MODE_OFF]

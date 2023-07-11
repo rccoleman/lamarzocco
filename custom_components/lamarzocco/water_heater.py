@@ -21,12 +21,18 @@ from .const import (
     ENTITY_NAME,
     ENTITY_TEMP_TAG,
     ENTITY_TSET_TAG,
+    ENTITY_TSTATE_TAG,
     ENTITY_TYPE,
     ENTITY_UNITS,
+    MODE_HEAT,
+    MODE_OFF,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
     MODEL_LMU,
+    OPERATION_MODES,
+    POWER,
+    STEAM_BOILER_ENABLE,
     TEMP_COFFEE,
     TSET_COFFEE,
     TEMP_STEAM,
@@ -53,6 +59,7 @@ ENTITIES = {
     "coffee": {
         ENTITY_TEMP_TAG: TEMP_COFFEE,
         ENTITY_TSET_TAG: TSET_COFFEE,
+        ENTITY_TSTATE_TAG: POWER,
         ENTITY_NAME: "Coffee",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_COFFEE,
@@ -67,6 +74,7 @@ ENTITIES = {
     "steam": {
         ENTITY_TEMP_TAG: TEMP_STEAM,
         ENTITY_TSET_TAG: TSET_STEAM,
+        ENTITY_TSTATE_TAG: STEAM_BOILER_ENABLE,
         ENTITY_NAME: "Steam",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_STEAM,
@@ -141,6 +149,20 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     def temperature_unit(self):
         """Return the unit of measurement used by the platform."""
         return self._entities[self._object_id][ENTITY_UNITS]
+
+    @property
+    def operation_list(self):
+        return OPERATION_MODES
+
+    @property
+    def current_operation(self):
+        is_on = self._lm.current_status.get(
+            self._entities[self._object_id][ENTITY_TSTATE_TAG], False
+        )
+        if is_on:
+            return MODE_HEAT
+        else:
+            return MODE_OFF
 
     @property
     def state_attributes(self):

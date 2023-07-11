@@ -3,7 +3,7 @@ import logging
 from typing import Any, Dict
 
 import voluptuous as vol
-from homeassistant import config_entries, core, exceptions
+from homeassistant import config_entries, exceptions
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
@@ -38,11 +38,11 @@ STEP_USER_DATA_SCHEMA = STEP_DISCOVERY_DATA_SCHEMA.extend(
 )
 
 
-async def validate_input(hass: core.HomeAssistant, data):
+async def validate_input(data):
     """Validate the user input allows us to connect."""
 
     try:
-        lm = await LaMarzoccoClient.create(hass=hass, data=data)
+        lm = await LaMarzoccoClient.create(data)
 
         if not lm.machine_info:
             raise CannotConnect
@@ -64,7 +64,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     async def _try_create_entry(self, data):
-        machine_info = await validate_input(self.hass, data)
+        machine_info = await validate_input(data)
         self._abort_if_unique_id_configured()
         return self.async_create_entry(
             title=machine_info["title"], data={**data, **machine_info}

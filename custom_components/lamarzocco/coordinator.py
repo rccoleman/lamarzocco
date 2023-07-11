@@ -50,7 +50,10 @@ class LmApiCoordinator(DataUpdateCoordinator):
                 if self._use_websocket:
                     _LOGGER.debug("Initializing WebSockets.")
                     self.hass.async_create_task(
-                        self._lm._lm_local_api.websocket_connect(self._on_data_received)
+                        self._lm._lm_local_api.websocket_connect(
+                            callback=self._on_data_received,
+                            use_sigterm_handler=False
+                        )
                     )
 
             await self._lm.update_local_machine_status()

@@ -38,6 +38,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
         )
         self._lm = lm
         self._initialized = False
+        self._websocket_initialized = False
         self._config_entry = config_entry
         self._use_websocket = self._config_entry.options.get(CONF_USE_WEBSOCKET, False)
 
@@ -46,17 +47,20 @@ class LmApiCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Update coordinator: Updating data")
             if not self._initialized:
                 await self._lm.hass_init()
-                self._initialized = True
-                if self._use_websocket:
-                    _LOGGER.debug("Initializing WebSockets.")
-                    self.hass.async_create_task(
-                        self._lm._lm_local_api.websocket_connect(
-                            callback=self._on_data_received,
-                            use_sigterm_handler=False
-                        )
+
+            elif self._initialized and not self._websocket_initialized and self._use_websocket:
+                # only initialize websockets after the first update
+                _LOGGER.debug("Initializing WebSockets.")
+                self.hass.async_create_task(
+                    self._lm._lm_local_api.websocket_connect(
+                        callback=self._on_data_received,
+                        use_sigterm_handler=False
                     )
+                )
+                self._websocket_initialized = True
 
             await self._lm.update_local_machine_status()
+
         except AuthFail as ex:
             msg = "Authentication failed. \
                             Maybe one of your credential details was invalid or you changed your password."
@@ -66,10 +70,22 @@ class LmApiCoordinator(DataUpdateCoordinator):
             _LOGGER.error(ex)
             raise UpdateFailed("Querying API failed. Error: %s", ex)
         _LOGGER.debug("Current status: %s", str(self._lm.current_status))
+        self._initialized = True
         return self._lm
 
     @callback
-    def _on_data_received(self, status: dict):
+    def _on_data_received(self, property_updated, update):
         """ callback which gets called whenever the websocket receives data """
-        self._lm._brew_active = status[BREW_ACTIVE]
-        self.async_set_updated_data(self._lm)
+
+        if not property_updated or not self._initialized:
+            return
+
+        _LOGGER.debug("Received data from websocket, property updated: %s", str(property_updated))
+        if property_updated:
+            if property_updated != BREW_ACTIVE:
+                self._lm._current_status[property_updated] = update
+            else:
+                self._lm._brew_active = update
+
+        self.data = self._lm
+        self.async_update_listeners()

@@ -63,13 +63,13 @@ Unfortunately, two very long and hard-to-access pieces of information (client_id
 After digging around in the Android La Marzocco Home app, we found the same client_id and client_secret embedded in the app that several users discovered "the hard way". 
 
 This pair is set as default during configuration:
-```
+```yaml
 CLIENT_ID: 7_1xwei9rtkuckso44ks4o8s0c0oc4swowo00wgw0ogsok84kosg
 CLIENT_SECRET: 2mgjqpikbfuok8g4s44oo4gsw0ks44okk4kc4kkkko0c8soc8s
 ```
 
 Pre-Micra the App used those values:
-```
+```yaml
 CLIENT_ID: 4_2d2impykbv0g44oc88kogw000s8wgwwgws80ccowkcg0wk8o8w
 CLIENT_SECRET: 1m52x65srmysk4owk0ww4ok84sw484ww0gsoo0kc0gs4gcwkko
 ```

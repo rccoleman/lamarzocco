@@ -15,6 +15,8 @@ from .const import (
     CONF_CLIENT_SECRET,
     CONF_USE_WEBSOCKET,
     DOMAIN,
+    CONF_DEFAULT_CLIENT_ID,
+    CONF_DEFAULT_CLIENT_SECRET,
     DEFAULT_PORT_CLOUD
 )
 
@@ -22,8 +24,8 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_DISCOVERY_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_CLIENT_ID): cv.string,
-        vol.Required(CONF_CLIENT_SECRET): cv.string,
+        vol.Required(CONF_CLIENT_ID, default=CONF_DEFAULT_CLIENT_ID): cv.string,
+        vol.Required(CONF_CLIENT_SECRET, default=CONF_DEFAULT_CLIENT_SECRET): cv.string,
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
     },

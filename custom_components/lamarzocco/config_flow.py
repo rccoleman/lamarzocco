@@ -174,7 +174,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     ): cv.string,
                     vol.Optional(
                         CONF_USE_WEBSOCKET,
-                        default=self.config_entry.options.get(CONF_USE_WEBSOCKET, False)
+                        default=self.config_entry.options.get(CONF_USE_WEBSOCKET, True)
                     ): cv.boolean,
                 }
             ),

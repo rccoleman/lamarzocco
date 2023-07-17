@@ -97,7 +97,7 @@ class LaMarzoccoClient(LMCloud):
         await self.set_auto_on_off(day_of_week, hour_on, minute_on, hour_off, minute_off)
 
     async def set_dose(self, key, pulses) -> None:
-        await super().set_dose(key, pulse)
+        await super().set_dose(key, pulses)
 
     async def set_dose_hot_water(self, seconds) -> None:
         await super().set_dose_hot_water(seconds)

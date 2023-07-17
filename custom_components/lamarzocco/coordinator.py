@@ -39,8 +39,9 @@ class LmApiCoordinator(DataUpdateCoordinator):
         self._lm = lm
         self._initialized = False
         self._websocket_initialized = False
+        self._websocket_task = None
         self._config_entry = config_entry
-        self._use_websocket = self._config_entry.options.get(CONF_USE_WEBSOCKET, False)
+        self._use_websocket = self._config_entry.options.get(CONF_USE_WEBSOCKET, True)
 
     async def _async_update_data(self):
         try:
@@ -51,7 +52,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
             elif self._initialized and not self._websocket_initialized and self._use_websocket:
                 # only initialize websockets after the first update
                 _LOGGER.debug("Initializing WebSockets.")
-                self.hass.async_create_task(
+                self._websocket_task = self.hass.async_create_task(
                     self._lm._lm_local_api.websocket_connect(
                         callback=self._on_data_received,
                         use_sigterm_handler=False
@@ -89,3 +90,10 @@ class LmApiCoordinator(DataUpdateCoordinator):
 
         self.data = self._lm
         self.async_update_listeners()
+
+    def terminate_websocket(self):
+        """Terminate the websocket connection."""
+        self._lm._lm_local_api._terminating = True
+        if self._websocket_task:
+            self._websocket_task.cancel()
+            self._websocket_task = None

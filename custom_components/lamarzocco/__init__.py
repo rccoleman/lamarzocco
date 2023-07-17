@@ -46,6 +46,9 @@ async def options_update_listener(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry):
     """Unload a config entry."""
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+    coordinator.terminate_websocket()
+
     services = list(hass.services.async_services().get(DOMAIN).keys())
     [hass.services.async_remove(DOMAIN, service) for service in services]
 

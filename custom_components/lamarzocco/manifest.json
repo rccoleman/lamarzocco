@@ -5,7 +5,7 @@
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": ["lmcloud==0.3.20"],
+  "requirements": ["lmcloud==0.3.21"],
   "ssdp": [],
   "homekit": {},
   "dependencies": [

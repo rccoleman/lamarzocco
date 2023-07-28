@@ -56,7 +56,6 @@ class EntityBase(CoordinatorEntity):
             "name": self._lm.machine_name,
             "manufacturer": "La Marzocco",
             "model": self._lm.true_model_name,
-            # "default_name": "La Marzocco " + self._lm.true_model_name,
             "sw_version": self._lm.firmware_version,
         }
 

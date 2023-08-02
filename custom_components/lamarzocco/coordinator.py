@@ -66,10 +66,13 @@ class LmApiCoordinator(DataUpdateCoordinator):
             msg = "Authentication failed. \
                             Maybe one of your credential details was invalid or you changed your password."
             _LOGGER.error(msg)
+            _LOGGER.debug(msg, exc_info=True)
             raise ConfigEntryAuthFailed(msg) from ex
         except (RequestNotSuccessful, Exception) as ex:
-            _LOGGER.exception(ex)
+            _LOGGER.error(ex)
+            _LOGGER.debug(ex, exc_info=True)
             raise UpdateFailed("Querying API failed. Error: %s", ex)
+     
         _LOGGER.debug("Current status: %s", str(self._lm.current_status))
         self._initialized = True
         return self._lm

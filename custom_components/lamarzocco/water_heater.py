@@ -3,8 +3,6 @@
 import logging
 
 from homeassistant.components.water_heater import (
-    ATTR_CURRENT_TEMPERATURE,
-    ATTR_TEMPERATURE,
     STATE_ELECTRIC,
     STATE_OFF,
     WaterHeaterEntity,

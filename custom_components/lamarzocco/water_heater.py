@@ -3,11 +3,12 @@
 import logging
 
 from homeassistant.components.water_heater import (
-    SUPPORT_TARGET_TEMPERATURE,
     ATTR_CURRENT_TEMPERATURE,
     ATTR_TEMPERATURE,
     STATE_ELECTRIC,
+    STATE_OFF,
     WaterHeaterEntity,
+    WaterHeaterEntityFeature
 )
 from homeassistant.const import PRECISION_TENTHS, TEMP_CELSIUS
 from homeassistant.helpers.temperature import display_temp as show_temp
@@ -24,13 +25,10 @@ from .const import (
     ENTITY_TSTATE_TAG,
     ENTITY_TYPE,
     ENTITY_UNITS,
-    MODE_HEAT,
-    MODE_OFF,
     MODEL_GS3_AV,
     MODEL_GS3_MP,
     MODEL_LM,
     MODEL_LMU,
-    OPERATION_MODES,
     POWER,
     STEAM_BOILER_ENABLE,
     TEMP_COFFEE,
@@ -105,7 +103,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     """Water heater representing espresso machine temperature data."""
 
     """Set static properties."""
-    _attr_supported_features = SUPPORT_TARGET_TEMPERATURE
+    _attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE  # | WaterHeaterEntityFeature.ON_OFF
     _attr_precision = PRECISION_TENTHS
 
     def __init__(self, coordinator, water_heater_type, hass, config_entry):
@@ -119,7 +117,13 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     @property
     def state(self):
         """State of the water heater."""
-        return STATE_ELECTRIC
+        is_on = self._lm.current_status.get(
+            self._entities[self._object_id][ENTITY_TSTATE_TAG], False
+        )
+        if is_on:
+            return STATE_ELECTRIC
+        else:
+            return STATE_OFF
 
     @property
     def current_temperature(self):
@@ -150,27 +154,13 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         """Return the unit of measurement used by the platform."""
         return self._entities[self._object_id][ENTITY_UNITS]
 
-    @property
-    def operation_list(self):
-        return OPERATION_MODES
-
-    @property
-    def current_operation(self):
-        is_on = self._lm.current_status.get(
-            self._entities[self._object_id][ENTITY_TSTATE_TAG], False
-        )
-        if is_on:
-            return MODE_HEAT
-        else:
-            return MODE_OFF
-
-    @property
-    def state_attributes(self):
-        temps = {
-            ATTR_CURRENT_TEMPERATURE: self.current_temperature,
-            ATTR_TEMPERATURE: self.target_temperature
-        }
-        return {**EntityBase.extra_state_attributes.fget(self), **temps}
+    # @property
+    # def extra_state_attributes(self):
+    #     temps = {
+    #         ATTR_CURRENT_TEMPERATURE: self.current_temperature,
+    #         ATTR_TEMPERATURE: self.target_temperature
+    #     }
+    #     return {**EntityBase.extra_state_attributes.fget(self), **temps}
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""
@@ -181,3 +171,13 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         await call_service(func, temp=round(temperature, 1))
         await self._update_ha_state()
         return True
+
+    # async def async_turn_on(self):
+    #     _LOGGER.debug(f"Turning {self._object_id} on")
+    #     func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
+    #     await call_service(func, state=True)
+
+    # async def async_turn_off(self):
+    #     _LOGGER.debug(f"Turning {self._object_id} on")
+    #     func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
+    #     await call_service(func, state=False)

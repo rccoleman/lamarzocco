@@ -278,8 +278,3 @@ ENTITY_UNITS = "units"
 PLATFORM = "platform"
 PLATFORM_SENSOR = "sensor"
 PLATFORM_SWITCH = "switch"
-
-MODE_HEAT = "heat"
-MODE_OFF = "off"
-
-OPERATION_MODES = [MODE_HEAT, MODE_OFF]

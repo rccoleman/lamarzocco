@@ -101,7 +101,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     """Water heater representing espresso machine temperature data."""
 
     """Set static properties."""
-    _attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE  # | WaterHeaterEntityFeature.ON_OFF
+    _attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE | WaterHeaterEntityFeature.ON_OFF
     _attr_precision = PRECISION_TENTHS
 
     def __init__(self, coordinator, water_heater_type, hass, config_entry):
@@ -170,12 +170,12 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         await self._update_ha_state()
         return True
 
-    # async def async_turn_on(self):
-    #     _LOGGER.debug(f"Turning {self._object_id} on")
-    #     func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
-    #     await call_service(func, state=True)
+    async def async_turn_on(self):
+        _LOGGER.debug(f"Turning {self._object_id} on")
+        func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
+        await call_service(func, state=True)
 
-    # async def async_turn_off(self):
-    #     _LOGGER.debug(f"Turning {self._object_id} on")
-    #     func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
-    #     await call_service(func, state=False)
+    async def async_turn_off(self):
+        _LOGGER.debug(f"Turning {self._object_id} on")
+        func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
+        await call_service(func, state=False)

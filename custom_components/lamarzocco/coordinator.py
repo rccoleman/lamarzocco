@@ -60,7 +60,7 @@ class LmApiCoordinator(DataUpdateCoordinator):
                 )
                 self._websocket_initialized = True
 
-            await self._lm.update_local_machine_status()
+            await self._lm.update_local_machine_status(force_update=True)
 
         except AuthFail as ex:
             msg = "Authentication failed. \
@@ -71,8 +71,8 @@ class LmApiCoordinator(DataUpdateCoordinator):
         except (RequestNotSuccessful, Exception) as ex:
             _LOGGER.error(ex)
             _LOGGER.debug(ex, exc_info=True)
-            raise UpdateFailed("Querying API failed. Error: %s", ex)
-     
+            raise UpdateFailed("Querying API failed. Error: %s", ex) from ex
+
         _LOGGER.debug("Current status: %s", str(self._lm.current_status))
         self._initialized = True
         return self._lm

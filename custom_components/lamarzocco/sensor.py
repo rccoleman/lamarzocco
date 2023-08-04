@@ -70,9 +70,17 @@ class LaMarzoccoSensor(EntityBase, SensorEntity):
         """Initialize sensors"""
         super().__init__(coordinator, hass, sensor_type, ENTITIES, ENTITY_TYPE)
 
-        self._attr_native_unit_of_measurement = self._entities[self._object_id][ENTITY_UNITS]
-        self._attr_device_class = self._entities[self._object_id][ENTITY_CLASS]
-        self._attr_state_class = STATE_CLASS_MEASUREMENT
+    @property
+    def native_unit_of_measurement(self) -> str:
+        return self._entities[self._object_id][ENTITY_UNITS]
+
+    @property
+    def device_class(self) -> str:
+        return self._entities[self._object_id][ENTITY_CLASS]
+
+    @property
+    def state_class(self) -> str:
+        return self._entities[self._object_id][ENTITY_CLASS]
 
     @property
     def available(self):

@@ -4,7 +4,14 @@ from typing import Any, Dict
 
 import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
-from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_PORT, CONF_USERNAME
+from homeassistant.const import (
+    CONF_HOST,
+    CONF_MAC,
+    CONF_NAME,
+    CONF_PASSWORD,
+    CONF_PORT,
+    CONF_USERNAME
+)
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from lmcloud.exceptions import AuthFail, RequestNotSuccessful
@@ -22,19 +29,25 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_DISCOVERY_DATA_SCHEMA = vol.Schema(
+LOGIN_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_CLIENT_ID, default=CONF_DEFAULT_CLIENT_ID): cv.string,
-        vol.Required(CONF_CLIENT_SECRET, default=CONF_DEFAULT_CLIENT_SECRET): cv.string,
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
     },
     extra=vol.PREVENT_EXTRA,
 )
 
-STEP_USER_DATA_SCHEMA = STEP_DISCOVERY_DATA_SCHEMA.extend(
+STEP_USER_DATA_SCHEMA = LOGIN_DATA_SCHEMA.extend(
     {
         vol.Required(CONF_HOST): cv.string,
+    },
+    extra=vol.PREVENT_EXTRA,
+)
+
+STEP_REAUTH_DATA_SCHEMA = LOGIN_DATA_SCHEMA.extend(
+    {
+        vol.Required(CONF_CLIENT_ID, default=CONF_DEFAULT_CLIENT_ID): cv.string,
+        vol.Required(CONF_CLIENT_SECRET, default=CONF_DEFAULT_CLIENT_SECRET): cv.string,
     },
     extra=vol.PREVENT_EXTRA,
 )
@@ -67,6 +80,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
+    def __init__(self):
+        self._discovered = {}
+
     async def _try_create_entry(self, data):
         machine_info = await validate_input(self.hass, data)
         self._abort_if_unique_id_configured()
@@ -84,7 +100,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             data = user_input.copy()
+            data |= self._discovered
             data[CONF_PORT] = DEFAULT_PORT_CLOUD
+            data[CONF_CLIENT_ID] = CONF_DEFAULT_CLIENT_ID
+            data[CONF_CLIENT_SECRET] = CONF_DEFAULT_CLIENT_SECRET
 
             try:
                 return await self._try_create_entry(data)
@@ -96,6 +115,20 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
+
+    async def async_step_bluetooth(self, discovery_info):
+        address = discovery_info.address
+        name = discovery_info.name
+
+        _LOGGER.debug(f"Discovered La Marzocco machine {name} through Bluetooth at address {address}")
+
+        self._discovered[CONF_NAME] = name
+        self._discovered[CONF_MAC] = address
+
+        await self.async_set_unique_id(address)
+        self._abort_if_unique_id_configured()
+
+        return await self.async_step_user()
 
     async def async_step_reauth(self, user_input=None):
         """Perform reauth upon an API authentication error."""
@@ -109,7 +142,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is None:
             return self.async_show_form(
                 step_id="reauth_confirm",
-                data_schema=STEP_DISCOVERY_DATA_SCHEMA,
+                data_schema=STEP_REAUTH_DATA_SCHEMA,
             )
         self.hass.config_entries.async_update_entry(
             self.reauth_entry, data=user_input

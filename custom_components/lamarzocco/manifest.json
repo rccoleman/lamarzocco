@@ -5,11 +5,25 @@
   "config_flow": true,
   "documentation": "https://github.com/rccoleman/lamarzocco",
   "issue_tracker": "https://github.com/rccoleman/lamarzocco/issues",
-  "requirements": ["lmcloud==0.3.25"],
+  "requirements": ["lmcloud==0.3.28"],
   "ssdp": [],
   "homekit": {},
   "dependencies": [
     "bluetooth_adapters"
+  ],
+  "bluetooth": [
+    {
+      "local_name": "MICRA_*"
+    },
+    {
+      "local_name": "MINI_*"
+    },
+    {
+      "local_name": "GS3_*"
+    },
+    {
+      "local_name": "GS3AV_*"
+    }
   ],
   "codeowners": ["@rccoleman", "@zweckj"],
   "iot_class": "cloud_polling",

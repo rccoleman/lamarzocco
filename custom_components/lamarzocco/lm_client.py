@@ -5,6 +5,7 @@ from lmcloud import LMCloud
 
 from .const import *
 from homeassistant.components import bluetooth
+from homeassistant.const import CONF_HOST, CONF_MAC, CONF_NAME, CONF_USERNAME
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -51,21 +52,29 @@ class LaMarzoccoClient(LMCloud):
 
     async def hass_init(self) -> None:
 
-        init_bt = False
-        bt_scanner = None
-        # check if there are any bluetooth adapters to use
-        count = bluetooth.async_scanner_count(self.hass, connectable=True)
-        if count > 0:
-            _LOGGER.debug("Found bluetooth adapters, initializing with bluetooth.")
-            init_bt = True
-            bt_scanner = bluetooth.async_get_scanner(self.hass)
-
-        await self.init_with_local_api(
+        await self._init_with_local_api(
             self._hass_config,
-            self._hass_config[HOST],
-            port=DEFAULT_PORT_CLOUD,
-            use_bluetooth=init_bt,
-            bluetooth_scanner=bt_scanner)
+            self._hass_config.get(CONF_HOST),
+            port=DEFAULT_PORT_CLOUD)
+
+        username = self._hass_config.get(CONF_USERNAME)
+        mac_address = self._hass_config.get(CONF_MAC)
+        name = self._hass_config.get(CONF_NAME)
+
+        if mac_address is not None and name is not None:
+            # coming from discovery
+            _LOGGER.debug("Initializing with known BT device.")
+            await self._init_bluetooth_with_known_device(username, mac_address, name)
+        else:
+            # check if there are any bluetooth adapters to use
+            count = bluetooth.async_scanner_count(self.hass, connectable=True)
+            if count > 0:
+                _LOGGER.debug("Found bluetooth adapters, initializing with bluetooth.")
+                bt_scanner = bluetooth.async_get_scanner(self.hass)
+
+                await self._init_bluetooth(username=username, 
+                                           init_client=False, 
+                                           bluetooth_scanner=bt_scanner)
 
         _LOGGER.debug(f"Model name: {self.model_name}")
 

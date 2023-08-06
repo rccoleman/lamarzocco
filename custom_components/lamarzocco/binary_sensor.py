@@ -66,7 +66,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up binary sensor entities."""
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
 
-    use_websocket = config_entry.options.get(CONF_USE_WEBSOCKET, False)
+    use_websocket = config_entry.options.get(CONF_USE_WEBSOCKET, True)
 
     entities = []
     for sensor_type in ENTITIES:

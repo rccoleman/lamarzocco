@@ -122,10 +122,18 @@ class LaMarzoccoClient(LMCloud):
         await super().set_dose_hot_water(seconds)
 
     async def set_prebrew_times(self, key, seconds_on, seconds_off) -> None:
-        await self.configure_prebrew(prebrewOnTime=seconds_on * 1000, prebrewOffTime=seconds_off * 1000, key=key)
+        await self.configure_prebrew(
+            prebrewOnTime=seconds_on * 1000,
+            prebrewOffTime=seconds_off * 1000,
+            key=key
+        )
 
     async def set_preinfusion_time(self, key, seconds) -> None:
-        await self.configure_prebrew(prebrewOnTime=0, prebrewOffTime=seconds * 1000, key=key)
+        await self.configure_prebrew(
+            prebrewOnTime=0,
+            prebrewOffTime=seconds * 1000,
+            key=key
+        )
 
     async def set_start_backflush(self) -> None:
         await self.start_backflush()
@@ -143,16 +151,22 @@ class LaMarzoccoClient(LMCloud):
     async def get_hass_bt_client(self) -> None:
         # according to HA best practices, we should not reuse the same client
         # get a new BLE device from hass and init a new Bleak Client with it
-        if self._lm_bluetooth:
-            ble_device = bluetooth.async_ble_device_from_address(self.hass,
-                                                                 self._lm_bluetooth._address,
-                                                                 connectable=True)
-            if ble_device is None:
-                if not self._bt_disconnected:
-                    _LOGGER.warn("Machine not found in Bluetooth scan, not sending commands through bluetooth.")
-                    self._bt_disconnected = True
-            else:
-                if self._bt_disconnected:
-                    _LOGGER.warn("Machine available again for Bluetooth, sending commands through bluetooth.")
-                    self._bt_disconnected = False
-            await self._lm_bluetooth.new_bleak_client_from_ble_device(ble_device)
+        if self._lm_bluetooth is None:
+            return
+
+        ble_device = bluetooth.async_ble_device_from_address(
+            self.hass,
+            self._lm_bluetooth._address,
+            connectable=True
+        )
+
+        if ble_device is None:
+            if not self._bt_disconnected:
+                _LOGGER.warn("Machine not found in Bluetooth scan, not sending commands through bluetooth.")
+                self._bt_disconnected = True
+        else:
+            if self._bt_disconnected:
+                _LOGGER.warn("Machine available again for Bluetooth, sending commands through bluetooth.")
+                self._bt_disconnected = False
+
+        await self._lm_bluetooth.new_bleak_client_from_ble_device(ble_device)

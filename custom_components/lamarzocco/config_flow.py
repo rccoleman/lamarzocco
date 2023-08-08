@@ -39,7 +39,7 @@ LOGIN_DATA_SCHEMA = vol.Schema(
 
 STEP_USER_DATA_SCHEMA = LOGIN_DATA_SCHEMA.extend(
     {
-        vol.Required(CONF_HOST): cv.string,
+        vol.Optional(CONF_HOST): cv.string,
     },
     extra=vol.PREVENT_EXTRA,
 )

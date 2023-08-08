@@ -52,10 +52,14 @@ class LaMarzoccoClient(LMCloud):
 
     async def hass_init(self) -> None:
 
-        await self._init_with_local_api(
-            self._hass_config,
-            self._hass_config.get(CONF_HOST),
-            port=DEFAULT_PORT_CLOUD)
+        await self._init_cloud_api(self._hass_config)
+
+        ip = self._hass_config.get(CONF_HOST)
+        if ip is not None:
+            await self._init_local_api(
+                ip=self._hass_config.get(CONF_HOST),
+                port=DEFAULT_PORT_CLOUD
+            )
 
         username = self._hass_config.get(CONF_USERNAME)
         mac_address = self._hass_config.get(CONF_MAC)
@@ -72,8 +76,8 @@ class LaMarzoccoClient(LMCloud):
                 _LOGGER.debug("Found bluetooth adapters, initializing with bluetooth.")
                 bt_scanner = bluetooth.async_get_scanner(self.hass)
 
-                await self._init_bluetooth(username=username, 
-                                           init_client=False, 
+                await self._init_bluetooth(username=username,
+                                           init_client=False,
                                            bluetooth_scanner=bt_scanner)
 
         _LOGGER.debug(f"Model name: {self.model_name}")

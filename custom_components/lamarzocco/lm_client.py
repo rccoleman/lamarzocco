@@ -21,6 +21,7 @@ class LaMarzoccoClient(LMCloud):
         self._hass_config = hass_config
         self.hass = hass
         self._brew_active = False
+        self._bt_disconnected = False
 
     @property
     def model_name(self) -> str:
@@ -52,14 +53,9 @@ class LaMarzoccoClient(LMCloud):
 
     async def hass_init(self) -> None:
 
+        _LOGGER.debug("Initializing Cloud API.")
         await self._init_cloud_api(self._hass_config)
-
-        ip = self._hass_config.get(CONF_HOST)
-        if ip is not None:
-            await self._init_local_api(
-                ip=self._hass_config.get(CONF_HOST),
-                port=DEFAULT_PORT_CLOUD
-            )
+        _LOGGER.debug(f"Model name: {self.model_name}")
 
         username = self._hass_config.get(CONF_USERNAME)
         mac_address = self._hass_config.get(CONF_MAC)
@@ -80,7 +76,17 @@ class LaMarzoccoClient(LMCloud):
                                            init_client=False,
                                            bluetooth_scanner=bt_scanner)
 
-        _LOGGER.debug(f"Model name: {self.model_name}")
+        if self._lm_bluetooth:
+            _LOGGER.debug("Connecting to machine with Bluetooth.")
+            await self.get_hass_bt_client()
+
+        ip = self._hass_config.get(CONF_HOST)
+        if ip is not None:
+            _LOGGER.debug("Initializing local API.")
+            await self._init_local_api(
+                ip=self._hass_config.get(CONF_HOST),
+                port=DEFAULT_PORT_CLOUD
+            )
 
     '''
     interface methods
@@ -141,4 +147,12 @@ class LaMarzoccoClient(LMCloud):
             ble_device = bluetooth.async_ble_device_from_address(self.hass,
                                                                  self._lm_bluetooth._address,
                                                                  connectable=True)
+            if ble_device is None:
+                if not self._bt_disconnected:
+                    _LOGGER.warn("Machine not found in Bluetooth scan, not sending commands through bluetooth.")
+                    self._bt_disconnected = True
+            else:
+                if self._bt_disconnected:
+                    _LOGGER.warn("Machine available again for Bluetooth, sending commands through bluetooth.")
+                    self._bt_disconnected = False
             await self._lm_bluetooth.new_bleak_client_from_ble_device(ble_device)

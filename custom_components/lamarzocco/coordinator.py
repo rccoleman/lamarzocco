@@ -42,7 +42,6 @@ class LmApiCoordinator(DataUpdateCoordinator):
         self._websocket_task = None
         self._config_entry = config_entry
         self._use_websocket = self._config_entry.options.get(CONF_USE_WEBSOCKET, True)
-        self._brew_running_set = False
 
     async def _async_update_data(self):
         try:
@@ -93,15 +92,6 @@ class LmApiCoordinator(DataUpdateCoordinator):
                 self._lm._brew_active = update
 
         self.data = self._lm
-
-        # machine spams the websocket with brew_active updates, during brew
-        # so we only want to update the listeners once, to avoid overloading HA
-        if property_updated == BREW_ACTIVE and update and not self._brew_running_set:
-            self._brew_running_set = True
-        elif property_updated == BREW_ACTIVE and update and self._brew_running_set:
-            return
-        elif property_updated == BREW_ACTIVE and not update:
-            self._brew_running_set = False
 
         self.async_update_listeners()
 

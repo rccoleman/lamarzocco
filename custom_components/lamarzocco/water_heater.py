@@ -13,10 +13,12 @@ from homeassistant.const import PRECISION_TENTHS, UnitOfTemperature
 from .const import (
     ATTR_MAP_COFFEE,
     ATTR_MAP_STEAM,
+    COFFEE_BOILER_STATE,
     DOMAIN,
     ENTITY_ICON,
     ENTITY_MAP,
     ENTITY_NAME,
+    ENTITY_TOPERATION_TAG,
     ENTITY_TEMP_TAG,
     ENTITY_TSET_TAG,
     ENTITY_TSTATE_TAG,
@@ -27,6 +29,7 @@ from .const import (
     MODEL_LMU,
     POWER,
     STEAM_BOILER_ENABLE,
+    STEAM_BOILER_STATE,
     TEMP_COFFEE,
     TSET_COFFEE,
     TEMP_STEAM,
@@ -38,14 +41,14 @@ from .entity_base import EntityBase
 from .services import async_setup_entity_services, call_service
 
 """Min/Max coffee and team temps."""
-# COFFEE_MIN_TEMP = 87
-# COFFEE_MAX_TEMP = 100
-COFFEE_MIN_TEMP_LMU = 85
-COFFEE_MAX_TEMP_LMU = 104
+COFFEE_MIN_TEMP = 85
+COFFEE_MAX_TEMP = 104
 
-# STEAM_MIN_TEMP = 110
-# STEAM_MAX_TEMP = 132
-LMU_STEAM_STEPS = [126, 128, 131]
+STEAM_STEPS = [126, 128, 131]
+
+MODE_ENABLED = "Enabled"
+MODE_DISABLED = "Disabled"
+OPERATION_MODES = [MODE_ENABLED, MODE_DISABLED]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,7 +56,8 @@ ENTITIES = {
     "coffee": {
         ENTITY_TEMP_TAG: TEMP_COFFEE,
         ENTITY_TSET_TAG: TSET_COFFEE,
-        ENTITY_TSTATE_TAG: POWER,
+        ENTITY_TOPERATION_TAG: POWER,
+        ENTITY_TSTATE_TAG: COFFEE_BOILER_STATE,
         ENTITY_NAME: "Coffee",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_COFFEE,
@@ -67,7 +71,8 @@ ENTITIES = {
     "steam": {
         ENTITY_TEMP_TAG: TEMP_STEAM,
         ENTITY_TSET_TAG: TSET_STEAM,
-        ENTITY_TSTATE_TAG: STEAM_BOILER_ENABLE,
+        ENTITY_TOPERATION_TAG: STEAM_BOILER_ENABLE,
+        ENTITY_TSTATE_TAG: STEAM_BOILER_STATE,
         ENTITY_NAME: "Steam",
         ENTITY_MAP: {
             MODEL_GS3_AV: ATTR_MAP_STEAM,
@@ -104,7 +109,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
     @property
     def supported_features(self):
         """Return the list of supported features."""
-        return WaterHeaterEntityFeature.TARGET_TEMPERATURE | WaterHeaterEntityFeature.ON_OFF
+        return WaterHeaterEntityFeature.TARGET_TEMPERATURE | WaterHeaterEntityFeature.ON_OFF | WaterHeaterEntityFeature.OPERATION_MODE
 
     @property
     def temperature_unit(self):
@@ -122,10 +127,7 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         is_on = self._lm.current_status.get(
             self._entities[self._object_id][ENTITY_TSTATE_TAG], False
         )
-        if is_on:
-            return STATE_ELECTRIC
-        else:
-            return STATE_OFF
+        return STATE_ELECTRIC if is_on else STATE_OFF
 
     @property
     def current_temperature(self):
@@ -143,11 +145,22 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
 
     @property
     def min_temp(self):
-        return COFFEE_MIN_TEMP_LMU if self._object_id == "coffee" else min(LMU_STEAM_STEPS)
+        return COFFEE_MIN_TEMP if self._object_id == "coffee" else min(STEAM_STEPS)
 
     @property
     def max_temp(self):
-        return COFFEE_MAX_TEMP_LMU if self._object_id == "coffee" else max(LMU_STEAM_STEPS)
+        return COFFEE_MAX_TEMP if self._object_id == "coffee" else max(STEAM_STEPS)
+
+    @property
+    def operation_list(self):
+        return OPERATION_MODES
+
+    @property
+    def current_operation(self):
+        is_on = self._lm.current_status.get(
+            self._entities[self._object_id][ENTITY_TOPERATION_TAG], False
+        )
+        return MODE_ENABLED if is_on else MODE_DISABLED
 
     async def async_set_temperature(self, **kwargs):
         """Service call to set the temp of either the coffee or steam boilers."""
@@ -168,3 +181,9 @@ class LaMarzoccoWaterHeater(EntityBase, WaterHeaterEntity):
         _LOGGER.debug(f"Turning {self._object_id} on")
         func = getattr(self._lm, f"set_{self._entities[self._object_id][ENTITY_TSTATE_TAG]}")
         await call_service(func, state=False)
+
+    async def async_set_operation_mode(self, operation_mode):
+        if operation_mode == MODE_ENABLED:
+            await self.async_turn_on()
+        else:
+            await self.async_turn_off()

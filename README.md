@@ -4,6 +4,9 @@
 [![Hassfest](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 
+> **Warning**
+>  This integration will most likely not work with your machine. Any machine, that updated to Gateway v3 in or before September 2023, will need to use [this version](https://github.com/zweckj/lamarzocco).
+
 ## Overview
 
 This is an integration for recent La Marzocco espresso machines that use Wifi to connect to the cloud and can be controlled via the La Marzocco mobile app. This capability was rolled out in late 2019, and La Marzocco supposedly offers a retrofit kit to add it to earlier models.

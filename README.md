@@ -4,7 +4,7 @@
 [![Hassfest](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/rccoleman/lamarzocco/actions/workflows/hassfest.yaml)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 
-> [!IMPORTANT]
+> [!WARNING]
 > This integration will most likely not work with your machine. Any machine, that updated to Gateway v3 in or before September 2023, will need to use [this version](https://github.com/zweckj/lamarzocco).
 
 ## Overview

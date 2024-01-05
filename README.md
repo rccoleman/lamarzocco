@@ -6,6 +6,8 @@
 
 > [!WARNING]
 > This integration will most likely not work with your machine. Any machine, that updated to Gateway v3 in or before September 2023, will need to use [this version](https://github.com/zweckj/lamarzocco).
+>
+> This repo will be archived and removed from HACS, so please move to [this one](https://github.com/zweckj/lamarzocco).
 
 ## Overview
 
